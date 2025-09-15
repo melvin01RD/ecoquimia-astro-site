@@ -1,0 +1,12 @@
+---
+import type { Service } from "../data/services";
+const { service }:{ service: Service } = Astro.props;
+---
+<article class="card p-6 bg-white text-zinc-900 hover:-translate-y-0.5 transition will-change-transform">
+  <div class="w-14 h-14 rounded-2xl grid place-items-center bg-emerald-100 text-2xl mb-3">{service.emoji}</div>
+  <h3 class="font-bold text-lg">{service.title}</h3>
+  <p class="text-sm text-zinc-600 mt-1">{service.description}</p>
+  <ul class="mt-4 text-sm text-zinc-700 space-y-1">
+    {service.bullets.map((b) => <li>• {b}</li>)}
+  </ul>
+</article>

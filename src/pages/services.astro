@@ -1,0 +1,18 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { services } from "../data/services";
+import ServiceCard from "../components/ServiceCard.astro";
+---
+<Base title="Servicios | Ecoquimia" description="Desinsectación, desratización, sanitización, antitermitas, tanques y control de palomas">
+  <Fragment slot="header"><Header /></Fragment>
+
+
+<section class="pt-10">
+  <h1 class="text-3xl font-bold">Servicios</h1>
+  <p class="text-white/80 mt-2">Elige el plan que mejor se adapte a tu hogar o negocio.</p>
+  <div class="mt-8 grid gap-6 lg:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {services.map((s) => <ServiceCard service={s} />)}
+  </div>
+</section>

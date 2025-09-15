@@ -1,0 +1,29 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-grad-from: 0 0% 0%;
+  --bg-grad-to: 0 0% 8%;
+}
+
+.container-max { @apply max-w-6xl mx-auto px-4; }
+.btn { @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-semibold transition; }
+.btn-primary { @apply bg-brand text-white hover:bg-brand-dark; }
+.btn-outline { @apply border border-white/60 text-white hover:bg-white hover:text-black; }
+.card { @apply rounded-3xl shadow-sm border border-black/5 bg-white; }
+
+/* Focus visible */
+:where(a, button, input, textarea, [role="button"]):focus-visible {
+  outline: 2px solid rgb(16 185 129); /* emerald-500 */
+  outline-offset: 2px;
+  border-radius: .5rem;
+}
+
+/* Enlaces en dark con subrayado sutil al hover */
+a { text-underline-offset: 2px; }
+a:hover { text-decoration: underline; }
+
+/* Ajuste de container si lo quieres más ancho: */
+/* .container-max { max-width: 72rem; }  /* 1152px */

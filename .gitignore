@@ -1,0 +1,49 @@
+# === Node / package managers ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+# (NO ignores para lock files; conserva package-lock.json / pnpm-lock.yaml / yarn.lock)
+
+# === Astro build & cache ===
+dist/
+.astro/
+
+# === Env y secretos ===
+.env
+.env.*
+!.env.example
+
+# === Sistemas operativos ===
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# === Editores/IDE ===
+.vscode/
+.idea/
+*.swp
+
+# === Logs / coverage / tmp ===
+logs/
+*.log
+coverage/
+tmp/
+temp/
+
+# === Proveedores de deploy (artefactos locales) ===
+.vercel/
+.netlify/
+
+# === Testing (si usas luego) ===
+cypress/screenshots/
+cypress/videos/
+playwright-report/
+test-results/
