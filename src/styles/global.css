@@ -1,29 +1,299 @@
-
+/* Tailwind layers */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg-grad-from: 0 0% 0%;
-  --bg-grad-to: 0 0% 8%;
+/* =========================
+   Variables y bases globales
+   ========================= */
+@layer base {
+  :root {
+    /* Fondo gradiente (HSL) */
+    --bg-grad-from: 0 0% 0%;
+    --bg-grad-to: 0 0% 8%;
+
+    /* Radios / elevación */
+    --radius: 1rem;
+
+    /* Color del anillo de enfoque (emerald-500) */
+    --ring-r: 16;
+    --ring-g: 185;
+    --ring-b: 129;
+  }
+
+  .dark {
+    --bg-grad-from: 0 0% 0%;
+    --bg-grad-to: 0 0% 10%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased bg-white;
+    background-image: none;
+    background-color: #ffffff;
+  }
+
+  /* Texto por defecto (modo “hero” oscuro) */
+  body,
+  :where(p, li, span, small) {
+    @apply text-white/90;
+  }
+  :where(h1, h2, h3, h4) {
+    @apply text-white font-semibold tracking-tight;
+  }
+
+  ::selection {
+    background: rgba(var(--ring-r), var(--ring-g), var(--ring-b), 0.25);
+    color: #fff;
+  }
+
+  :where(a, button, input, textarea, select, [role="button"]):focus-visible {
+    outline: 2px solid rgb(var(--ring-r) var(--ring-g) var(--ring-b));
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Scrollbar sutil (WebKit) */
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
 }
 
-.container-max { @apply max-w-6xl mx-auto px-4; }
-.btn { @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-semibold transition; }
-.btn-primary { @apply bg-brand text-white hover:bg-brand-dark; }
-.btn-outline { @apply border border-white/60 text-white hover:bg-white hover:text-black; }
-.card { @apply rounded-3xl shadow-sm border border-black/5 bg-white; }
+/* =========================
+   Componentes reutilizables
+   ========================= */
+@layer components {
+  /* Container */
+  .container-max {
+    @apply max-w-6xl mx-auto px-4;
+  }
 
-/* Focus visible */
-:where(a, button, input, textarea, [role="button"]):focus-visible {
-  outline: 2px solid rgb(16 185 129); /* emerald-500 */
-  outline-offset: 2px;
-  border-radius: .5rem;
+  /* Enlaces con subrayado solo al hover */
+  a {
+    text-underline-offset: 2px;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* Botones base */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-semibold
+           transition duration-200 select-none;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500;
+    @apply disabled:opacity-50 disabled:pointer-events-none;
+    transform: translateZ(0);
+  }
+  .btn-primary {
+    @apply bg-brand text-white hover:bg-brand-dark active:scale-[0.98] shadow-sm shadow-black/20;
+  }
+  .btn-secondary {
+    @apply bg-white/10 text-white hover:bg-white/20 active:scale-[0.98] border border-white/10 backdrop-blur-sm;
+  }
+  .btn-outline {
+    @apply border border-white/60 text-white hover:bg-white hover:text-black active:scale-[0.98];
+  }
+  .btn-ghost {
+    @apply text-white/70 hover:text-white hover:bg-white/10;
+  }
+  .btn-block {
+    @apply w-full md:w-auto;
+  } /* mobile-friendly */
+
+  .btn[aria-busy="true"] {
+    @apply relative pointer-events-none opacity-70;
+  }
+  .btn[aria-busy="true"]::after {
+    content: "";
+    @apply absolute inset-0 rounded-2xl;
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.15),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: btnShimmer 1.2s infinite;
+  }
+  @keyframes btnShimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Tarjetas */
+  .card {
+    @apply rounded-3xl shadow-sm border border-white/10 bg-white/5 text-white backdrop-blur-md;
+  }
+  .card-hover {
+    @apply transition hover:-translate-y-0.5 hover:shadow-md;
+  }
+
+  /* Superficie sólida (secciones claras) */
+  .surface {
+    @apply rounded-3xl border border-black/5 bg-white text-black;
+  }
+  .dark .surface {
+    @apply border-white/10 bg-zinc-900/70 text-white backdrop-blur-sm;
+  }
+
+  /* ---------- OVERRIDES para .surface (legibilidad en claro) ---------- */
+  .surface :where(h1, h2, h3, h4) {
+    @apply text-zinc-900;
+  }
+  .surface :where(p, li, span, small) {
+    @apply text-zinc-800;
+  }
+  .surface .label {
+    @apply text-zinc-700;
+  }
+  .surface .help {
+    @apply text-zinc-500;
+  }
+
+  .surface .input,
+  .surface .select,
+  .surface .textarea {
+    @apply bg-white text-zinc-900 placeholder-zinc-400 border border-zinc-300;
+  }
+  .surface .input:focus,
+  .surface .select:focus,
+  .surface .textarea:focus {
+    @apply ring-emerald-500 border-emerald-500;
+  }
+
+  /* Tiles claras para listas (categorías) dentro de .surface */
+  .tile-light {
+    @apply rounded-[var(--radius)] p-4 border border-zinc-200 bg-white text-zinc-900
+           hover:bg-zinc-50 transition card-hover no-underline;
+  }
+
+  /* Inputs */
+  .field {
+    @apply space-y-2;
+  }
+  .label {
+    @apply text-sm font-medium text-white/80;
+  }
+  .input,
+  .select,
+  .textarea {
+    @apply w-full rounded-xl px-3.5 py-2.5 bg-white/5 text-white placeholder-white/40
+           border border-white/10 shadow-sm transition;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-transparent;
+  }
+  .input[disabled],
+  .select[disabled],
+  .textarea[disabled] {
+    @apply opacity-60 cursor-not-allowed;
+  }
+
+  /* Divisor */
+  .divider {
+    @apply h-px w-full bg-white/10;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium border border-white/15 bg-white/5 text-white;
+  }
+
+  /* Nav links */
+  .nav-link {
+    @apply text-sm text-white/70 hover:text-white transition;
+  }
+  .nav-link.is-active {
+    @apply text-white font-semibold;
+  }
 }
 
-/* Enlaces en dark con subrayado sutil al hover */
-a { text-underline-offset: 2px; }
-a:hover { text-decoration: underline; }
+/* =========================
+   Utilidades de ayuda
+   ========================= */
+@layer utilities {
+  /* Grids fluidos */
+  .auto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+  }
+  /* Variante más compacta para móviles angostos */
+  .auto-grid-sm {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 0.75rem;
+  }
 
-/* Ajuste de container si lo quieres más ancho: */
-/* .container-max { max-width: 72rem; }  /* 1152px */
+  /* Espaciado de secciones */
+  .section-pad {
+    @apply py-10 md:py-16;
+  }
+
+  /* Glass utilitario */
+  .glass {
+    @apply bg-white/5 border border-white/10 backdrop-blur-md;
+  }
+
+  /* Radio global utilitario */
+  .rounded-app {
+    border-radius: var(--radius);
+  }
+
+  /* Helpers mobile */
+  .stack-sm {
+    @apply space-y-3 md:space-y-4;
+  } /* pilas verticales */
+  .hide-on-mobile {
+    @apply hidden sm:block;
+  }
+  .only-mobile {
+    @apply sm:hidden;
+  }
+}
+
+@layer base {
+  /* Actívalo solo en páginas que quieras claras (ej: /cotiza) */
+  body.page-light {
+    background-color: #f8fafc; /* slate-50 */
+    background-image: none;
+  }
+  body.page-light,
+  body.page-light :where(p, li, span, small) {
+    @apply text-zinc-900;
+  }
+  body.page-light :where(h1, h2, h3, h4) {
+    @apply text-zinc-900;
+  }
+}
+
+/* ==============
+   Notas rápidas:
+   ==============
+   - Usa .surface para secciones claras; dentro de ella, inputs/labels se vuelven legibles en claro.
+   - Para las tarjetas de categorías dentro de .surface usa .tile-light (en vez de .glass).
+   - En mobile, puedes cambiar a .auto-grid-sm si quieres columnas más angostas.
+   - .btn-block deja botones a 100% ancho en móviles automáticamente.
+*/

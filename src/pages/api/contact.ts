@@ -59,18 +59,17 @@ async function sendEmail({ subject, text }: { subject: string; text: string }) {
     const nodemailer = await import("nodemailer");
 
     const secure =
-      (env.SMTP_SECURE || "").toLowerCase() === "true" ||
-      Number(port) === 465;
+      (env.SMTP_SECURE || "").toLowerCase() === "true" || Number(port) === 465;
 
     const transporter = nodemailer.createTransport({
       host,
       port: Number(port),
-      secure,                 // true para 465, false para 587/25 (STARTTLS)
+      secure, // true para 465, false para 587/25 (STARTTLS)
       auth: { user, pass },
-      requireTLS: !secure,    // obliga STARTTLS si secure=false
+      requireTLS: !secure, // obliga STARTTLS si secure=false
       tls: {
         minVersion: "TLSv1.2",
-        servername: host,     // SNI correcto
+        servername: host, // SNI correcto
         // rejectUnauthorized: false, // SOLO pruebas con cert self-signed
       },
       logger: process.env.NODE_ENV !== "production",
@@ -79,7 +78,11 @@ async function sendEmail({ subject, text }: { subject: string; text: string }) {
 
     // En dev muestra si hay advertencias de conexión/login
     if (process.env.NODE_ENV !== "production") {
-      try { await transporter.verify(); } catch (e) { /* se verá en logger/debug */ }
+      try {
+        await transporter.verify();
+      } catch (e) {
+        /* se verá en logger/debug */
+      }
     }
 
     const fromAddress = env.SMTP_FROM_EMAIL || user;

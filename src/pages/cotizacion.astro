@@ -1,0 +1,188 @@
+---
+import "../styles/global.css";
+import categoriesDefault, { categories as categoriesNamed } from "../data/categories";
+
+// Íconos nativos (SVG inline)
+import {
+  Grid2x2, Mail, User, AtSign, ListFilter, Hash,
+  Building2, Home, Bed, Building, Utensils, Car,
+  Landmark, Factory, School, ShoppingBag, Hammer, Wrench
+} from "@lucide/astro";
+
+const CATEGORIES: string[] = (categoriesNamed ?? categoriesDefault ?? []) as string[];
+
+const honeypot =
+  (import.meta.env.PUBLIC_HONEYPOT_FIELD ?? import.meta.env.HONEYPOT_FIELD) || "website";
+
+const icons: Record<string, any> = {
+  "Apartamentos": Building2,
+  "Casas": Home,
+  "Hoteles": Bed ?? Building2,
+  "Oficinas": Building,
+  "Restaurantes": Utensils,
+  "Vehículos": Car,
+  "Área Común": Landmark,
+  "Industria Farmacéutica": Factory,
+  "Colegios": School,
+  "Plazas Comerciales": ShoppingBag,
+  "Edificios Empresariales": Building2,
+  "Cimientos de Construcción": Hammer ?? Wrench ?? Building2,
+};
+---
+
+<!-- Forzar fondo y tipografía clara SOLO en esta página (sin tocar lo global) -->
+<style is:global>
+  body.page-light { background-color: #f8fafc; background-image: none; }
+  body.page-light, body.page-light :where(p, li, span, small) { color: #18181b; }
+  body.page-light :where(h1,h2,h3,h4) { color: #18181b; }
+</style>
+
+<section class="section-pad">
+  <div class="container-max">
+    <header class="text-center mb-8 md:mb-10">
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">Cotiza tu necesidad</h1>
+      <p class="text-sm md:text-base text-zinc-600">Selecciona una categoría y cuéntanos qué necesitas.</p>
+    </header>
+
+    <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
+      <!-- Categorías (claro) -->
+      <div class="surface rounded-app p-5 md:p-6">
+        <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
+          <Grid2x2 class="w-5 h-5" /> Categorías
+        </h2>
+
+        {CATEGORIES.length === 0 ? (
+          <div class="text-sm text-red-600">
+            No hay categorías configuradas. Revisa <code>src/data/categories.*</code>.
+          </div>
+        ) : (
+          <div class="auto-grid-sm md:auto-grid">
+            {CATEGORIES.map((c) => {
+              const IconComp = icons[c] ?? Building2;
+              return (
+                <a
+                  href={`/cotiza?service=${encodeURIComponent(c)}`}
+                  class="tile-light flex items-center gap-3 no-underline hover:no-underline"
+                >
+                  <IconComp class="w-6 h-6 md:w-7 md:h-7 text-brand" />
+                  <span class="text-sm md:text-base font-medium">{c}</span>
+                </a>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <!-- Formulario (claro) -->
+      <div class="surface rounded-app p-5 md:p-6">
+        <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
+          <Mail class="w-5 h-5" /> Solicitar cotización
+        </h2>
+
+        <form id="quoteForm" class="stack-sm max-w-xl">
+          <div class="field">
+            <label class="label">Nombre</label>
+            <div class="relative">
+              <User class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+              <input name="name" placeholder="Tu nombre" required class="input pl-9" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Correo</label>
+            <div class="relative">
+              <AtSign class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+              <input name="email" type="email" placeholder="tucorreo@dominio.com" required class="input pl-9" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Tipo de servicio</label>
+            <div class="relative">
+              <ListFilter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+              <select id="serviceSelect" name="service" required class="select pl-9">
+                <option value="">Seleccione tipo de servicio</option>
+                {CATEGORIES.map((c) => <option value={c}>{c}</option>)}
+              </select>
+            </div>
+            <p class="help">También puedes elegir desde las tarjetas de la izquierda.</p>
+          </div>
+
+          <div class="field">
+            <label class="label">Cantidad (opcional)</label>
+            <div class="relative">
+              <Hash class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+              <input name="quantity" placeholder="Ej: 2" inputmode="numeric" class="input pl-9" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Describe tu necesidad</label>
+            <textarea name="message" placeholder="Cuéntanos detalles del servicio que necesitas" required class="textarea"></textarea>
+          </div>
+
+          <!-- Honeypot -->
+          <input type="text" name={honeypot} class="hidden" tabindex="-1" autocomplete="off" />
+
+          <div class="flex items-center gap-3">
+            <button id="submitBtn" class="btn btn-primary btn-block" type="submit">Enviar</button>
+            <p id="status" class="text-sm"></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  // Forzar modo claro SOLO en esta página
+  document.documentElement.classList.remove('dark');
+  document.body.classList.add('page-light');
+
+  // Preseleccionar servicio desde ?service
+  const select = document.getElementById("serviceSelect");
+  const params = new URLSearchParams(window.location.search);
+  const s = params.get("service");
+  if (s && select) {
+    const opts = Array.from(select.options);
+    const match = opts.find(o => o.value.toLowerCase() === s.toLowerCase());
+    if (match) select.value = match.value;
+  }
+
+  // Submit
+  const form = document.getElementById("quoteForm");
+  const status = document.getElementById("status");
+  const btn = document.getElementById("submitBtn");
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!status || !btn) return;
+
+    btn.setAttribute("aria-busy", "true");
+    status.textContent = "Enviando...";
+    status.className = "text-sm text-zinc-600";
+
+    const data = Object.fromEntries(new FormData(form));
+    try {
+      const r = await fetch("/api/cotizacion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok) {
+        status.textContent = j.message || "¡Gracias! Te contactaremos pronto.";
+        status.className = "text-sm text-emerald-600";
+        form.reset();
+      } else {
+        status.textContent = j.error || "Error al enviar";
+        status.className = "text-sm text-red-600";
+      }
+    } catch {
+      status.textContent = "Error de red";
+      status.className = "text-sm text-red-600";
+    } finally {
+      btn.removeAttribute("aria-busy");
+    }
+  });
+</script>

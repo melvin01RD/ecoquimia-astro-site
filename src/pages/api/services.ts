@@ -2,8 +2,16 @@
 import type { APIRoute } from "astro";
 
 const services = [
-  { id: 1, name: "Análisis químico", description: "Pruebas de laboratorio certificadas." },
-  { id: 2, name: "Consultoría ambiental", description: "Asesoría en normas ISO y cumplimiento." },
+  {
+    id: 1,
+    name: "Análisis químico",
+    description: "Pruebas de laboratorio certificadas.",
+  },
+  {
+    id: 2,
+    name: "Consultoría ambiental",
+    description: "Asesoría en normas ISO y cumplimiento.",
+  },
 ];
 
 export const GET: APIRoute = async () => {
