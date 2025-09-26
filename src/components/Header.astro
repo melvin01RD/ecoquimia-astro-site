@@ -3,46 +3,99 @@ const links = [
   { href: "/", label: "Inicio" },
   { href: "/nosotros", label: "Nosotros" },
   { href: "/services", label: "Servicios" },
-  { href: "/cotiza", label: "Cotización" },
-  { href: "/aprende", label: "Aprende de las plagas" },
+  { href: "/cotizacion", label: "Cotización" },
+  { href: "/aprende-de-las-plagas", label: "Aprende de las plagas" },
   { href: "/contact", label: "Contacto" },
   { href: "/politicas", label: "Políticas" },
 ];
-const { pathname } = Astro.url;
+
+const normalize = (p: string) => (p.replace(/\/+$/, "") || "/");
+const current = normalize(Astro.url.pathname);
 ---
 
 <header class="sticky top-0 z-50 backdrop-blur bg-zinc-900/70 border-b border-white/10">
   <div class="container-max flex items-center justify-between h-16">
-    
     <!-- Logo -->
-    <a href="/" class="flex items-center gap-2">
+    <a href="/" class="flex items-center gap-2 min-w-0">
       <img src="/logo/logo.png" alt="Ecoquimia" class="h-8 w-auto" />
       <span class="sr-only">Ecoquimia</span>
     </a>
 
-    <!-- Navegación -->
-    <nav class="flex items-center gap-6">
-      {links.map((l) => (
-        <a
-          href={l.href}
-          class={`text-sm transition ${
-            pathname === l.href
-              ? "text-white font-semibold"
-              : "text-white/70 hover:text-white/90"
-          }`}
-        >
-          {l.label}
-        </a>
-      ))}
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-6">
+      {links.map((l) => {
+        const isActive = current === normalize(l.href);
+        return (
+          <a
+            href={l.href}
+            aria-current={isActive ? "page" : undefined}
+            class={`text-sm transition whitespace-nowrap ${
+              isActive ? "text-white font-semibold" : "text-white/70 hover:text-white/90"
+            }`}
+          >
+            {l.label}
+          </a>
+        );
+      })}
+      <!-- En mobile lo escondemos y en desktop mostramos texto -->
       <a
-        href="https://wa.me/18296666004?text=Hola%20quiero%20una%20cotización"
-        target="_blank"
-        rel="noopener noreferrer"
+        href="https://wa.me/18296666004?text=Hola%20quiero%20una%20cotizaci%C3%B3n"
+        target="_blank" rel="noopener noreferrer"
         class="btn btn-primary text-sm"
         aria-label="Escribir por WhatsApp"
       >
         WhatsApp
       </a>
     </nav>
+
+    <!-- Mobile actions -->
+    <div class="flex items-center gap-2 md:hidden">
+      <!-- Icon-only WhatsApp en XS para que no rompa el layout -->
+      <a
+        href="https://wa.me/18296666004?text=Hola%20quiero%20una%20cotizaci%C3%B3n"
+        target="_blank" rel="noopener"
+        aria-label="WhatsApp"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-600/90 hover:bg-emerald-600 text-white"
+        title="WhatsApp"
+      >
+        <!-- simple icon -->
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A10 10 0 0 0 3.2 16.9L2 22l5.2-1.2A10 10 0 1 0 20.5 3.5zm-8.5 17a8.5 8.5 0 0 1-4.3-1.2l-.3-.2-3.1.8.8-3.1-.2-.3A8.5 8.5 0 1 1 12 20.5zm4.7-6.2c-.3-.2-1.7-.8-2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.3-.7.1a7 7 0 0 1-2-1.2 7.4 7.4 0 0 1-1.4-1.7c-.2-.4 0-.6.1-.8l.4-.5c.2-.2.2-.4 0-.7s-.7-1.7-.9-2.3-.5-.5-.7-.5h-.6c-.2 0-.7.1-1 .5s-1.3 1.3-1.3 3.2 1.4 3.7 1.6 4s2.7 4.2 6.5 5.7c.9.4 1.6.6 2.1.8.9.3 1.7.2 2.3.1a3 3 0 0 0 2-1.4 2.5 2.5 0 0 0 .2-1.4c-.1-.2-.3-.3-.6-.5z"/></svg>
+      </a>
+
+      <!-- Hamburger -->
+      <button id="menuBtn" class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/20 text-white/90" aria-controls="mobileMenu" aria-expanded="false" aria-label="Abrir menú">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+      </button>
+    </div>
   </div>
+
+  <!-- Mobile menu drawer -->
+  <div id="mobileMenu" class="md:hidden hidden border-t border-white/10 bg-zinc-900/95 backdrop-blur">
+    <nav class="container-max py-3 grid">
+      {links.map((l) => {
+        const isActive = current === normalize(l.href);
+        return (
+          <a
+            href={l.href}
+            class={`px-1 py-2 text-sm ${
+              isActive ? "text-white font-semibold" : "text-white/80 hover:text-white"
+            }`}
+          >
+            {l.label}
+          </a>
+        );
+      })}
+    </nav>
+  </div>
+
+  <script is:inline>
+    const btn = document.getElementById('menuBtn');
+    const menu = document.getElementById('mobileMenu');
+    if (btn && menu) {
+      btn.addEventListener('click', () => {
+        const open = menu.classList.toggle('hidden') === false;
+        btn.setAttribute('aria-expanded', String(open));
+      });
+    }
+  </script>
 </header>

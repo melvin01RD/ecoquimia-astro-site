@@ -8,10 +8,6 @@
    ========================= */
 @layer base {
   :root {
-    /* Fondo gradiente (HSL) */
-    --bg-grad-from: 0 0% 0%;
-    --bg-grad-to: 0 0% 8%;
-
     /* Radios / elevación */
     --radius: 1rem;
 
@@ -19,31 +15,44 @@
     --ring-r: 16;
     --ring-g: 185;
     --ring-b: 129;
-  }
 
-  .dark {
+    /* Gradiente para secciones oscuras (si las usas) */
     --bg-grad-from: 0 0% 0%;
-    --bg-grad-to: 0 0% 10%;
+    --bg-grad-to: 0 0% 8%;
   }
 
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
-    @apply antialiased bg-white;
+    /* Por defecto: sitio claro (coincide con tu Base.astro actual) */
+    @apply antialiased bg-white text-zinc-900;
     background-image: none;
-    background-color: #ffffff;
+    overflow-x: hidden; /* evita scroll lateral en mobile */
   }
 
-  /* Texto por defecto (modo “hero” oscuro) */
-  body,
-  :where(p, li, span, small) {
+  /* ====== Tema oscuro opcional por clase ======
+     Úsalo en el <body> sólo cuando quieras contenido claro sobre fondo oscuro.
+     Ej.: <body class="theme-dark"> … </body>
+  */
+  .theme-dark {
+    @apply bg-zinc-950 text-white;
+  }
+  .theme-dark,
+  .theme-dark :where(p, li, span, small) {
     @apply text-white/90;
   }
-  :where(h1, h2, h3, h4) {
+  .theme-dark :where(h1, h2, h3, h4) {
     @apply text-white font-semibold tracking-tight;
   }
+
+  /* Encabezados (mejor lectura cross-devices) */
+  :where(h1) { @apply text-3xl md:text-4xl font-semibold leading-tight; }
+  :where(h2) { @apply text-2xl md:text-3xl font-semibold leading-snug; }
+  :where(h3) { @apply text-xl md:text-2xl font-semibold; }
+  :where(h4) { @apply text-lg md:text-xl font-semibold; }
 
   ::selection {
     background: rgba(var(--ring-r), var(--ring-g), var(--ring-b), 0.25);
@@ -56,6 +65,18 @@
     border-radius: 0.5rem;
   }
 
+  /* Scrollbar sutil (WebKit) */
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 999px;
+  }
+  .theme-dark *::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+  }
+  *::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+  .theme-dark *::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
   @media (prefers-reduced-motion: reduce) {
     * {
       animation-duration: 0.001ms !important;
@@ -64,19 +85,6 @@
       scroll-behavior: auto !important;
     }
   }
-
-  /* Scrollbar sutil (WebKit) */
-  *::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  *::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 999px;
-  }
-  *::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
 }
 
 /* =========================
@@ -84,17 +92,20 @@
    ========================= */
 @layer components {
   /* Container */
-  .container-max {
-    @apply max-w-6xl mx-auto px-4;
+  .container-max { @apply max-w-6xl mx-auto px-4; }
+  @media (max-width: 480px) {
+    .container-max { @apply px-4; }
   }
 
+   /* Forzar header negro sólido en todo momento */
+header .site-header {
+  background-color: #000 !important;
+}
+
+
   /* Enlaces con subrayado solo al hover */
-  a {
-    text-underline-offset: 2px;
-  }
-  a:hover {
-    text-decoration: underline;
-  }
+  a { text-underline-offset: 2px; }
+  a:hover { text-decoration: underline; }
 
   /* Botones base */
   .btn {
@@ -103,76 +114,65 @@
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500;
     @apply disabled:opacity-50 disabled:pointer-events-none;
     transform: translateZ(0);
+    white-space: nowrap; /* evita quiebres feos en mobile */
   }
   .btn-primary {
-    @apply bg-brand text-white hover:bg-brand-dark active:scale-[0.98] shadow-sm shadow-black/20;
+    @apply bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.98] shadow-sm shadow-black/10;
   }
   .btn-secondary {
-    @apply bg-white/10 text-white hover:bg-white/20 active:scale-[0.98] border border-white/10 backdrop-blur-sm;
+    @apply bg-zinc-900 text-white hover:bg-black active:scale-[0.98] border border-black/10;
+  }
+  .theme-dark .btn-secondary {
+    @apply bg-white/10 text-white hover:bg-white/20 border border-white/10 backdrop-blur-sm;
   }
   .btn-outline {
-    @apply border border-white/60 text-white hover:bg-white hover:text-black active:scale-[0.98];
+    @apply border border-zinc-300 text-zinc-900 hover:bg-zinc-900 hover:text-white active:scale-[0.98];
   }
-  .btn-ghost {
-    @apply text-white/70 hover:text-white hover:bg-white/10;
+  .theme-dark .btn-outline {
+    @apply border-white/60 text-white hover:bg-white hover:text-black;
   }
-  .btn-block {
-    @apply w-full md:w-auto;
-  } /* mobile-friendly */
+  .btn-ghost { @apply text-zinc-700 hover:text-zinc-900; }
+  .theme-dark .btn-ghost { @apply text-white/70 hover:text-white hover:bg-white/10; }
+  .btn-block { @apply w-full md:w-auto; } /* mobile-friendly */
 
-  .btn[aria-busy="true"] {
-    @apply relative pointer-events-none opacity-70;
-  }
+  .btn[aria-busy="true"] { @apply relative pointer-events-none opacity-70; }
   .btn[aria-busy="true"]::after {
     content: "";
     @apply absolute inset-0 rounded-2xl;
-    background-image: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.15),
-      transparent
-    );
+    background-image: linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent);
     background-size: 200% 100%;
     animation: btnShimmer 1.2s infinite;
   }
+  .theme-dark .btn[aria-busy="true"]::after {
+    background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  }
   @keyframes btnShimmer {
-    0% {
-      background-position: 200% 0;
-    }
-    100% {
-      background-position: -200% 0;
-    }
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
 
   /* Tarjetas */
   .card {
-    @apply rounded-3xl shadow-sm border border-white/10 bg-white/5 text-white backdrop-blur-md;
+    @apply rounded-3xl shadow-sm border border-zinc-200 bg-white text-zinc-900;
   }
-  .card-hover {
-    @apply transition hover:-translate-y-0.5 hover:shadow-md;
+  .theme-dark .card {
+    @apply border-white/10 bg-white/5 text-white backdrop-blur-md;
   }
+  .card-hover { @apply transition hover:-translate-y-0.5 hover:shadow-md; }
 
   /* Superficie sólida (secciones claras) */
   .surface {
-    @apply rounded-3xl border border-black/5 bg-white text-black;
+    @apply rounded-3xl border border-zinc-200 bg-white text-zinc-900;
   }
-  .dark .surface {
+  .theme-dark .surface {
     @apply border-white/10 bg-zinc-900/70 text-white backdrop-blur-sm;
   }
 
-  /* ---------- OVERRIDES para .surface (legibilidad en claro) ---------- */
-  .surface :where(h1, h2, h3, h4) {
-    @apply text-zinc-900;
-  }
-  .surface :where(p, li, span, small) {
-    @apply text-zinc-800;
-  }
-  .surface .label {
-    @apply text-zinc-700;
-  }
-  .surface .help {
-    @apply text-zinc-500;
-  }
+  /* ---------- OVERRIDES dentro de .surface ---------- */
+  .surface :where(h1, h2, h3, h4) { @apply text-zinc-900; }
+  .surface :where(p, li, span, small) { @apply text-zinc-800; }
+  .surface .label { @apply text-zinc-700; }
+  .surface .help { @apply text-zinc-500; }
 
   .surface .input,
   .surface .select,
@@ -191,49 +191,47 @@
            hover:bg-zinc-50 transition card-hover no-underline;
   }
 
-  /* Inputs */
-  .field {
-    @apply space-y-2;
-  }
-  .label {
-    @apply text-sm font-medium text-white/80;
-  }
+  /* Inputs globales (tema claro por defecto) */
+  .field { @apply space-y-2; }
+  .label { @apply text-sm font-medium text-zinc-700; }
   .input,
   .select,
   .textarea {
-    @apply w-full rounded-xl px-3.5 py-2.5 bg-white/5 text-white placeholder-white/40
-           border border-white/10 shadow-sm transition;
+    @apply w-full rounded-xl px-3.5 py-2.5 bg-white text-zinc-900 placeholder-zinc-400
+           border border-zinc-300 shadow-sm transition;
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-transparent;
   }
   .input[disabled],
   .select[disabled],
-  .textarea[disabled] {
-    @apply opacity-60 cursor-not-allowed;
-  }
+  .textarea[disabled] { @apply opacity-60 cursor-not-allowed; }
 
   /* Divisor */
-  .divider {
-    @apply h-px w-full bg-white/10;
-  }
+  .divider { @apply h-px w-full bg-zinc-200; }
+  .theme-dark .divider { @apply bg-white/10; }
 
   /* Badge */
   .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium border border-white/15 bg-white/5 text-white;
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium
+           border border-zinc-200 bg-zinc-50 text-zinc-700;
+  }
+  .theme-dark .badge {
+    @apply border-white/15 bg-white/5 text-white;
   }
 
   /* Nav links */
-  .nav-link {
-    @apply text-sm text-white/70 hover:text-white transition;
-  }
-  .nav-link.is-active {
-    @apply text-white font-semibold;
-  }
+  .nav-link { @apply text-sm text-zinc-700 hover:text-zinc-900 transition; }
+  .nav-link.is-active { @apply text-zinc-900 font-semibold; }
+  .theme-dark .nav-link { @apply text-white/70 hover:text-white; }
+  .theme-dark .nav-link.is-active { @apply text-white font-semibold; }
 }
 
 /* =========================
    Utilidades de ayuda
    ========================= */
 @layer utilities {
+  /* Imágenes y medios fluidos */
+  img, video, canvas, svg { max-width: 100%; height: auto; display: block; }
+
   /* Grids fluidos */
   .auto-grid {
     display: grid;
@@ -248,52 +246,42 @@
   }
 
   /* Espaciado de secciones */
-  .section-pad {
-    @apply py-10 md:py-16;
-  }
+  .section-pad { @apply py-10 md:py-16; }
 
   /* Glass utilitario */
-  .glass {
-    @apply bg-white/5 border border-white/10 backdrop-blur-md;
-  }
+  .glass { @apply bg-white/5 border border-white/10 backdrop-blur-md; }
 
   /* Radio global utilitario */
-  .rounded-app {
-    border-radius: var(--radius);
-  }
+  .rounded-app { border-radius: var(--radius); }
 
   /* Helpers mobile */
-  .stack-sm {
-    @apply space-y-3 md:space-y-4;
-  } /* pilas verticales */
-  .hide-on-mobile {
-    @apply hidden sm:block;
-  }
-  .only-mobile {
-    @apply sm:hidden;
-  }
+  .stack-sm { @apply space-y-3 md:space-y-4; } /* pilas verticales */
+  .hide-on-mobile { @apply hidden sm:block; }
+  .only-mobile { @apply sm:hidden; }
+
+  /* Control de texto largo (evita roturas en mobile) */
+  .nowrap { white-space: nowrap; }
+  .break-anywhere { overflow-wrap: anywhere; word-break: break-word; }
 }
 
+/* ====== Variación “page-light” (si una vista debe forzarse clara) ====== */
 @layer base {
-  /* Actívalo solo en páginas que quieras claras (ej: /cotiza) */
   body.page-light {
     background-color: #f8fafc; /* slate-50 */
     background-image: none;
-  }
-  body.page-light,
-  body.page-light :where(p, li, span, small) {
     @apply text-zinc-900;
   }
-  body.page-light :where(h1, h2, h3, h4) {
-    @apply text-zinc-900;
-  }
+  body.page-light :where(p, li, span, small) { @apply text-zinc-900; }
+  body.page-light :where(h1, h2, h3, h4) { @apply text-zinc-900; }
 }
 
 /* ==============
    Notas rápidas:
    ==============
-   - Usa .surface para secciones claras; dentro de ella, inputs/labels se vuelven legibles en claro.
-   - Para las tarjetas de categorías dentro de .surface usa .tile-light (en vez de .glass).
-   - En mobile, puedes cambiar a .auto-grid-sm si quieres columnas más angostas.
+   - Por defecto el sitio es CLARO (bg blanco + texto oscuro). Para secciones
+     con fondo oscuro, usa contenedores con clases .theme-dark en el body o
+     secciones específicas (o aplica utilidades de Tailwind).
+   - Usa .surface para bloques “claros”; dentro ya ajusta inputs/labels.
+   - Grids: .auto-grid / .auto-grid-sm para colapsar bien en mobile.
    - .btn-block deja botones a 100% ancho en móviles automáticamente.
 */

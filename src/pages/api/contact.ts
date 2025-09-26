@@ -1,10 +1,12 @@
+// src/pages/api/contact.ts
 import type { APIRoute } from "astro";
 import { z } from "zod";
+
+export const prerender = false;
 
 const env = import.meta.env;
 const honeypotField = env.HONEYPOT_FIELD || "website";
 
-// Esquema de validación (desconocidos se eliminan)
 const ContactSchema = z
   .object({
     name: z.string().trim().min(1, { message: "El nombre es obligatorio" }),
@@ -21,6 +23,18 @@ function json(body: unknown, status = 200) {
   });
 }
 
+async function parseBody(req: Request) {
+  const ct = req.headers.get("content-type") ?? "";
+  if (ct.includes("application/json")) {
+    return await req.json();
+  }
+  // fallback: formularios HTML (multipart o x-www-form-urlencoded)
+  const form = await req.formData();
+  const obj: Record<string, unknown> = {};
+  form.forEach((v, k) => (obj[k] = typeof v === "string" ? v : ""));
+  return obj;
+}
+
 /**
  * Envía email con Resend (si hay API key) o cae a SMTP (nodemailer).
  */
@@ -35,56 +49,31 @@ async function sendEmail({ subject, text }: { subject: string; text: string }) {
     const resend = new Resend(resendApiKey);
     const fromAddress =
       env.RESEND_FROM_EMAIL ||
-      `no-reply@${
-        new URL(env.PUBLIC_SITE_URL || "http://example.com").hostname
-      }`;
+      `no-reply@${new URL(env.PUBLIC_SITE_URL || "http://example.com").hostname}`;
 
-    const { error } = await resend.emails.send({
-      from: fromAddress,
-      to,
-      subject,
-      text,
-    });
+    const { error } = await resend.emails.send({ from: fromAddress, to, subject, text });
     if (error) throw new Error(error.message || "Fallo al enviar con Resend");
     return;
   }
 
   // 2) SMTP (nodemailer)
-  const host = env.SMTP_HOST;
-  const port = env.SMTP_PORT;
-  const user = env.SMTP_USER;
-  const pass = env.SMTP_PASS;
-
+  const { SMTP_HOST: host, SMTP_PORT: port, SMTP_USER: user, SMTP_PASS: pass } = env;
   if (host && port && user && pass) {
     const nodemailer = await import("nodemailer");
-
-    const secure =
-      (env.SMTP_SECURE || "").toLowerCase() === "true" || Number(port) === 465;
-
+    const secure = (env.SMTP_SECURE || "").toLowerCase() === "true" || Number(port) === 465;
     const transporter = nodemailer.createTransport({
       host,
       port: Number(port),
-      secure, // true para 465, false para 587/25 (STARTTLS)
+      secure,
       auth: { user, pass },
-      requireTLS: !secure, // obliga STARTTLS si secure=false
-      tls: {
-        minVersion: "TLSv1.2",
-        servername: host, // SNI correcto
-        // rejectUnauthorized: false, // SOLO pruebas con cert self-signed
-      },
+      requireTLS: !secure,
+      tls: { minVersion: "TLSv1.2", servername: host },
       logger: process.env.NODE_ENV !== "production",
       debug: process.env.NODE_ENV !== "production",
     });
-
-    // En dev muestra si hay advertencias de conexión/login
     if (process.env.NODE_ENV !== "production") {
-      try {
-        await transporter.verify();
-      } catch (e) {
-        /* se verá en logger/debug */
-      }
+      try { await transporter.verify(); } catch {}
     }
-
     const fromAddress = env.SMTP_FROM_EMAIL || user;
     await transporter.sendMail({ from: fromAddress, to, subject, text });
     return;
@@ -97,12 +86,12 @@ async function sendEmail({ subject, text }: { subject: string; text: string }) {
 export const POST: APIRoute = async ({ request }) => {
   let dataRaw: unknown;
   try {
-    dataRaw = await request.json();
+    dataRaw = await parseBody(request);
   } catch {
-    return json({ error: "Formato JSON inválido" }, 400);
+    return json({ error: "Formato de cuerpo inválido" }, 400);
   }
 
-  // Honeypot: si el campo señuelo viene con valor -> bot
+  // Honeypot
   if (
     dataRaw &&
     typeof dataRaw === "object" &&
@@ -115,7 +104,7 @@ export const POST: APIRoute = async ({ request }) => {
   const parsed = ContactSchema.safeParse(dataRaw);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => i.message);
-    return json({ error: issues.join(", ") }, 400);
+    return json({ error: issues.join(", ") }, 422);
   }
 
   const { name, email, phone, message } = parsed.data;
@@ -128,9 +117,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     await sendEmail({ subject, text });
-    return json({
-      message: "Gracias por contactarnos. Te responderemos pronto.",
-    });
+    return json({ message: "Gracias por contactarnos. Te responderemos pronto." });
   } catch (err: any) {
     return json({ error: err?.message || "No se pudo enviar el mensaje" }, 500);
   }
@@ -152,13 +139,13 @@ export const DELETE = methodNotAllowed;
 export const PATCH = methodNotAllowed;
 
 // OPTIONS para preflight (si envías desde otro origen)
-export const OPTIONS: APIRoute = async () =>
+export const OPTIONS: APIRoute = async ({ request }) =>
   new Response(null, {
     status: 204,
     headers: {
       Allow: "POST, OPTIONS",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
-      // "Access-Control-Allow-Origin": "*" // descomenta si posteas desde otro dominio
+      // "Access-Control-Allow-Origin": request.headers.get("origin") ?? "*",
     },
   });

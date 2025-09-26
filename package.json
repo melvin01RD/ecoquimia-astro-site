@@ -8,8 +8,10 @@
     "build": "astro build",
     "preview": "astro preview",
     "format": "prettier --write .",
-    "check": "astro check"
-  },
+    "check": "astro check",
+    "deploy": "vercel --prod",
+    "deploy:prebuilt": "vercel deploy --prod --prebuilt"
+},
   "dependencies": {
     "nodemailer": "^7.0.6",
     "resend": "^6.1.0",
