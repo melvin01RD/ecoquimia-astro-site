@@ -1,29 +1,23 @@
-// astro.config.mjs
-import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
-import sitemap from '@astrojs/sitemap';
-import node from '@astrojs/node';
-import vercel from '@astrojs/vercel/serverless';
-import { fileURLToPath } from 'node:url';
+// astro.config.mjs — Astro 5 + @astrojs/vercel v8
+import { defineConfig } from "astro/config";
+import tailwind from "@astrojs/tailwind";
+import sitemap from "@astrojs/sitemap";
+import vercel from "@astrojs/vercel";
+import { fileURLToPath } from "node:url";
 
-const SITE = process.env.SITE ?? 'https://ecoquimia.com.do';
-const isVercel = !!process.env.VERCEL;
+const SITE = process.env.SITE ?? "https://ecoquimia.com.do";
 
 export default defineConfig({
   site: SITE,
-  output: 'hybrid',                // para que /cotizacion pueda prerender
-  adapter: isVercel ? vercel() : node({ mode: 'standalone' }),
-  trailingSlash: 'never',
+  adapter: vercel(),               // ← adapter correcto en Astro 5
+  trailingSlash: "never",
   compressHTML: true,
-
-  
-  prefetch: {
-    // prefetchAll: true,          // (opcional) para prefetchear TODOS los links
-    defaultStrategy: 'hover',      // hover | tap | viewport | load
-  },
-
+  // Prefetch nativo (opcional)
+  prefetch: { defaultStrategy: "hover" },
   integrations: [tailwind(), sitemap()],
   vite: {
-    resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
+    resolve: {
+      alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+    },
   },
 });
