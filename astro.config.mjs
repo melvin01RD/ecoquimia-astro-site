@@ -1,4 +1,3 @@
-// astro.config.mjs — Astro 5 + @astrojs/vercel v8
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
@@ -9,7 +8,7 @@ const SITE = process.env.SITE ?? "https://ecoquimia.com.do";
 
 export default defineConfig({
   site: SITE,
-  adapter: vercel(),               // ← adapter correcto en Astro 5
+  adapter: vercel(),
   trailingSlash: "never",
   compressHTML: true,
   // Prefetch nativo (opcional)
@@ -17,7 +16,7 @@ export default defineConfig({
   integrations: [tailwind(), sitemap()],
   vite: {
     resolve: {
-      alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
-    },
-  },
+      alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) }
+    }
+  }
 });
