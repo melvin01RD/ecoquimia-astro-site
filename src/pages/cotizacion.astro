@@ -1,22 +1,23 @@
 ---
-import "../styles/global.css";
-import categoriesDefault, { categories as categoriesNamed } from "../data/categories";
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+export const prerender = true;
 
-// Íconos nativos (SVG inline)
 import {
   Grid2x2, Mail, User, AtSign, ListFilter, Hash,
-  Building2, Home, Bed, Building, Utensils, Car,
-  Landmark, Factory, School, ShoppingBag, Hammer, Wrench
+  Building2, Bed, Building, Utensils, Car,
+  Landmark, Factory, School, ShoppingBag, Hammer, Wrench, House
 } from "@lucide/astro";
 
-const CATEGORIES: string[] = (categoriesNamed ?? categoriesDefault ?? []) as string[];
+import categoriesDefault, { categories as categoriesNamed } from "../data/categories";
 
-const honeypot =
-  (import.meta.env.PUBLIC_HONEYPOT_FIELD ?? import.meta.env.HONEYPOT_FIELD) || "website";
+const CATEGORIES: readonly string[] = (categoriesNamed ?? categoriesDefault ?? []);
 
+// Mapea iconos por categoría (solo los que usamos)
 const icons: Record<string, any> = {
   "Apartamentos": Building2,
-  "Casas": Home,
+  "Casas": House,
   "Hoteles": Bed ?? Building2,
   "Oficinas": Building,
   "Restaurantes": Utensils,
@@ -28,24 +29,27 @@ const icons: Record<string, any> = {
   "Edificios Empresariales": Building2,
   "Cimientos de Construcción": Hammer ?? Wrench ?? Building2,
 };
+
+// Honeypot estable (no depende de headers ni nada servidor)
+const honeypotName = "website";
 ---
 
-<!-- Forzar fondo y tipografía clara SOLO en esta página (sin tocar lo global) -->
-<style is:global>
-  body.page-light { background-color: #f8fafc; background-image: none; }
-  body.page-light, body.page-light :where(p, li, span, small) { color: #18181b; }
-  body.page-light :where(h1,h2,h3,h4) { color: #18181b; }
-</style>
+<Base title="Cotización — Ecoquimia" description="Solicita tu cotización de control de plagas. Respuesta rápida.">
+  <Header slot="header" />
 
-<section class="section-pad">
-  <div class="container-max">
-    <header class="text-center mb-8 md:mb-10">
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">Cotiza tu necesidad</h1>
-      <p class="text-sm md:text-base text-zinc-600">Selecciona una categoría y cuéntanos qué necesitas.</p>
-    </header>
+  <!-- Hero compacto -->
+  <section class="relative overflow-hidden pt-16 md:pt-20">
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(16,185,129,.15),rgba(255,255,255,0))]"></div>
+    <div class="container-max py-8 md:py-12 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Cotiza tu necesidad</h1>
+      <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">Selecciona una categoría o completa el formulario. Respuesta en horas laborales.</p>
+    </div>
+  </section>
 
-    <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
-      <!-- Categorías (claro) -->
+  <!-- Contenido principal -->
+  <section class="section-pad">
+    <div class="container-max grid gap-6 md:gap-8 lg:grid-cols-2">
+      <!-- Categorías -->
       <div class="surface rounded-app p-5 md:p-6">
         <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
           <Grid2x2 class="w-5 h-5" /> Categorías
@@ -61,7 +65,9 @@ const icons: Record<string, any> = {
               const IconComp = icons[c] ?? Building2;
               return (
                 <a
-                  href={`/cotiza?service=${encodeURIComponent(c)}`}
+                  href={`/cotizacion?service=${encodeURIComponent(c)}#quoteForm`}
+                  data-astro-prefetch
+                  data-service={c}
                   class="tile-light flex items-center gap-3 no-underline hover:no-underline"
                 >
                   <IconComp class="w-6 h-6 md:w-7 md:h-7 text-brand" />
@@ -73,116 +79,140 @@ const icons: Record<string, any> = {
         )}
       </div>
 
-      <!-- Formulario (claro) -->
+      <!-- Formulario -->
       <div class="surface rounded-app p-5 md:p-6">
         <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
           <Mail class="w-5 h-5" /> Solicitar cotización
         </h2>
 
-        <form id="quoteForm" class="stack-sm max-w-xl">
-          <div class="field">
-            <label class="label">Nombre</label>
-            <div class="relative">
-              <User class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-              <input name="name" placeholder="Tu nombre" required class="input pl-9" />
+        <form id="quoteForm" name="quoteForm" class="stack-sm max-w-xl" method="post" action="/api/cotizacion" aria-labelledby="form-legend" novalidate>
+          <fieldset class="grid gap-4">
+            <legend id="form-legend" class="sr-only">Formulario de cotización</legend>
+
+            <!-- Honeypot -->
+            <div class="hidden" aria-hidden="true">
+              <label for="hp-field">No llenar</label>
+              <input id="hp-field" name={honeypotName} type="text" tabindex="-1" autocomplete="organization" />
             </div>
-          </div>
 
-          <div class="field">
-            <label class="label">Correo</label>
-            <div class="relative">
-              <AtSign class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-              <input name="email" type="email" placeholder="tucorreo@dominio.com" required class="input pl-9" />
+            <div class="field">
+              <label class="label" for="name">Nombre</label>
+              <div class="relative">
+                <User class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                <input id="name" name="name" type="text" autocomplete="name" required placeholder="Tu nombre" class="input pl-9" />
+              </div>
             </div>
-          </div>
 
-          <div class="field">
-            <label class="label">Tipo de servicio</label>
-            <div class="relative">
-              <ListFilter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-              <select id="serviceSelect" name="service" required class="select pl-9">
-                <option value="">Seleccione tipo de servicio</option>
-                {CATEGORIES.map((c) => <option value={c}>{c}</option>)}
-              </select>
+            <div class="field">
+              <label class="label" for="email">Correo</label>
+              <div class="relative">
+                <AtSign class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                <input id="email" name="email" type="email" autocomplete="email" required placeholder="tucorreo@dominio.com" class="input pl-9" />
+              </div>
             </div>
-            <p class="help">También puedes elegir desde las tarjetas de la izquierda.</p>
-          </div>
 
-          <div class="field">
-            <label class="label">Cantidad (opcional)</label>
-            <div class="relative">
-              <Hash class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-              <input name="quantity" placeholder="Ej: 2" inputmode="numeric" class="input pl-9" />
+            <div class="field">
+              <label class="label" for="serviceSelect">Tipo de servicio</label>
+              <div class="relative">
+                <ListFilter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                <select id="serviceSelect" name="service" required class="select pl-9">
+                  <option value="">Seleccione tipo de servicio</option>
+                  {CATEGORIES.map((c) => <option value={c}>{c}</option>)}
+                </select>
+              </div>
+              <p class="help">También puedes elegir desde las tarjetas de la izquierda.</p>
             </div>
-          </div>
 
-          <div class="field">
-            <label class="label">Describe tu necesidad</label>
-            <textarea name="message" placeholder="Cuéntanos detalles del servicio que necesitas" required class="textarea"></textarea>
-          </div>
+            <div class="field">
+              <label class="label" for="quantity">Cantidad (opcional)</label>
+              <div class="relative">
+                <Hash class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                <input id="quantity" name="quantity" type="number" inputmode="numeric" min="1" step="1" placeholder="Ej: 2" class="input pl-9" />
+              </div>
+            </div>
 
-          <!-- Honeypot -->
-          <input type="text" name={honeypot} class="hidden" tabindex="-1" autocomplete="off" />
+            <div class="field">
+              <label class="label" for="message">Describe tu necesidad</label>
+              <textarea id="message" name="message" rows={5} required placeholder="Cuéntanos detalles del servicio que necesitas" class="textarea"></textarea>
+            </div>
 
-          <div class="flex items-center gap-3">
-            <button id="submitBtn" class="btn btn-primary btn-block" type="submit">Enviar</button>
-            <p id="status" class="text-sm"></p>
-          </div>
+            <div class="flex items-center gap-3">
+              <button id="submitBtn" type="submit" class="btn btn-primary btn-block">Enviar</button>
+              <p id="status" class="text-sm" aria-live="polite"></p>
+            </div>
+          </fieldset>
         </form>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<script is:inline>
-  // Forzar modo claro SOLO en esta página
-  document.documentElement.classList.remove('dark');
-  document.body.classList.add('page-light');
+  <Footer slot="footer" />
 
-  // Preseleccionar servicio desde ?service
-  const select = document.getElementById("serviceSelect");
-  const params = new URLSearchParams(window.location.search);
-  const s = params.get("service");
-  if (s && select) {
-    const opts = Array.from(select.options);
-    const match = opts.find(o => o.value.toLowerCase() === s.toLowerCase());
-    if (match) select.value = match.value;
-  }
-
-  // Submit
-  const form = document.getElementById("quoteForm");
-  const status = document.getElementById("status");
-  const btn = document.getElementById("submitBtn");
-
-  form?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!status || !btn) return;
-
-    btn.setAttribute("aria-busy", "true");
-    status.textContent = "Enviando...";
-    status.className = "text-sm text-zinc-600";
-
-    const data = Object.fromEntries(new FormData(form));
-    try {
-      const r = await fetch("/api/cotizacion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const j = await r.json().catch(() => ({}));
-      if (r.ok) {
-        status.textContent = j.message || "¡Gracias! Te contactaremos pronto.";
-        status.className = "text-sm text-emerald-600";
-        form.reset();
-      } else {
-        status.textContent = j.error || "Error al enviar";
-        status.className = "text-sm text-red-600";
+  <script is:inline>
+    // Preseleccionar servicio desde ?service sin bloquear render
+    requestAnimationFrame(() => {
+      const select = document.getElementById("serviceSelect");
+      const params = new URLSearchParams(window.location.search);
+      const s = params.get("service");
+      if (s && select) {
+        const opts = Array.from(select.options);
+        const match = opts.find(o => o.value.toLowerCase() === s.toLowerCase());
+        if (match) select.value = match.value;
       }
-    } catch {
-      status.textContent = "Error de red";
-      status.className = "text-sm text-red-600";
-    } finally {
-      btn.removeAttribute("aria-busy");
-    }
-  });
-</script>
+    });
+
+    // Interceptar clics en categorías si ya estamos en /cotizacion (evita recarga)
+    document.querySelectorAll('a[data-service]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        if (location.pathname.endsWith('/cotizacion')) {
+          e.preventDefault();
+          const s = a.getAttribute('data-service');
+          const select = document.getElementById("serviceSelect");
+          if (select && s) {
+            select.value = s;
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+            document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            history.replaceState(null, '', `/cotizacion?service=${encodeURIComponent(s)}#quoteForm`);
+          }
+        }
+      });
+    });
+
+    // Submit (POST) — no bloquea el load
+    const form = document.getElementById("quoteForm");
+    const status = document.getElementById("status");
+    const btn = document.getElementById("submitBtn");
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!status || !btn) return;
+
+      btn.setAttribute("aria-busy", "true");
+      status.textContent = "Enviando...";
+      status.className = "text-sm text-zinc-600";
+
+      const data = Object.fromEntries(new FormData(form));
+      try {
+        const r = await fetch("/api/cotizacion", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) {
+          status.textContent = j.message || "¡Gracias! Te contactaremos pronto.";
+          status.className = "text-sm text-emerald-600";
+          form.reset();
+        } else {
+          status.textContent = j.error || "Error al enviar";
+          status.className = "text-sm text-red-600";
+        }
+      } catch {
+        status.textContent = "Error de red";
+        status.className = "text-sm text-red-600";
+      } finally {
+        btn.removeAttribute("aria-busy");
+      }
+    });
+  </script>
+</Base>

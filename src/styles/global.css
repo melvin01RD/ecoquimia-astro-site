@@ -19,6 +19,9 @@
     /* Gradiente para secciones oscuras (si las usas) */
     --bg-grad-from: 0 0% 0%;
     --bg-grad-to: 0 0% 8%;
+
+    /* Esquema de color por defecto (mejor integración nativa) */
+    color-scheme: light;
   }
 
   html {
@@ -39,6 +42,7 @@
   */
   .theme-dark {
     @apply bg-zinc-950 text-white;
+    color-scheme: dark;
   }
   .theme-dark,
   .theme-dark :where(p, li, span, small) {
@@ -53,6 +57,7 @@
   :where(h2) { @apply text-2xl md:text-3xl font-semibold leading-snug; }
   :where(h3) { @apply text-xl md:text-2xl font-semibold; }
   :where(h4) { @apply text-lg md:text-xl font-semibold; }
+  :where(h1, h2, h3, h4) { text-wrap: balance; } /* quiebre amable en móvil */
 
   ::selection {
     background: rgba(var(--ring-r), var(--ring-g), var(--ring-b), 0.25);
@@ -63,6 +68,11 @@
     outline: 2px solid rgb(var(--ring-r) var(--ring-g) var(--ring-b));
     outline-offset: 2px;
     border-radius: 0.5rem;
+  }
+
+  /* Tap highlight sutil (móvil) */
+  :where(a, button) {
+    -webkit-tap-highlight-color: rgba(var(--ring-r), var(--ring-g), var(--ring-b), 0.2);
   }
 
   /* Scrollbar sutil (WebKit) */
@@ -97,15 +107,21 @@
     .container-max { @apply px-4; }
   }
 
-   /* Forzar header negro sólido en todo momento */
-header .site-header {
-  background-color: #000 !important;
-}
-
+  /* Header sólido (requiere class="site-header" en <header>) */
+  .site-header {
+    background-color: #000 !important;
+    backdrop-filter: none !important; /* elimina blur si estaba */
+  }
+  .site-header, .site-header * { color: #fff; }
 
   /* Enlaces con subrayado solo al hover */
   a { text-underline-offset: 2px; }
   a:hover { text-decoration: underline; }
+  /* Excepciones (CTA y tiles sin subrayado en hover) */
+  a.btn:hover,
+  .btn:hover,
+  .tile-light:hover,
+  a.no-underline:hover { text-decoration: none; }
 
   /* Botones base */
   .btn {
@@ -270,9 +286,48 @@ header .site-header {
     background-color: #f8fafc; /* slate-50 */
     background-image: none;
     @apply text-zinc-900;
+    color-scheme: light;
   }
   body.page-light :where(p, li, span, small) { @apply text-zinc-900; }
   body.page-light :where(h1, h2, h3, h4) { @apply text-zinc-900; }
+}
+
+/* =========================
+   Estados de formularios / a11y extra
+   ========================= */
+
+/* Estados de validez (no molestan hasta que el campo recibe foco) */
+.input:focus-visible:invalid,
+.select:focus-visible:invalid,
+.textarea:focus-visible:invalid {
+  @apply border-red-500 ring-2 ring-red-500;
+}
+
+.input:focus-visible:valid,
+.select:focus-visible:valid,
+.textarea:focus-visible:valid {
+  @apply border-emerald-500 ring-2 ring-emerald-500;
+}
+
+/* Mejor feedback de focus (además de tu outline global) */
+.input:focus-visible,
+.select:focus-visible,
+.textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--ring-r), var(--ring-g), var(--ring-b), 0.35);
+}
+
+/* Autofill (Chrome/Safari) — respeta colores de tema claro/oscuro */
+.input:-webkit-autofill,
+.select:-webkit-autofill,
+.textarea:-webkit-autofill {
+  -webkit-text-fill-color: #18181b;
+  transition: background-color 5000s ease-in-out 0s;
+}
+.theme-dark .input:-webkit-autofill,
+.theme-dark .select:-webkit-autofill,
+.theme-dark .textarea:-webkit-autofill {
+  -webkit-text-fill-color: #fff;
 }
 
 /* ==============

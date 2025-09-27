@@ -2,20 +2,38 @@
 import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
+export const prerender = true;
 ---
-<Base title="Políticas — Ecoquimia" description="Términos, privacidad y cookies.">
+<Base title="Políticas — Ecoquimia" description="Políticas de privacidad y términos de servicio.">
   <Header slot="header" />
 
-  <section class="container-max py-16">
-    <div class="rounded-3xl border border-white/10 bg-zinc-900/60 p-8 text-white">
-      <h1 class="text-3xl font-semibold">Políticas</h1>
-      <p class="mt-3 text-white/80">
-        Aquí encontrarás nuestra Política de Privacidad, Términos de Servicio y uso de Cookies.
-        El documento oficial estará disponible pronto.
+  <section class="container-max py-16" aria-labelledby="politicas-title">
+    <div class="text-center mb-8 md:mb-10">
+      <h1 id="politicas-title" class="text-3xl md:text-4xl font-bold">Políticas</h1>
+      <p class="mt-3 text-zinc-600">Transparencia en el manejo de datos y condiciones del servicio.</p>
+    </div>
+
+    <article class="prose max-w-none">
+      <h2>Privacidad</h2>
+      <p>Tu información es tratada con confidencialidad y solo se utiliza para responder a tus solicitudes y brindar el servicio.</p>
+
+      <h2>Términos</h2>
+      <p>Los servicios se prestan conforme a la propuesta enviada. Algunas tareas requieren preparación del área y acceso autorizado.</p>
+
+      <h2>Contacto</h2>
+      <p>
+        Si tienes dudas sobre estas políticas, escríbenos a
+        <a href="mailto:contacto@ecoquimia.com">contacto@ecoquimia.com</a>
+        o llámanos al
+        <a href="tel:+18096172105">+1&nbsp;(809)&nbsp;617&#8209;2105</a>.
       </p>
-      <div class="mt-6">
-        <a href="/" class="btn btn-outline">Volver al inicio</a>
-      </div>
+    </article>
+
+    <!-- Navegación interna con prefetch -->
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href="/" class="btn btn-outline" data-astro-prefetch>Volver al inicio</a>
+      <a href="/contact" class="btn btn-outline" data-astro-prefetch>Contacto</a>
+      <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
     </div>
   </section>
 

@@ -1,41 +1,28 @@
 ---
-// src/pages/nosotros.astro
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 ---
-<Base title="Nosotros — Ecoquimia" description="Conoce quiénes somos.">
+<Base title="Nosotros — Ecoquimia" description="Quiénes somos y cómo trabajamos.">
   <Header slot="header" />
 
-  <section class="container-max py-16">
-    <div class="rounded-3xl border border-white/10 bg-zinc-900/60 p-8 text-white">
-      <h1 class="text-3xl font-semibold">Nosotros</h1>
-      <p class="mt-3 text-white/80">
-        Esta sección está en construcción. Muy pronto compartiremos nuestra historia, equipo,
-        certificaciones y valores.
-      </p>
-
-      <div class="grid md:grid-cols-3 gap-6 mt-8">
-        <div class="rounded-2xl border border-white/10 p-5 bg-black/20">
-          <h2 class="font-semibold">Misión</h2>
-          <p class="mt-2 text-white/70">Proteger hogares y empresas con soluciones responsables de control de plagas.</p>
-        </div>
-        <div class="rounded-2xl border border-white/10 p-5 bg-black/20">
-          <h2 class="font-semibold">Visión</h2>
-          <p class="mt-2 text-white/70">Ser referentes en calidad, seguridad y atención al cliente en RD.</p>
-        </div>
-        <div class="rounded-2xl border border-white/10 p-5 bg-black/20">
-          <h2 class="font-semibold">Valores</h2>
-          <p class="mt-2 text-white/70">Responsabilidad, transparencia, puntualidad y servicio.</p>
-        </div>
-      </div>
-
-      <div class="mt-6 flex gap-3">
-        <a href="/contact" class="btn btn-primary">Contáctanos</a>
-        <a href="/services" class="btn btn-outline">Ver servicios</a>
-      </div>
+  <section class="container-max py-16" aria-labelledby="nosotros-title">
+    <div class="text-center mb-8 md:mb-10">
+      <h1 id="nosotros-title" class="text-3xl md:text-4xl font-bold">Nosotros</h1>
+      <p class="mt-3 text-zinc-600 max-w-2xl mx-auto">Equipo profesional dedicado al control integral de plagas en Santo Domingo.</p>
     </div>
-  </section>
 
-  <Footer slot="footer" />
-</Base>
+    <div class="grid gap-8 md:grid-cols-2">
+      <div class="prose max-w-none">
+        <h2>¿Quiénes somos?</h2>
+        <p>Brindamos soluciones seguras y efectivas para hogares y negocios, con productos certificados y personal capacitado.</p>
+        <h3>Nuestro enfoque</h3>
+        <ul class="list-disc pl-5">
+          <li>Diagnóstico y plan a medida</li>
+          <li>Productos aprobados y seguros</li>
+          <li>Garantía y seguimiento</li>
+        </ul>
+      </div>
+
+      <div class="card p-6">
+        <h3 class="text-lg font-semibold mb-2">Contacto directo</h3>

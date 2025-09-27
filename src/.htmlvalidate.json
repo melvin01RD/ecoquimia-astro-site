@@ -1,0 +1,11 @@
+{
+  "extends": ["html-validate:recommended", "html-validate:a11y"],
+  "rules": {
+    "no-nested-interactive": "error",
+    "void-style": ["error", {"style":"omit"}],
+    "no-dup-id": "error",
+    "wcag/h30": "warn",                 
+    "wcag/h32": "warn",               
+    "prefer-button": "off"             
+  }
+}

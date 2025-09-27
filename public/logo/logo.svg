@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40" role="img" aria-label="Ecoquimia">
+  <g fill="none" fill-rule="evenodd">
+    <rect width="40" height="40" rx="10" fill="#061a17"></rect>
+    <path d="M30 8c-9 2.3-15 7.9-15 16.5 5 0 10.9-4 15-16.5Z" fill="#10b981"></path>
+    <path d="M13 22c3.8 0 6.5 2.7 6.5 6.5" stroke="#a7f3d0" stroke-width="1.8" stroke-linecap="round"></path>
+    <text x="48" y="27" font-family="ui-sans-serif, system-ui" font-size="20" font-weight="700" fill="#0f172a">
+      Eco<tspan fill="#10b981">quimia</tspan>
+    </text>
+  </g>
+</svg>

@@ -1,136 +1,130 @@
 // src/pages/api/cotizacion.ts
 import type { APIRoute } from "astro";
+import { z } from "zod";
 
 export const prerender = false;
 
-type Cotizacion = {
-  name: string;
-  email: string;
-  service: string;
-  quantity?: string | number;
-  message: string;
-  // permitir campos extra (p. ej. honeypot)
-  [k: string]: unknown;
-};
+const ORIGIN = process.env.PUBLIC_SITE_ORIGIN ?? "*";
+const TO_EMAIL = process.env.CONTACT_TO ?? "contacto@ecoquimia.com";
+const FROM_EMAIL =
+  process.env.CONTACT_FROM ??
+  `no-reply@${new URL(process.env.PUBLIC_SITE_URL || "http://localhost").hostname}`;
 
-function isEmail(v: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-}
+const schema = z.object({
+  name: z.string().trim().min(2, "El nombre es obligatorio"),
+  email: z.string().trim().email("Correo electrónico no válido"),
+  service: z.string().trim().min(1, "Selecciona un servicio"),
+  quantity: z
+    .union([z.string(), z.number()])
+    .optional()
+    .transform((v) => (v === undefined || v === "" ? undefined : Number(v)))
+    .refine((v) => v === undefined || Number.isFinite(v), { message: "Cantidad inválida" }),
+  message: z.string().trim().min(5, "Describe tu necesidad"),
+  // honeypot del formulario de cotización
+  website: z.string().optional(),
+});
 
-function baseHeaders(origin?: string): Record<string, string> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json; charset=utf-8",
-    "Vary": "Origin",
-  };
-  if (origin) headers["Access-Control-Allow-Origin"] = origin;
-  return headers;
-}
-
-async function parseBody(request: Request): Promise<Cotizacion> {
-  const ct = request.headers.get("content-type") ?? "";
-  if (ct.includes("application/json")) {
-    const raw = (await request.json()) as Record<string, unknown>;
-    const payload: Cotizacion = {
-      name: String(raw.name ?? "").trim(),
-      email: String(raw.email ?? "").trim(),
-      service: String(raw.service ?? "").trim(),
-      quantity:
-        typeof raw.quantity === "number"
-          ? raw.quantity
-          : String(raw.quantity ?? "").trim(),
-      message: String(raw.message ?? "").trim(),
-    };
-    // añade cualquier otro campo (ej. honeypot)
-    for (const [k, v] of Object.entries(raw)) {
-      if (!(k in payload)) payload[k] = v;
-    }
-    return payload;
-  }
-
-  // Formularios HTML (multipart/x-www-form-urlencoded)
-  const form = await request.formData();
-  const payload: Cotizacion = {
-    name: String(form.get("name") ?? "").trim(),
-    email: String(form.get("email") ?? "").trim(),
-    service: String(form.get("service") ?? "").trim(),
-    quantity: String(form.get("quantity") ?? "").trim(),
-    message: String(form.get("message") ?? "").trim(),
-  };
-  form.forEach((v, k) => {
-    if (!(k in payload)) payload[k] = typeof v === "string" ? v : "";
+export const OPTIONS: APIRoute = async () =>
+  new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": ORIGIN,
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      Allow: "POST, OPTIONS",
+    },
   });
-  return payload;
-}
-
-function validate(data: Cotizacion) {
-  const errors: Record<string, string> = {};
-  if (!data.name) errors.name = "El nombre es requerido.";
-  if (!data.email) errors.email = "El email es requerido.";
-  else if (!isEmail(String(data.email))) errors.email = "Email inválido.";
-  if (!data.service) errors.service = "Selecciona un servicio.";
-  if (!data.message) errors.message = "Describe brevemente tu necesidad.";
-  return errors;
-}
-
-export const OPTIONS: APIRoute = async ({ request }) => {
-  const headers: Record<string, string> = {
-    "Access-Control-Allow-Origin": request.headers.get("origin") ?? "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Max-Age": "86400",
-  };
-  return new Response(null, { status: 204, headers });
-};
 
 export const POST: APIRoute = async ({ request }) => {
-  const origin = request.headers.get("origin") ?? "";
   try {
-    const data = await parseBody(request);
+    const input = await parseBody(request);
+    const data = schema.parse(input);
 
     // Honeypot
-    const honeypotField = import.meta.env.HONEYPOT_FIELD ?? "website";
-    const hp = (data as Record<string, unknown>)[honeypotField];
-    if (typeof hp === "string" && hp.trim() !== "") {
-      return new Response(JSON.stringify({ error: "Spam detectado" }), {
-        status: 400,
-        headers: baseHeaders(origin),
-      });
+    if (data.website && data.website.trim() !== "") {
+      return json({ ok: true, message: "Gracias" }, 200);
     }
 
-    // Validaciones
-    const errors = validate(data);
-    if (Object.keys(errors).length) {
-      return new Response(JSON.stringify({ error: "Validación", errors }), {
-        status: 422,
-        headers: baseHeaders(origin),
-      });
-    }
+    const subject = `Nueva cotización: ${data.service}`;
+    const text =
+      `Nombre: ${data.name}\n` +
+      `Email: ${data.email}\n` +
+      (data.quantity ? `Cantidad: ${data.quantity}\n` : "") +
+      `Servicio: ${data.service}\n\n` +
+      `Mensaje:\n${data.message}\n`;
 
-    // TODO: enviar correo o almacenar en DB
-    // console.log("Nueva cotización:", {
-    //   name: data.name, email: data.email, service: data.service,
-    //   quantity: data.quantity, message: data.message
-    // });
+    await sendMail({ to: TO_EMAIL, from: FROM_EMAIL, subject, text, html: toHtml(text) });
 
-    return new Response(
-      JSON.stringify({ message: "¡Gracias! Te contactaremos pronto." }),
-      { status: 200, headers: baseHeaders(origin) },
-    );
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "JSON/form inválido";
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 400,
-      headers: baseHeaders(origin),
-    });
+    return json({ ok: true, message: "¡Gracias! Te contactaremos pronto." }, 200);
+  } catch (err: any) {
+    const msg = err?.issues?.[0]?.message || err?.message || "Error";
+    return json({ ok: false, error: msg }, 400);
   }
 };
 
-// GET → 405 con Allow (elimina el warning del router)
-export const GET: APIRoute = async ({ request }) => {
-  const headers = baseHeaders(request.headers.get("origin") ?? undefined);
-  headers["Allow"] = "POST, OPTIONS";
-  return new Response(
-    JSON.stringify({ message: "Usa POST en este endpoint." }),
-    { status: 405, headers },
-  );
-};
+// ---------- helpers ----------
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Access-Control-Allow-Origin": ORIGIN,
+      "Content-Type": "application/json; charset=utf-8",
+    },
+  });
+}
+
+async function parseBody(req: Request) {
+  const ct = req.headers.get("content-type") ?? "";
+  if (ct.includes("application/json")) return await req.json();
+  const form = await req.formData();
+  const out: Record<string, string> = {};
+  for (const [k, v] of form.entries()) out[k] = String(v);
+  return out;
+}
+
+function toHtml(text: string) {
+  return `<pre style="font:14px ui-sans-serif,system-ui,Segoe UI,Roboto,Arial">${escapeHtml(text)}</pre>`;
+}
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
+async function sendMail({
+  to,
+  from,
+  subject,
+  text,
+  html,
+}: {
+  to: string;
+  from: string;
+  subject: string;
+  text: string;
+  html: string;
+}) {
+  if (process.env.RESEND_API_KEY) {
+    const { Resend } = await import("resend");
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const { error } = await resend.emails.send({ to, from, subject, text, html });
+    if (error) throw new Error(error.message || "Fallo al enviar con Resend");
+    return;
+  }
+
+  const { SMTP_HOST: host, SMTP_PORT: port, SMTP_USER: user, SMTP_PASS: pass } = process.env;
+  if (host && port && user && pass) {
+    const nm: any = await import("nodemailer");
+    const secure = (process.env.SMTP_SECURE || "").toLowerCase() === "true" || Number(port) === 465;
+    const transporter = nm.createTransport({
+      host,
+      port: Number(port),
+      secure,
+      auth: { user, pass },
+      requireTLS: !secure,
+      tls: { minVersion: "TLSv1.2", servername: host },
+    });
+    await transporter.sendMail({ to, from, subject, text, html });
+    return;
+  }
+
+  console.warn("[cotizacion] Sin RESEND ni SMTP configurado: mensaje no enviado");
+}

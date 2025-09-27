@@ -1,22 +1,26 @@
 // src/pages/api/services.ts
 import type { APIRoute } from "astro";
+import { services } from "../../data/services";
 
-const services = [
-  {
-    id: 1,
-    name: "Análisis químico",
-    description: "Pruebas de laboratorio certificadas.",
-  },
-  {
-    id: 2,
-    name: "Consultoría ambiental",
-    description: "Asesoría en normas ISO y cumplimiento.",
-  },
-];
+export const prerender = false;
 
 export const GET: APIRoute = async () => {
-  return new Response(JSON.stringify(services), {
+  return new Response(JSON.stringify({ services }), {
     status: 200,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "public, max-age=600", // 10 min
+    },
   });
 };
+
+export const OPTIONS: APIRoute = async () =>
+  new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      Allow: "GET, OPTIONS",
+    },
+  });

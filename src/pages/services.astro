@@ -5,14 +5,20 @@ import Footer from "../components/Footer.astro";
 import { services } from "../data/services";
 import ServiceCard from "../components/ServiceCard.astro";
 ---
-<Base title="Servicios | Ecoquimia" description="Desinsectación, desratización, sanitización, antitermitas, tanques y control de palomas">
-  <Fragment slot="header"><Header /></Fragment>
+<Base title="Servicios — Ecoquimia" description="Planes residenciales y comerciales de control de plagas.">
+  <Header slot="header" />
 
+  <section class="container-max py-16" aria-labelledby="services-title">
+    <div class="text-center">
+      <h1 id="services-title" class="text-3xl md:text-4xl font-bold">Nuestros servicios</h1>
+      <div class="mx-auto mt-3 h-1.5 w-20 rounded-full bg-brand"></div>
+      <p class="mt-3 text-zinc-600">Tratamientos efectivos y seguros, con seguimiento.</p>
+    </div>
 
-<section class="pt-10">
-  <h1 class="text-3xl font-bold">Servicios</h1>
-  <p class="text-white/80 mt-2">Elige el plan que mejor se adapte a tu hogar o negocio.</p>
-  <div class="mt-8 grid gap-6 lg:gap-8 sm:grid-cols-2 lg:grid-cols-3">
-    {services.map((s) => <ServiceCard service={s} />)}
-  </div>
-</section>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {services.map((s) => <ServiceCard service={s} />)}
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
