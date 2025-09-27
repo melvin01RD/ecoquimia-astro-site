@@ -1,7 +1,0 @@
-﻿{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "_render": { "runtime": "nodejs22.x" },
-    "api/*":   { "runtime": "nodejs22.x" }
-  }
-}
