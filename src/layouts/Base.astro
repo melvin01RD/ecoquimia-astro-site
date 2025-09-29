@@ -1,21 +1,27 @@
 ---
-import "../styles/global.css";
-const { title = "Ecoquimia", description = "" } = Astro.props;
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = "Ecoquimia", description = "Control de plagas en RD" } = Astro.props as Props;
+
+const hasHeader = Astro.slots.has("header");
+const hasFooter = Astro.slots.has("footer");
 ---
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content={description} />
     <title>{title}</title>
-    {description && <meta name="description" content={description} />}
   </head>
-  <body>
-    <slot name="header" />
-    <main id="content" class="min-h-[60vh]">
-      <slot />
-    </main>
-    <slot name="footer" />
+  <body class="page-light">
+    {hasHeader ? <slot name="header" /> : <Header />}
+    <main><slot /></main>
+    {hasFooter ? <slot name="footer" /> : <Footer />}
   </body>
 </html>

@@ -309,7 +309,7 @@
   @apply border-emerald-500 ring-2 ring-emerald-500;
 }
 
-/* Mejor feedback de focus (además de tu outline global) */
+/* Mejor feedback de focus */
 .input:focus-visible,
 .select:focus-visible,
 .textarea:focus-visible {
@@ -329,6 +329,37 @@
 .theme-dark .textarea:-webkit-autofill {
   -webkit-text-fill-color: #fff;
 }
+
+
+/* ==== Ajustes UI para página de Contacto ==== */
+@layer components {
+  /* Tarjetas laterales y del formulario */
+  .info-card { @apply card p-6 md:p-8; }
+  .form-card { @apply card p-6 md:p-8; }
+
+  /* Labels más legibles y consistentes */
+  .label { @apply block mb-1; }
+
+  /* Área de texto con altura mínima y resize vertical */
+  .textarea { @apply min-h-[140px] resize-y; }
+}
+
+
+/* ==== Soporte layout Base/Header (actualizado) ==== */
+@layer base {
+  /* Altura mínima de la vista descontando el header (h-16 = 4rem) */
+  main { min-height: calc(100svh - 4rem); }
+}
+
+@layer components {
+  /* Fuerza menú del header en blanco (por encima de .nav-link por defecto) */
+  .site-header .nav-link { @apply text-white/80 hover:text-white; }
+  .site-header .nav-link.is-active { @apply text-white font-semibold; }
+
+  /* Evita subrayado en CTA del header */
+  .site-header .btn { text-decoration: none !important; }
+}
+
 
 /* ==============
    Notas rápidas:

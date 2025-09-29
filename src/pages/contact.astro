@@ -1,242 +1,98 @@
 ---
-// src/pages/contact.astro
 import Base from "../layouts/Base.astro";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
-export const prerender = true;
-
-const WHATSAPP =
-  "https://wa.me/18296176004?text=Hola,%20quisiera%20información%20y%20una%20cotización";
+const waPhone = "18096172105";
+const waText = "Hola, quiero una cotización de control de plagas.";
+const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}`;
 ---
 
-<Base
-  title="Contacto — Ecoquimia"
-  description="Escríbenos por WhatsApp o completa el formulario. Respondemos rápido."
->
-  <Header slot="header" />
+<Base>
+  <section class="bg-gradient-to-b from-white to-emerald-50/40">
+    <div class="container-max py-10 md:py-14">
+      <header class="mb-8 md:mb-10">
+        <h1 class="text-2xl md:text-3xl font-bold text-zinc-900">Contacto</h1>
+        <p class="text-zinc-600 mt-2">Cuéntanos qué necesitas y cómo prefieres que te contactemos.</p>
+      </header>
 
-  <!-- Hero compacto -->
-  <section class="relative overflow-hidden pt-12 md:pt-16">
-    <div
-      class="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(16,185,129,.08),rgba(255,255,255,0))]"
-    ></div>
-    <div class="container-max max-w-4xl">
-      <h1 class="text-3xl md:text-4xl font-bold text-white">
-        Hablemos de tu necesidad
-      </h1>
-      <p class="mt-3 text-white/70">
-        Cotizaciones, preguntas técnicas y soporte. Te respondemos lo antes
-        posible.
-      </p>
-    </div>
-  </section>
+      <!-- Grid principal -->
+      <div class="grid gap-6 md:gap-8 md:grid-cols-[360px,1fr] items-start">
+        <!-- Tarjeta izquierda -->
+        <aside class="info-card">
+          <h2 class="text-lg font-semibold text-zinc-900">Información de contacto</h2>
+          <p class="text-zinc-600 mt-1">Escríbenos directo o usa el formulario.</p>
 
-  <!-- Contenido principal: caja más compacta -->
-  <main class="py-10 md:py-12">
-    <div class="container-max">
-      <div
-        class="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6 items-start"
-      >
-        <!-- Columna de información -->
-        <aside class="surface rounded-app p-4 md:p-5 lg:col-span-1">
-          <h2 class="text-lg font-semibold">Información de contacto</h2>
-          <p class="mt-1 text-sm text-zinc-500">
-            Escríbenos directo o usa el formulario.
-          </p>
-
-          <ul class="mt-4 space-y-3 text-[15px] leading-relaxed">
-            <li>
-              <span class="font-medium">Email:</span>
-              <a
-                class="link"
-                href="mailto:contacto@ecoquimia.com"
-              >contacto@ecoquimia.com</a>
-            </li>
-            <li>
-              <span class="font-medium">Teléfono:</span>
-              <a
-                class="link whitespace-nowrap"
-                href="tel:+18096172105"
-              >+1&nbsp;(809)&nbsp;617&#8209;2105</a>
-            </li>
-            <li>
-              <span class="font-medium">Ubicación:</span> Santo Domingo, RD
-            </li>
+          <ul class="mt-4 space-y-3 text-zinc-700">
+            <li><span class="font-medium">Email:</span> contacto@ecoquimia.com</li>
+            <li><span class="font-medium">Teléfono:</span> +1 (809) 617-2105</li>
+            <li><span class="font-medium">Ubicación:</span> Santo Domingo, RD</li>
           </ul>
 
           <div class="mt-5 flex flex-wrap gap-3">
-            <a
-              href={WHATSAPP}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn btn-primary"
-              >Abrir WhatsApp</a
-            >
+            <a href={waLink} target="_blank" rel="noopener" class="btn btn-primary">Abrir WhatsApp</a>
             <a href="/services" class="btn btn-outline">Ver servicios</a>
           </div>
 
-          <p class="mt-4 text-xs text-zinc-500">
+          <p class="text-xs text-zinc-500 mt-5">
             Horario de atención: L–V 8:30 am–5:00 pm · Sáb. 9:00 am–1:00 pm
           </p>
         </aside>
 
-        <!-- Formulario -->
-        <section class="surface rounded-app p-4 md:p-5 lg:col-span-2">
-          <h2 class="text-lg font-semibold">Envíanos un mensaje</h2>
-          <p class="mt-1 text-sm text-zinc-500">
-            Cuéntanos brevemente qué necesitas y cómo prefieres que te
-            contactemos.
-          </p>
+        <!-- Tarjeta derecha: formulario -->
+        <div class="form-card">
+          <h2 class="text-lg font-semibold text-zinc-900">Envíanos un mensaje</h2>
+          <p class="text-zinc-600 mt-1">Te responderemos lo antes posible.</p>
 
-          <form id="contact-form" class="mt-5 space-y-4" novalidate>
-            <!-- Honeypot (mejorado) -->
-            <input
-              type="text"
-              name="company"
-              class="sr-only"
-              tabindex="-1"
-              aria-hidden="true"
-              autocomplete="off"
-            />
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form id="contact-form" class="mt-6 space-y-5" method="post" action="/api/contact">
+            <div class="grid gap-4 md:grid-cols-2">
               <div>
-                <label for="name" class="block text-sm font-medium"
-                  >Nombre y apellido</label
-                >
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  class="mt-1 w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="Tu nombre"
-                />
+                <label class="label" for="name">Nombre y apellido</label>
+                <input class="input" id="name" name="name" type="text" required minlength="3" autocomplete="name" placeholder="Tu nombre" />
               </div>
-
               <div>
-                <label for="email" class="block text-sm font-medium">Email</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  class="mt-1 w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="tunombre@correo.com"
-                />
+                <label class="label" for="email">Email</label>
+                <input class="input" id="email" name="email" type="email" required autocomplete="email" placeholder="tu@correo.com" />
+              </div>
+              <div>
+                <label class="label" for="phone">Teléfono</label>
+                <input class="input" id="phone" name="phone" type="tel" inputmode="tel" placeholder="+1 809 000 0000" />
+              </div>
+              <div>
+                <label class="label" for="subject">Asunto</label>
+                <input class="input" id="subject" name="subject" type="text" required placeholder="¿Sobre qué nos escribes?" />
+              </div>
+              <div class="md:col-span-2">
+                <label class="label" for="message">Mensaje</label>
+                <textarea class="textarea" id="message" name="message" required minlength="10" placeholder="Escribe los detalles de tu solicitud..."></textarea>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label for="phone" class="block text-sm font-medium"
-                  >Teléfono</label
-                >
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  inputmode="tel"
-                  class="mt-1 w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="+1 809 000 0000"
-                />
-              </div>
-
-              <div>
-                <label for="subject" class="block text-sm font-medium"
-                  >Asunto</label
-                >
-                <input
-                  id="subject"
-                  name="subject"
-                  type="text"
-                  required
-                  class="mt-1 w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="Cotización, visita, etc."
-                />
-              </div>
+            <div class="flex flex-wrap gap-3 pt-2">
+              <button class="btn btn-primary" type="submit">Enviar mensaje</button>
+              <a class="btn btn-outline" href={waLink} target="_blank" rel="noopener">WhatsApp</a>
             </div>
 
-            <div>
-              <label for="message" class="block text-sm font-medium"
-                >Mensaje</label
-              >
-              <textarea
-                id="message"
-                name="message"
-                rows={5}
-                required
-                class="mt-1 w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                placeholder="Describe brevemente tu requerimiento…"
-              ></textarea>
-            </div>
-
-            <div class="flex items-center gap-3 pt-2">
-              <button type="submit" class="btn btn-primary">
-                Enviar mensaje
-              </button>
-              <a
-                href={WHATSAPP}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="btn btn-outline"
-                >WhatsApp</a
-              >
-              <span id="form-status" class="text-sm text-zinc-400"></span>
-            </div>
+            <p id="contact-toast" class="hidden mt-4 text-sm"></p>
           </form>
-        </section>
+        </div>
       </div>
     </div>
-  </main>
+  </section>
 
-  <Footer slot="footer" />
+  <script>
+    const form = document.getElementById('contact-form');
+    const toast = document.getElementById('contact-toast');
 
-  <script is:inline>
-    const form = document.getElementById("contact-form");
-    const status = document.getElementById("form-status");
-
-    form?.addEventListener("submit", async (e) => {
+    form?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      status.textContent = "";
-      const btn = form.querySelector('button[type="submit"]');
-      btn?.setAttribute("aria-busy", "true");
-
-      // Armar payload
-      const data = Object.fromEntries(new FormData(form));
-      // Si el honeypot viene relleno, abortar silenciosamente
-      if ((data.company || "").toString().trim() !== "") {
-        btn?.removeAttribute("aria-busy");
-        return;
-      }
-
+      const data = new FormData(form);
       try {
-        const res = await fetch("/api/contact", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: data.name,
-            email: data.email,
-            phone: data.phone,
-            subject: data.subject,
-            message: data.message,
-          }),
-        });
-
-        const j = await res.json().catch(() => ({}));
-        if (res.ok) {
-          status.textContent = "¡Mensaje enviado! Te responderemos pronto.";
-          status.className = "text-sm text-emerald-500";
-          form.reset();
-        } else {
-          status.textContent = j.error || "Error al enviar";
-          status.className = "text-sm text-red-600";
-        }
+        const res = await fetch(form.action, { method: 'POST', body: data });
+        const ok = res.ok;
+        toast.className = ok ? 'mt-4 text-sm text-emerald-700' : 'mt-4 text-sm text-red-600';
+        toast.textContent = ok ? '¡Gracias! Recibimos tu mensaje.' : 'No se pudo enviar. Intenta de nuevo.';
+        if (ok) form.reset();
       } catch {
-        status.textContent = "Error de red";
-        status.className = "text-sm text-red-600";
-      } finally {
-        btn?.removeAttribute("aria-busy");
+        toast.className = 'mt-4 text-sm text-red-600';
+        toast.textContent = 'Error de red. Intenta nuevamente.';
       }
     });
   </script>
