@@ -4,6 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { services } from "../data/services";
 import ServiceCard from "../components/ServiceCard.astro";
+export const prerender = true;
 ---
 <Base title="Servicios — Ecoquimia" description="Planes residenciales y comerciales de control de plagas.">
   <Header slot="header" />
