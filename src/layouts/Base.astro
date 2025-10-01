@@ -6,10 +6,19 @@ interface Props {
   title?: string;
   description?: string;
 }
-const { title = "Ecoquimia", description = "Control de plagas en RD" } = Astro.props as Props;
+
+const {
+  title = "Ecoquimia",
+  description = "Control de plagas en RD",
+} = Astro.props as Props;
 
 const hasHeader = Astro.slots.has("header");
 const hasFooter = Astro.slots.has("footer");
+const hasHead = Astro.slots.has("head");
+
+const canonicalUrl = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : `${Astro.url.origin}${Astro.url.pathname}`;
 ---
 <!doctype html>
 <html lang="es">
@@ -18,10 +27,28 @@ const hasFooter = Astro.slots.has("footer");
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href="/logo/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {hasHead && <slot name="head" />}
   </head>
-  <body class="page-light">
+  <body class="page-light bg-white text-zinc-900 antialiased">
+    <a
+      href="#contenido-principal"
+      class="fixed left-4 top-4 z-[999] -translate-y-32 rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition focus:translate-y-0 focus:outline-none"
+    >
+      Saltar al contenido
+    </a>
     {hasHeader ? <slot name="header" /> : <Header />}
-    <main><slot /></main>
+    <main id="contenido-principal" class="min-h-[60vh]">
+      <slot />
+    </main>
     {hasFooter ? <slot name="footer" /> : <Footer />}
   </body>
 </html>
