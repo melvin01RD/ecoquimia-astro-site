@@ -1,16 +1,52 @@
 ---
 import Base from "../layouts/Base.astro";
+
 const waPhone = "18096172105";
 const waText = "Hola, quiero una cotización de control de plagas.";
 const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}`;
+
+const contactFaqs = [
+  {
+    question: "¿En cuánto tiempo responden?",
+    answer: "Respondemos correos y formularios en menos de 24 horas hábiles. Para urgencias usa WhatsApp y te atenderemos de inmediato.",
+  },
+  {
+    question: "¿Puedo agendar visitas fuera del horario laboral?",
+    answer: "Sí, coordinamos intervenciones nocturnas o fines de semana según la operación de tu negocio.",
+  },
+  {
+    question: "¿Qué información debo compartir?",
+    answer: "Indica tipo de plaga, área aproximada, fotos si es posible y horarios disponibles. Así enviamos una propuesta precisa.",
+  },
+];
+
+const extraChannels = [
+  {
+    label: "Correo",
+    value: "contacto@ecoquimia.com",
+    href: "mailto:contacto@ecoquimia.com",
+  },
+  {
+    label: "Teléfono",
+    value: "+1 (809) 617-2105",
+    href: "tel:+18096172105",
+  },
+  {
+    label: "WhatsApp",
+    value: "+1 (809) 617-2105",
+    href: waLink,
+  },
+];
 ---
 
-<Base>
+<Base title="Contacto — Ecoquimia" description="Comunícate con nosotros para solicitar cotizaciones o soporte en control de plagas.">
   <section class="bg-gradient-to-b from-white to-emerald-50/40">
     <div class="container-max py-10 md:py-14">
-      <header class="mb-8 md:mb-10">
-        <h1 class="text-2xl md:text-3xl font-bold text-zinc-900">Contacto</h1>
-        <p class="text-zinc-600 mt-2">Cuéntanos qué necesitas y cómo prefieres que te contactemos.</p>
+      <header class="mb-8 md:mb-10 text-center md:text-left">
+        <h1 class="text-3xl md:text-4xl font-bold text-zinc-900">Contacto</h1>
+        <p class="text-zinc-600 mt-3 max-w-2xl">
+          Cuéntanos qué necesitas y cómo prefieres que te contactemos. Nuestro equipo responde rápido y coordina el servicio ideal para ti.
+        </p>
       </header>
 
       <!-- Grid principal -->
@@ -21,19 +57,28 @@ const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}`;
           <p class="text-zinc-600 mt-1">Escríbenos directo o usa el formulario.</p>
 
           <ul class="mt-4 space-y-3 text-zinc-700">
-            <li><span class="font-medium">Email:</span> contacto@ecoquimia.com</li>
-            <li><span class="font-medium">Teléfono:</span> +1 (809) 617-2105</li>
+            {extraChannels.map((channel) => (
+              <li class="flex items-center justify-between gap-3">
+                <span class="font-medium">{channel.label}:</span>
+                <a href={channel.href} class="text-emerald-700 hover:underline">{channel.value}</a>
+              </li>
+            ))}
             <li><span class="font-medium">Ubicación:</span> Santo Domingo, RD</li>
           </ul>
 
           <div class="mt-5 flex flex-wrap gap-3">
             <a href={waLink} target="_blank" rel="noopener" class="btn btn-primary">Abrir WhatsApp</a>
-            <a href="/services" class="btn btn-outline">Ver servicios</a>
+            <a href="/services" class="btn btn-outline" data-astro-prefetch>Ver servicios</a>
           </div>
 
-          <p class="text-xs text-zinc-500 mt-5">
-            Horario de atención: L–V 8:30 am–5:00 pm · Sáb. 9:00 am–1:00 pm
-          </p>
+          <div class="mt-5 rounded-2xl bg-white/80 p-4 text-xs text-zinc-600">
+            <p>
+              <strong>Horario de atención:</strong> L–V 8:30 am–5:00 pm · Sáb. 9:00 am–1:00 pm
+            </p>
+            <p class="mt-2">
+              Realizamos visitas programadas fuera de horario para negocios que lo requieran.
+            </p>
+          </div>
         </aside>
 
         <!-- Tarjeta derecha: formulario -->
@@ -72,6 +117,47 @@ const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}`;
 
             <p id="contact-toast" class="hidden mt-4 text-sm"></p>
           </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white py-16" aria-labelledby="faq-contacto">
+    <div class="container-max">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">Preguntas frecuentes</p>
+        <h2 id="faq-contacto" class="mt-3 text-3xl font-semibold text-zinc-900 md:text-4xl">Antes de escribirnos</h2>
+        <p class="mt-4 text-base text-zinc-600">
+          Estas respuestas rápidas pueden ayudarte a preparar la información necesaria para tu cotización o asistencia.
+        </p>
+      </div>
+
+      <div class="mx-auto mt-10 max-w-3xl space-y-4">
+        {contactFaqs.map((faq) => (
+          <details class="group rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 text-left text-lg font-semibold text-zinc-900 marker:hidden">
+              <span>{faq.question}</span>
+              <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full border border-emerald-200 text-emerald-600 transition group-open:rotate-45" aria-hidden="true">
+                +
+              </span>
+            </summary>
+            <p class="mt-4 text-sm leading-relaxed text-zinc-700">{faq.answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-20" aria-labelledby="cta-contacto">
+    <div class="container-max">
+      <div class="rounded-3xl border border-emerald-100 bg-emerald-50/80 p-8 md:p-12 text-center">
+        <h2 id="cta-contacto" class="text-3xl font-semibold text-zinc-900">¿Necesitas ayuda inmediata?</h2>
+        <p class="mt-4 text-base text-zinc-700">
+          Llámanos o envíanos un mensaje por WhatsApp. Un técnico puede orientarte y coordinar acciones de emergencia 24/7.
+        </p>
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+          <a href={waLink} class="btn btn-primary" target="_blank" rel="noopener">WhatsApp</a>
+          <a href="tel:+18096172105" class="btn btn-outline">Llamar ahora</a>
         </div>
       </div>
     </div>
