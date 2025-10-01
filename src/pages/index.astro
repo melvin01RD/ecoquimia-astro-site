@@ -123,7 +123,7 @@ const faqs = [
   />
 
   <!-- NUESTROS SERVICIOS (grilla con cards) -->
-  <section class="container-max py-16" aria-labelledby="srv-title">
+  <section class="container-max section-pad" aria-labelledby="srv-title">
     <div class="mx-auto max-w-2xl text-center">
       <h2 id="srv-title" class="text-3xl font-semibold text-zinc-900 md:text-4xl">Nuestros servicios</h2>
       <p class="mt-4 text-lg text-zinc-600">
@@ -131,14 +131,14 @@ const faqs = [
       </p>
     </div>
 
-    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-10 grid-balanced sm:grid-cols-2 lg:grid-cols-3">
       {services.map((s) => <ServiceCard service={s} />)}
     </div>
   </section>
 
   <!-- Beneficios principales -->
-  <section class="bg-emerald-50/60 py-16" aria-labelledby="beneficios-title">
-    <div class="container-max grid gap-12 lg:grid-cols-[1fr,1.2fr] lg:items-center">
+  <section class="bg-emerald-50/60 section-pad" aria-labelledby="beneficios-title">
+    <div class="container-max grid-balanced lg:grid-cols-[1fr,1.2fr] lg:items-center">
       <div>
         <p class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">¿Por qué Ecoquimia?</p>
         <h2 id="beneficios-title" class="mt-4 text-3xl font-semibold text-zinc-900 md:text-4xl">
@@ -150,7 +150,7 @@ const faqs = [
         </p>
       </div>
 
-      <div class="grid gap-6 sm:grid-cols-2">
+      <div class="grid-balanced sm:grid-cols-2">
         {benefits.map((benefit) => (
           <article class="h-full rounded-3xl border border-emerald-200 bg-white/70 p-6 shadow-sm">
             <div class="text-3xl" aria-hidden="true">{benefit.icon}</div>
@@ -163,8 +163,8 @@ const faqs = [
   </section>
 
   <!-- Sectores -->
-  <section class="container-max py-16" aria-labelledby="sectores-title">
-    <div class="grid gap-10 lg:grid-cols-[1.2fr,1fr] lg:items-center">
+  <section class="container-max section-pad" aria-labelledby="sectores-title">
+    <div class="grid-balanced lg:grid-cols-[1.2fr,1fr] lg:items-center">
       <div>
         <h2 id="sectores-title" class="text-3xl font-semibold text-zinc-900 md:text-4xl">
           Cobertura en todos los sectores clave
@@ -185,7 +185,7 @@ const faqs = [
         </ul>
       </div>
 
-      <div class="grid gap-6 sm:grid-cols-3">
+      <div class="grid-balanced sm:grid-cols-2 lg:grid-cols-3">
         {sectors.map((sector) => (
           <article class="rounded-3xl border border-zinc-200 bg-white/90 p-5 text-center shadow-sm">
             <div class="text-3xl" aria-hidden="true">{sector.icon}</div>
@@ -198,7 +198,7 @@ const faqs = [
   </section>
 
   <!-- Proceso -->
-  <section class="bg-zinc-950 py-16 text-white" aria-labelledby="proceso-title">
+  <section class="bg-zinc-950 section-pad text-white" aria-labelledby="proceso-title">
     <div class="container-max">
       <div class="max-w-2xl">
         <h2 id="proceso-title" class="text-3xl font-semibold md:text-4xl">Tu plan de control en 3 pasos</h2>
@@ -207,7 +207,7 @@ const faqs = [
         </p>
       </div>
 
-      <div class="mt-12 grid gap-6 md:grid-cols-3">
+      <div class="mt-10 grid-balanced md:grid-cols-3">
         {process.map((step) => (
           <article class="flex h-full flex-col rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
             <span class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300">Paso {step.number}</span>
@@ -220,7 +220,7 @@ const faqs = [
   </section>
 
   <!-- FAQ -->
-  <section class="bg-white py-16" aria-labelledby="faq-title">
+  <section class="bg-white section-pad" aria-labelledby="faq-title">
     <div class="container-max">
       <div class="mx-auto max-w-3xl text-center">
         <p class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">Preguntas frecuentes</p>
@@ -250,7 +250,7 @@ const faqs = [
   </section>
 
   <!-- CTA INTERMEDIA / APRENDE -->
-  <section class="pb-20">
+  <section class="section-pad pt-0">
     <div class="container-max">
       <div class="rounded-3xl border border-emerald-100 bg-emerald-50/80 p-8 md:p-12">
         <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
