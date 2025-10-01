@@ -2,28 +2,166 @@
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+
 export const prerender = true;
+
+const stats = [
+  { label: "Años de experiencia", value: "15+" },
+  { label: "Técnicos certificados", value: "28" },
+  { label: "Clientes atendidos", value: "1,500" },
+];
+
+const values = [
+  {
+    title: "Seguridad primero",
+    description:
+      "Aplicamos protocolos de Salud Pública y capacitamos constantemente al equipo para garantizar ambientes seguros tras cada intervención.",
+  },
+  {
+    title: "Transparencia total",
+    description:
+      "Reportamos tratamientos, productos y recomendaciones en bitácoras digitales que puedes revisar en cualquier momento.",
+  },
+  {
+    title: "Servicio cercano",
+    description:
+      "Respondemos rápidamente y damos seguimiento personalizado para hogares, comercios y grandes industrias.",
+  },
+];
+
+const milestones = [
+  {
+    year: "2008",
+    title: "Fundación en Santo Domingo",
+    description: "Nacimos como un equipo de especialistas enfocados en controlar plagas urbanas con estándares internacionales.",
+  },
+  {
+    year: "2015",
+    title: "Expansión a sector industrial",
+    description: "Implementamos programas HACCP y BPM para plantas de alimentos, laboratorios y cadenas hoteleras.",
+  },
+  {
+    year: "2022",
+    title: "Monitoreo digital",
+    description: "Incorporamos reportes en línea y seguimiento fotográfico para auditar resultados en tiempo real.",
+  },
+];
+
+const certifications = [
+  "Certificación Salud Pública RD",
+  "Miembros de NPMA",
+  "Alianzas con distribuidores certificados",
+  "Capacitación anual en manejo integrado de plagas",
+];
 ---
-<Base title="Nosotros — Ecoquimia" description="Quiénes somos y cómo trabajamos.">
+<Base title="Nosotros — Ecoquimia" description="Quiénes somos, nuestra historia y cómo garantizamos servicios profesionales de control de plagas.">
   <Header slot="header" />
 
-  <section class="container-max py-16" aria-labelledby="nosotros-title">
-    <div class="text-center mb-8 md:mb-10">
-      <h1 id="nosotros-title" class="text-3xl md:text-4xl font-bold">Nosotros</h1>
-      <p class="mt-3 text-zinc-600 max-w-2xl mx-auto">Equipo profesional dedicado al control integral de plagas en Santo Domingo.</p>
-    </div>
-
-    <div class="grid gap-8 md:grid-cols-2">
-      <div class="prose max-w-none">
-        <h2>¿Quiénes somos?</h2>
-        <p>Brindamos soluciones seguras y efectivas para hogares y negocios, con productos certificados y personal capacitado.</p>
-        <h3>Nuestro enfoque</h3>
-        <ul class="list-disc pl-5">
-          <li>Diagnóstico y plan a medida</li>
-          <li>Productos aprobados y seguros</li>
-          <li>Garantía y seguimiento</li>
-        </ul>
+  <section class="bg-gradient-to-b from-white to-emerald-50/40 py-16" aria-labelledby="nosotros-title">
+    <div class="container-max">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">Sobre Ecoquimia</p>
+        <h1 id="nosotros-title" class="mt-3 text-3xl font-semibold text-zinc-900 md:text-4xl">Equipo experto en control de plagas con enfoque humano</h1>
+        <p class="mt-4 text-lg text-zinc-700">
+          Somos técnicos, biólogos y asesores comerciales comprometidos con proteger hogares y operaciones críticas en República Dominicana.
+        </p>
       </div>
 
-      <div class="card p-6">
-        <h3 class="text-lg font-semibold mb-2">Contacto directo</h3>
+      <dl class="mt-10 grid gap-6 sm:grid-cols-3">
+        {stats.map((item) => (
+          <div class="rounded-3xl border border-emerald-100 bg-white/80 p-6 text-center shadow-sm">
+            <dt class="text-sm font-medium text-emerald-700">{item.label}</dt>
+            <dd class="mt-2 text-3xl font-semibold text-zinc-900">{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="container-max py-16" aria-labelledby="historia-title">
+    <div class="grid gap-10 lg:grid-cols-[1.1fr,1fr] lg:items-start">
+      <article class="prose max-w-none">
+        <h2 id="historia-title">Nuestra historia</h2>
+        <p>
+          Desde el primer día entendimos que un buen control de plagas combina ciencia, comunicación y compromiso. Hemos crecido de forma sostenida gracias a clientes que valoran nuestra metodología y resultados verificables.
+        </p>
+        <p>
+          Hoy acompañamos a empresas de alimentos, farmacéuticas, hoteles y comercios en todo el país, adaptando cada programa a las auditorías que enfrentan y acompañando con consultoría preventiva.
+        </p>
+      </article>
+
+      <div class="rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-sm">
+        <h3 class="text-lg font-semibold text-zinc-900">Línea de tiempo</h3>
+        <ol class="mt-4 space-y-5 border-l border-emerald-200 pl-6">
+          {milestones.map((milestone) => (
+            <li>
+              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">{milestone.year}</div>
+              <p class="mt-1 text-base font-semibold text-zinc-900">{milestone.title}</p>
+              <p class="text-sm text-zinc-700">{milestone.description}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-zinc-950 py-16 text-white" aria-labelledby="valores-title">
+    <div class="container-max">
+      <div class="max-w-2xl">
+        <h2 id="valores-title" class="text-3xl font-semibold md:text-4xl">Nuestros pilares</h2>
+        <p class="mt-3 text-base text-white/80">
+          La confianza se construye con procesos claros y trabajo ético. Estos valores guían cada servicio que entregamos.
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        {values.map((value) => (
+          <article class="flex h-full flex-col rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+            <h3 class="text-xl font-semibold text-white">{value.title}</h3>
+            <p class="mt-3 text-sm text-white/80">{value.description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-max py-16" aria-labelledby="certificaciones-title">
+    <div class="grid gap-10 lg:grid-cols-[1fr,1.1fr] lg:items-center">
+      <div>
+        <h2 id="certificaciones-title" class="text-3xl font-semibold text-zinc-900 md:text-4xl">Certificaciones y alianzas</h2>
+        <p class="mt-3 text-base text-zinc-700">
+          Invertimos en formación continua y trabajamos con proveedores autorizados para asegurar tratamientos efectivos y responsables.
+        </p>
+        <p class="mt-3 text-base text-zinc-700">
+          Cada visita queda documentada y puedes solicitar certificados de aplicación y hojas de seguridad cuando lo necesites.
+        </p>
+      </div>
+
+      <ul class="grid gap-3 rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-sm">
+        {certifications.map((item) => (
+          <li class="flex items-start gap-3 text-sm text-zinc-700">
+            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="pb-20" aria-labelledby="cta-nosotros">
+    <div class="container-max">
+      <div class="rounded-3xl border border-emerald-100 bg-emerald-50/80 p-8 md:p-12 text-center">
+        <h2 id="cta-nosotros" class="text-3xl font-semibold text-zinc-900">Listos para diseñar un plan contigo</h2>
+        <p class="mt-4 text-base text-zinc-700">
+          Agenda una visita de diagnóstico o solicita referencias de clientes actuales. Estamos encantados de contarte más sobre cómo trabajamos.
+        </p>
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+          <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
+          <a href="/contact" class="btn btn-outline" data-astro-prefetch>Hablar con un asesor</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>

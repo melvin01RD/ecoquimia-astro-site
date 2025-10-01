@@ -1,0 +1,140 @@
+---
+interface CTA {
+  label: string;
+  href: string;
+  variant?: "primary" | "secondary" | "outline" | "ghost";
+  prefetch?: true | "load" | "visible";
+  target?: string;
+  rel?: string;
+  icon?: string;
+}
+
+interface Stat {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  title: string;
+  highlight?: string;
+  description?: string;
+  backgroundImage: string;
+  backgroundAlt: string;
+  overlayOpacity?: number;
+  primaryCta?: CTA;
+  secondaryCta?: CTA;
+  tertiaryCta?: CTA;
+  bullets?: string[];
+  stats?: Stat[];
+}
+
+const {
+  id = "hero",
+  eyebrow,
+  title,
+  highlight,
+  description,
+  backgroundImage,
+  backgroundAlt,
+  overlayOpacity = 0.45,
+  primaryCta,
+  secondaryCta,
+  tertiaryCta,
+  bullets = [],
+  stats = [],
+} = Astro.props as Props;
+
+const ctas = [primaryCta, secondaryCta, tertiaryCta].filter(Boolean) as CTA[];
+
+const variantClasses = {
+  primary: "btn btn-primary",
+  secondary: "btn btn-secondary",
+  outline: "btn btn-outline",
+  ghost: "btn btn-ghost",
+} as const;
+
+const getVariantClass = (variant: CTA["variant"]) => variantClasses[variant ?? "primary"];
+---
+<section id={id} class="relative isolate overflow-hidden">
+  <picture class="absolute inset-0 -z-20">
+    <img
+      src={backgroundImage}
+      alt={backgroundAlt}
+      class="h-full w-full object-cover"
+      loading="eager"
+      fetchpriority="high"
+    />
+  </picture>
+
+  <div
+    class="absolute inset-0 -z-10 bg-gradient-to-b from-black/80 via-black/65 to-black/70"
+    style={`opacity: ${overlayOpacity}`}
+  ></div>
+
+  <div class="container-max relative py-24 md:py-32 text-white">
+    <div class="max-w-3xl">
+      {eyebrow && (
+        <span class="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/80">
+          {eyebrow}
+        </span>
+      )}
+
+      <h1 class="mt-5 text-4xl md:text-6xl font-bold leading-tight drop-shadow-md">
+        {title}
+        {highlight && <span class="block text-emerald-300">{highlight}</span>}
+      </h1>
+
+      {description && <p class="mt-5 max-w-2xl text-lg text-white/90">{description}</p>}
+
+      {ctas.length > 0 && (
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          {ctas.map((cta) => {
+            const attrs = cta.prefetch
+              ? { "data-astro-prefetch": cta.prefetch === true ? "" : cta.prefetch }
+              : {};
+            return (
+              <a
+                href={cta.href}
+                class={`${getVariantClass(cta.variant)} btn-block`}
+                target={cta.target}
+                rel={cta.rel}
+                {...attrs}
+              >
+                {cta.icon && <span aria-hidden="true">{cta.icon}</span>}
+                <span>{cta.label}</span>
+              </a>
+            );
+          })}
+        </div>
+      )}
+
+      {bullets.length > 0 && (
+        <ul class="mt-6 grid gap-2 text-sm text-white/80 sm:grid-cols-2">
+          {bullets.map((bullet) => (
+            <li class="flex items-center gap-2">
+              <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-200">
+                ✓
+              </span>
+              <span>{bullet}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+
+    {stats.length > 0 && (
+      <dl class="mt-12 grid gap-6 sm:grid-cols-3">
+        {stats.map((stat) => (
+          <div class="rounded-2xl border border-white/10 bg-white/5 px-6 py-5 text-center backdrop-blur">
+            <dt class="text-sm uppercase tracking-wider text-white/70">{stat.label}</dt>
+            <dd class="mt-2 text-3xl font-semibold text-white">{stat.value}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+  </div>
+
+  <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-white"></div>
+</section>

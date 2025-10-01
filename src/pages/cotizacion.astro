@@ -12,6 +12,9 @@ import {
 
 import categoriesDefault, { categories as categoriesNamed } from "../data/categories";
 
+const waPhone = "18096172105";
+const waText = "Hola, necesito una cotización de control de plagas.";
+
 const CATEGORIES: readonly string[] = (categoriesNamed ?? categoriesDefault ?? []);
 
 // Mapea iconos por categoría (solo los que usamos)
@@ -32,6 +35,39 @@ const icons: Record<string, any> = {
 
 // Honeypot estable (no depende de headers ni nada servidor)
 const honeypotName = "website";
+
+const responseSteps = [
+  {
+    title: "Revisión de tu solicitud",
+    description: "Un asesor especializado valida la información y te contacta si necesita más detalles o fotos del área.",
+  },
+  {
+    title: "Propuesta personalizada",
+    description: "Enviamos un plan con alcance, frecuencia sugerida, productos y precio estimado en menos de 24 horas hábiles.",
+  },
+  {
+    title: "Coordinación de visita",
+    description: "Agendamos la primera intervención o inspección de diagnóstico según la disponibilidad que indiques.",
+  },
+];
+
+const helpChannels = [
+  {
+    label: "Teléfono",
+    value: "+1 (809) 617-2105",
+    href: "tel:+18096172105",
+  },
+  {
+    label: "Correo",
+    value: "contacto@ecoquimia.com",
+    href: "mailto:contacto@ecoquimia.com",
+  },
+  {
+    label: "WhatsApp",
+    value: "Escríbenos al instante",
+    href: `https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}`,
+  },
+];
 ---
 
 <Base title="Cotización — Ecoquimia" description="Solicita tu cotización de control de plagas. Respuesta rápida.">
@@ -42,7 +78,10 @@ const honeypotName = "website";
     <div class="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(16,185,129,.15),rgba(255,255,255,0))]"></div>
     <div class="container-max py-8 md:py-12 text-center">
       <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Cotiza tu necesidad</h1>
-      <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">Selecciona una categoría o completa el formulario. Respuesta en horas laborales.</p>
+      <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">
+        Selecciona una categoría o completa el formulario. Te responderemos con una propuesta detallada en menos de 24 horas hábiles.
+      </p>
+      <p class="mt-4 text-sm text-zinc-500">Si tienes fotos o planos, adjúntalos en tu mensaje para acelerar el diagnóstico.</p>
     </div>
   </section>
 
@@ -77,6 +116,10 @@ const honeypotName = "website";
             })}
           </div>
         )}
+
+        <p class="mt-6 rounded-2xl bg-emerald-50/70 p-4 text-sm text-emerald-700">
+          ¿No encuentras lo que buscas? Indícanos el tipo de plaga o servicio especial y diseñaremos una propuesta a medida.
+        </p>
       </div>
 
       <!-- Formulario -->
@@ -142,6 +185,51 @@ const honeypotName = "website";
             </div>
           </fieldset>
         </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-emerald-50/40 py-16" aria-labelledby="respuesta-title">
+    <div class="container-max grid gap-10 lg:grid-cols-[1fr,1fr] lg:items-start">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">¿Qué sigue?</p>
+        <h2 id="respuesta-title" class="mt-3 text-3xl font-semibold text-zinc-900 md:text-4xl">Así gestionamos tu cotización</h2>
+        <p class="mt-4 text-base text-zinc-700">
+          Queremos que tengas claridad en cada paso. Nuestro equipo técnico y comercial trabaja coordinado para agilizar la intervención.
+        </p>
+        <ol class="mt-6 space-y-4">
+          {responseSteps.map((step, idx) => (
+            <li class="rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-sm">
+              <div class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">Paso {idx + 1}</div>
+              <p class="mt-2 text-lg font-semibold text-zinc-900">{step.title}</p>
+              <p class="mt-1 text-sm text-zinc-700">{step.description}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-sm">
+        <h3 class="text-lg font-semibold text-zinc-900">Ayuda inmediata</h3>
+        <p class="mt-2 text-sm text-zinc-600">
+          Si tu solicitud es urgente o prefieres otro canal, contáctanos directamente. Estamos disponibles de lunes a sábado.
+        </p>
+        <ul class="mt-6 space-y-4 text-sm text-zinc-700">
+          {helpChannels.map((channel) => (
+            <li class="flex items-start gap-3">
+              <span class="mt-1 h-2.5 w-2.5 flex-none rounded-full bg-emerald-500"></span>
+              <div>
+                <p class="font-medium text-zinc-900">{channel.label}</p>
+                <a href={channel.href} class="text-emerald-700 hover:underline">{channel.value}</a>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <div class="mt-6 rounded-2xl bg-emerald-50/70 p-4 text-xs text-zinc-600">
+          <p>
+            <strong>Protección de datos:</strong> Utilizaremos tu información únicamente para responder la solicitud y coordinar el servicio.
+          </p>
+        </div>
       </div>
     </div>
   </section>

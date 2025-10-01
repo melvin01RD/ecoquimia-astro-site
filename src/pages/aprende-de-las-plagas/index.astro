@@ -2,6 +2,7 @@
 import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
+
 export const prerender = true;
 
 // Rutas internas para cada guía (puedes crear los .md/.astro luego)
@@ -22,30 +23,108 @@ const posts = [
     href: "/aprende-de-las-plagas/termitas",
   },
 ];
+
+const categories = [
+  "Hogar",
+  "Restaurantes",
+  "Hoteles",
+  "Condominios",
+  "Industria",
+];
+
+const quickTips = [
+  {
+    title: "Checklist mensual",
+    description: "Inspecciona desagües, almacenes y falsos plafones; reporta signos antes de que escalen.",
+  },
+  {
+    title: "Manejo de alimentos",
+    description: "Aísla materia prima del piso y rota inventarios para reducir focos de moscas y roedores.",
+  },
+  {
+    title: "Capacitación",
+    description: "Comparte con tu equipo protocolos de limpieza y almacenamiento para evitar reinfestaciones.",
+  },
+];
 ---
-<Base title="Aprende de las plagas — Ecoquimia" description="Guías y consejos para prevenir y tratar plagas.">
+<Base title="Aprende de las plagas — Ecoquimia" description="Guías, consejos y recursos para prevenir y tratar plagas en RD.">
   <Header slot="header" />
 
-  <section class="container-max py-16" aria-labelledby="aprende-title">
-    <div class="text-center mb-8 md:mb-10">
-      <h1 id="aprende-title" class="text-3xl md:text-4xl font-bold">Aprende de las plagas</h1>
-      <p class="mt-3 text-zinc-600">Consejos prácticos y guías rápidas para tu hogar o negocio.</p>
+  <section class="bg-gradient-to-b from-white to-emerald-50/40 py-16" aria-labelledby="aprende-title">
+    <div class="container-max">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">Recursos educativos</p>
+        <h1 id="aprende-title" class="mt-3 text-3xl font-semibold text-zinc-900 md:text-4xl">Aprende de las plagas</h1>
+        <p class="mt-4 text-lg text-zinc-700">
+          Consejos prácticos, guías rápidas y material descargable para que mantengas tus espacios protegidos entre visitas técnicas.
+        </p>
+      </div>
+
+      <div class="mt-10 flex flex-wrap justify-center gap-3">
+        {categories.map((category) => (
+          <span class="rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-sm font-medium text-emerald-700">
+            {category}
+          </span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-max py-16" aria-labelledby="guias-title">
+    <div class="text-center">
+      <h2 id="guias-title" class="text-3xl font-semibold text-zinc-900 md:text-4xl">Guías destacadas</h2>
+      <p class="mt-4 text-base text-zinc-600">
+        Próximamente añadiremos más artículos y material descargable. Puedes sugerir temas a través del formulario de contacto.
+      </p>
     </div>
 
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {posts.map((p) => (
-        <article class="card p-5">
-          <h2 class="text-lg font-semibold mb-2">{p.title}</h2>
-          <p class="text-sm text-zinc-700">{p.excerpt}</p>
-          <a href={p.href} class="btn btn-ghost mt-3" data-astro-prefetch>Leer más</a>
+        <article class="rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-sm">
+          <h3 class="text-lg font-semibold text-zinc-900">{p.title}</h3>
+          <p class="mt-2 text-sm text-zinc-700">{p.excerpt}</p>
+          <a href={p.href} class="btn btn-ghost mt-4" data-astro-prefetch>
+            Leer más
+          </a>
         </article>
       ))}
     </div>
+  </section>
 
-    <!-- CTA secundaria -->
-    <div class="mt-10 flex flex-wrap gap-3 justify-center">
-      <a href="/" class="btn btn-outline" data-astro-prefetch>Volver al inicio</a>
-      <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
+  <section class="bg-zinc-950 py-16 text-white" aria-labelledby="tips-title">
+    <div class="container-max grid gap-10 lg:grid-cols-[1fr,1fr] lg:items-center">
+      <div>
+        <h2 id="tips-title" class="text-3xl font-semibold md:text-4xl">Consejos rápidos</h2>
+        <p class="mt-4 text-base text-white/80">
+          Incorpora estas prácticas sencillas para disminuir la presión de plagas entre servicio y servicio.
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        {quickTips.map((tip) => (
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+            <h3 class="text-lg font-semibold text-white">{tip.title}</h3>
+            <p class="mt-2 text-sm text-white/80">{tip.description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-max py-16" aria-labelledby="cta-recursos">
+    <div class="rounded-3xl border border-emerald-100 bg-emerald-50/80 p-8 md:p-12">
+      <div class="grid gap-6 lg:grid-cols-[1.2fr,1fr] lg:items-center">
+        <div>
+          <h2 id="cta-recursos" class="text-3xl font-semibold text-zinc-900">Solicita material personalizado</h2>
+          <p class="mt-4 text-base text-zinc-700">
+            ¿Necesitas instructivos para tu personal, hojas de seguridad o capacitaciones específicas? Escríbenos y te compartiremos recursos adaptados a tu operación.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-3 lg:justify-end">
+          <a href="/contact" class="btn btn-primary" data-astro-prefetch>Contacto</a>
+          <a href="/cotizacion" class="btn btn-outline" data-astro-prefetch="hover">Solicitar cotización</a>
+        </div>
+      </div>
     </div>
   </section>
 
