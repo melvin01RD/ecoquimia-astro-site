@@ -4,20 +4,150 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { services } from "../data/services";
 import ServiceCard from "../components/ServiceCard.astro";
+
 export const prerender = true;
+
+const highlights = [
+  {
+    title: "Diagnóstico preciso",
+    description: "Inspección inicial con reporte fotográfico y mapa de riesgos para tu instalación.",
+  },
+  {
+    title: "Plan a medida",
+    description: "Definimos frecuencia, productos y responsables en conjunto con tu equipo.",
+  },
+  {
+    title: "Seguimiento digital",
+    description: "Bitácoras en línea, fichas técnicas y certificados descargables tras cada visita.",
+  },
+];
+
+const guarantees = [
+  "Productos registrados en Salud Pública y aplicados por técnicos certificados",
+  "Cobertura de emergencias 24/7 para clientes con contrato activo",
+  "Recordatorios automáticos para mantener los espacios libres de plagas",
+  "Capacitaciones in company sobre manejo preventivo y protocolos de saneamiento",
+];
+
+const industries = [
+  {
+    name: "Alimentos y bebidas",
+    detail: "Programas compatibles con HACCP, BPM y auditorías de cadenas internacionales.",
+  },
+  {
+    name: "Hospitalidad",
+    detail: "Tratamientos discretos para hoteles, villas y complejos turísticos con registro de habitaciones.",
+  },
+  {
+    name: "Sector residencial",
+    detail: "Planes para condominios, residenciales y urbanizaciones con atención a mascotas.",
+  },
+  {
+    name: "Logística e industria",
+    detail: "Monitoreo de almacenes, centros de distribución y plantas con trampas inteligentes.",
+  },
+];
 ---
-<Base title="Servicios — Ecoquimia" description="Planes residenciales y comerciales de control de plagas.">
+<Base title="Servicios — Ecoquimia" description="Programas residenciales, comerciales e industriales de control de plagas en República Dominicana.">
   <Header slot="header" />
 
-  <section class="container-max py-16" aria-labelledby="services-title">
+  <section class="bg-gradient-to-b from-white to-emerald-50/40 py-16" aria-labelledby="services-title">
+    <div class="container-max">
+      <div class="grid gap-10 lg:grid-cols-[1.1fr,1fr] lg:items-center">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">Nuestros servicios</p>
+          <h1 id="services-title" class="mt-3 text-3xl font-semibold text-zinc-900 md:text-4xl">Control de plagas integral para cada sector</h1>
+          <p class="mt-4 text-base text-zinc-700">
+            Diseñamos planes de fumigación y monitoreo que combinan tecnología, productos certificados y asesoría constante. Desde intervenciones puntuales hasta contratos anuales.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
+            <a href="/contact" class="btn btn-outline" data-astro-prefetch>Hablar con soporte</a>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-sm">
+          <h2 class="text-lg font-semibold text-zinc-900">Qué puedes esperar</h2>
+          <ul class="mt-4 space-y-3 text-sm text-zinc-700">
+            {highlights.map((item) => (
+              <li class="flex items-start gap-3">
+                <span class="mt-1 h-2.5 w-2.5 flex-none rounded-full bg-emerald-500"></span>
+                <div>
+                  <p class="font-medium text-zinc-900">{item.title}</p>
+                  <p class="text-zinc-600">{item.description}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-max py-16" aria-labelledby="catalogo-title">
     <div class="text-center">
-      <h1 id="services-title" class="text-3xl md:text-4xl font-bold">Nuestros servicios</h1>
-      <div class="mx-auto mt-3 h-1.5 w-20 rounded-full bg-brand"></div>
-      <p class="mt-3 text-zinc-600">Tratamientos efectivos y seguros, con seguimiento.</p>
+      <h2 id="catalogo-title" class="text-3xl font-semibold text-zinc-900 md:text-4xl">Catálogo de servicios</h2>
+      <p class="mt-4 text-lg text-zinc-600">
+        Planes preventivos, correctivos y de monitoreo continuo adaptados a viviendas, comercios y grandes operaciones.
+      </p>
     </div>
 
-    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {services.map((s) => <ServiceCard service={s} />)}
+    </div>
+  </section>
+
+  <section class="bg-zinc-950 py-16 text-white" aria-labelledby="garantias-title">
+    <div class="container-max">
+      <div class="max-w-2xl">
+        <h2 id="garantias-title" class="text-3xl font-semibold md:text-4xl">Garantías de nuestros programas</h2>
+        <p class="mt-3 text-base text-white/80">
+          Queremos que te sientas respaldado desde la primera visita. Estas son algunas de las prácticas que incorporamos en cada contrato.
+        </p>
+      </div>
+
+      <ul class="mt-10 grid gap-4 md:grid-cols-2">
+        {guarantees.map((item) => (
+          <li class="rounded-3xl border border-white/10 bg-white/5 p-6 text-sm leading-relaxed text-white/90">
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="container-max py-16" aria-labelledby="industrias-title">
+    <div class="grid gap-10 lg:grid-cols-[1fr,1fr] lg:items-center">
+      <div>
+        <h2 id="industrias-title" class="text-3xl font-semibold text-zinc-900 md:text-4xl">Industrias que atendemos</h2>
+        <p class="mt-4 text-base text-zinc-700">
+          Ajustamos el plan según normativas, horarios y sensibilidad de cada actividad. También coordinamos capacitaciones de buenas prácticas con tu personal.
+        </p>
+      </div>
+
+      <ul class="space-y-4">
+        {industries.map((industry) => (
+          <li class="rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-sm">
+            <p class="text-lg font-semibold text-zinc-900">{industry.name}</p>
+            <p class="mt-2 text-sm text-zinc-700">{industry.detail}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="pb-20" aria-labelledby="cta-servicios">
+    <div class="container-max">
+      <div class="rounded-3xl border border-emerald-100 bg-emerald-50/80 p-8 md:p-12 text-center">
+        <h2 id="cta-servicios" class="text-3xl font-semibold text-zinc-900">¿Listo para tu evaluación gratuita?</h2>
+        <p class="mt-4 text-base text-zinc-700">
+          Agenda una visita de diagnóstico o solicita una propuesta digital con precios estimados y alcance de servicio.
+        </p>
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+          <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
+          <a href="/contact" class="btn btn-outline" data-astro-prefetch>Coordinar visita</a>
+        </div>
+      </div>
     </div>
   </section>
 
