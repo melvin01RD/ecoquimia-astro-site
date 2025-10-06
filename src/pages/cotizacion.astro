@@ -7,7 +7,8 @@ export const prerender = true;
 import {
   Grid2x2, Mail, User, AtSign, ListFilter, Hash,
   Building2, Bed, Building, Utensils, Car,
-  Landmark, Factory, School, ShoppingBag, Hammer, Wrench, House
+  Landmark, Factory, School, ShoppingBag, Hammer, Wrench, House,
+  Phone, Clock, CheckCircle2
 } from "@lucide/astro";
 
 import categoriesDefault, { categories as categoriesNamed } from "../data/categories";
@@ -39,53 +40,77 @@ const honeypotName = "website";
 
   <!-- Hero compacto -->
   <section class="relative overflow-hidden pt-16 md:pt-20">
-    <div class="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(16,185,129,.15),rgba(255,255,255,0))]"></div>
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(16,185,129,.18),rgba(255,255,255,0))]"></div>
     <div class="container-max py-8 md:py-12 text-center">
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Cotiza tu necesidad</h1>
-      <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">Selecciona una categoría o completa el formulario. Respuesta en horas laborales.</p>
+      <span class="inline-flex items-center gap-2 rounded-full bg-emerald-100/80 px-4 py-1 text-sm font-medium text-emerald-700">Respuesta en menos de 24h</span>
+      <h1 class="mt-4 text-3xl md:text-4xl font-bold tracking-tight">Cotiza tu servicio de control de plagas</h1>
+      <p class="mt-3 text-zinc-600 max-w-2xl mx-auto">Selecciona una categoría o completa el formulario. Nuestro equipo te contactará con una propuesta personalizada.</p>
     </div>
   </section>
 
   <!-- Contenido principal -->
-  <section class="section-pad">
-    <div class="container-max grid gap-6 md:gap-8 lg:grid-cols-2">
-      <!-- Categorías -->
-      <div class="surface rounded-app p-5 md:p-6">
-        <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
-          <Grid2x2 class="w-5 h-5" /> Categorías
-        </h2>
+  <section class="relative py-12 md:py-16">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-emerald-50/50 via-white to-white"></div>
+    <div class="container-max grid gap-10 lg:grid-cols-[1.05fr,1fr] items-start">
+      <!-- Lateral informativo -->
+      <div class="space-y-6">
+        <div class="surface rounded-3xl border-emerald-100/80 shadow-xl shadow-emerald-900/5 p-5 md:p-6">
+          <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
+            <Grid2x2 class="w-5 h-5 text-emerald-600" /> Elige una categoría
+          </h2>
 
-        {CATEGORIES.length === 0 ? (
-          <div class="text-sm text-red-600">
-            No hay categorías configuradas. Revisa <code>src/data/categories.*</code>.
-          </div>
-        ) : (
-          <div class="auto-grid-sm md:auto-grid">
-            {CATEGORIES.map((c) => {
-              const IconComp = icons[c] ?? Building2;
-              return (
-                <a
-                  href={`/cotizacion?service=${encodeURIComponent(c)}#quoteForm`}
-                  data-astro-prefetch
-                  data-service={c}
-                  class="tile-light flex items-center gap-3 no-underline hover:no-underline"
-                >
-                  <IconComp class="w-6 h-6 md:w-7 md:h-7 text-brand" />
-                  <span class="text-sm md:text-base font-medium">{c}</span>
-                </a>
-              );
-            })}
-          </div>
-        )}
+          {CATEGORIES.length === 0 ? (
+            <div class="text-sm text-red-600">
+              No hay categorías configuradas. Revisa <code>src/data/categories.*</code>.
+            </div>
+          ) : (
+            <div class="auto-grid-sm md:auto-grid">
+              {CATEGORIES.map((c) => {
+                const IconComp = icons[c] ?? Building2;
+                return (
+                  <a
+                    href={`/cotizacion?service=${encodeURIComponent(c)}#quoteForm`}
+                    data-astro-prefetch
+                    data-service={c}
+                    class="tile-light flex items-center gap-3 rounded-2xl border border-transparent bg-white/90 px-4 py-3 text-left no-underline shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:no-underline hover:shadow-md"
+                  >
+                    <IconComp class="w-6 h-6 md:w-7 md:h-7 text-emerald-600" />
+                    <span class="text-sm md:text-base font-medium text-zinc-800">{c}</span>
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div class="rounded-3xl border border-emerald-100 bg-white/90 p-5 md:p-6 shadow-lg">
+          <h3 class="text-base md:text-lg font-semibold text-emerald-700 flex items-center gap-2">
+            <CheckCircle2 class="w-5 h-5" /> ¿Qué ocurre después de enviar?
+          </h3>
+          <ul class="mt-4 space-y-3 text-sm text-zinc-600">
+            <li class="flex gap-3">
+              <Clock class="mt-0.5 h-4 w-4 flex-none text-emerald-500" />
+              <span>Revisamos tu solicitud y respondemos en menos de 24 horas laborales.</span>
+            </li>
+            <li class="flex gap-3">
+              <Phone class="mt-0.5 h-4 w-4 flex-none text-emerald-500" />
+              <span>Si necesitamos más detalles, te contactaremos por teléfono o correo.</span>
+            </li>
+            <li class="flex gap-3">
+              <CheckCircle2 class="mt-0.5 h-4 w-4 flex-none text-emerald-500" />
+              <span>Recibirás una propuesta formal con fechas, equipo y garantía Ecoquimia.</span>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- Formulario -->
-      <div class="surface rounded-app p-5 md:p-6">
-        <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
+      <div class="rounded-3xl border border-emerald-100 bg-white/95 p-6 shadow-2xl shadow-emerald-900/10 backdrop-blur-sm">
+        <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2 text-emerald-700">
           <Mail class="w-5 h-5" /> Solicitar cotización
         </h2>
 
-        <form id="quoteForm" name="quoteForm" class="stack-sm max-w-xl" method="post" action="/api/cotizacion" aria-labelledby="form-legend" novalidate>
+        <form id="quoteForm" name="quoteForm" class="stack-sm" method="post" action="/api/cotizacion" aria-labelledby="form-legend" novalidate>
           <fieldset class="grid gap-4">
             <legend id="form-legend" class="sr-only">Formulario de cotización</legend>
 
@@ -136,8 +161,8 @@ const honeypotName = "website";
               <textarea id="message" name="message" rows={5} required placeholder="Cuéntanos detalles del servicio que necesitas" class="textarea"></textarea>
             </div>
 
-            <div class="flex items-center gap-3">
-              <button id="submitBtn" type="submit" class="btn btn-primary btn-block">Enviar</button>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-3">
+              <button id="submitBtn" type="submit" class="btn btn-primary btn-block shadow-md shadow-emerald-500/25">Enviar</button>
               <p id="status" class="text-sm" aria-live="polite"></p>
             </div>
           </fieldset>

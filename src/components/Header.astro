@@ -11,12 +11,27 @@ const links = [
 const { pathname } = Astro.url;
 ---
 <header class="site-header sticky top-0 z-50 bg-zinc-900 text-white border-b border-white/10">
-  <div class="container-max flex items-center justify-between h-16 pr-6 md:pr-10">
+  <div class="container-max flex items-center justify-between h-16 pr-4 md:pr-10">
     <a href="/" class="flex items-center gap-2 no-underline">
       <img src="/logo/ecoquimia.svg" alt="Ecoquimia" class="h-6 w-auto" loading="eager" />
     </a>
 
-    <nav class="flex items-center gap-6">
+    <button
+      id="mobileMenuButton"
+      type="button"
+      class="md:hidden inline-flex items-center justify-center rounded-2xl p-2.5 text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+      aria-expanded="false"
+      aria-controls="mobileMenu"
+    >
+      <span class="sr-only">Abrir menú</span>
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="4" x2="20" y1="7" y2="7"></line>
+        <line x1="4" x2="20" y1="12" y2="12"></line>
+        <line x1="4" x2="20" y1="17" y2="17"></line>
+      </svg>
+    </button>
+
+    <nav class="hidden md:flex items-center gap-6">
       {links.map((l) => (
         <a
           href={l.href}
@@ -34,4 +49,48 @@ const { pathname } = Astro.url;
       </a>
     </nav>
   </div>
+
+  <nav
+    id="mobileMenu"
+    class="md:hidden hidden border-t border-white/10 bg-zinc-950/95 backdrop-blur-sm"
+    aria-label="Menú móvil"
+  >
+    <div class="container-max py-4 space-y-3">
+      {links.map((l) => (
+        <a
+          href={l.href}
+          class={`block rounded-2xl px-4 py-2.5 text-sm font-medium transition ${pathname === l.href ? "bg-white/10 text-white" : "text-white/80 hover:bg-white/10 hover:text-white"}`}
+        >
+          {l.label}
+        </a>
+      ))}
+      <a
+        href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, quiero una cotización de control de plagas.")}`}
+        target="_blank" rel="noopener noreferrer"
+        class="btn btn-primary btn-block text-sm"
+      >
+        WhatsApp
+      </a>
+    </div>
+  </nav>
 </header>
+
+<script is:inline>
+  const toggle = document.getElementById("mobileMenuButton");
+  const menu = document.getElementById("mobileMenu");
+
+  toggle?.addEventListener("click", () => {
+    menu?.classList.toggle("hidden");
+    if (menu && toggle) {
+      const expanded = menu.classList.contains("hidden") ? "false" : "true";
+      toggle.setAttribute("aria-expanded", expanded);
+    }
+  });
+
+  menu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      menu.classList.add("hidden");
+      toggle?.setAttribute("aria-expanded", "false");
+    });
+  });
+</script>

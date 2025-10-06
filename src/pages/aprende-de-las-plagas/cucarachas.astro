@@ -1,0 +1,55 @@
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+export const prerender = true;
+---
+<Base title="Guía sobre cucarachas — Ecoquimia" description="Aprende cómo prevenir e identificar infestaciones de cucarachas.">
+  <Header slot="header" />
+
+  <article class="relative py-12 md:py-16">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-white via-emerald-50/40 to-white"></div>
+    <div class="container-max space-y-10">
+      <header class="text-center space-y-4">
+        <p class="inline-flex items-center gap-2 rounded-full bg-emerald-100/80 px-4 py-1 text-sm font-medium text-emerald-700">Guía rápida</p>
+        <h1 class="text-3xl md:text-4xl font-semibold">Cucarachas: prevención y control</h1>
+        <p class="text-zinc-600 max-w-2xl mx-auto">Las cucarachas prosperan en ambientes cálidos y húmedos. Detectarlas a tiempo reduce el riesgo sanitario y evita daños mayores.</p>
+      </header>
+
+      <section class="rounded-3xl border border-emerald-100 bg-white/95 p-6 md:p-10 shadow-xl shadow-emerald-900/5 backdrop-blur-sm space-y-10">
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-emerald-700">Señales de alerta</h2>
+            <ul class="list-disc pl-5 space-y-2 text-sm md:text-base text-zinc-700">
+              <li>Olor dulce y penetrante en áreas cerradas como despensas o gabinetes.</li>
+              <li>Excrementos con forma de granos de café molido cerca de fuentes de alimento.</li>
+              <li>Manchas y rastros grasos en paredes, zócalos y electrodomésticos.</li>
+              <li>Cápsulas de huevos (ootecas) escondidas detrás de muebles o dentro de cajas.</li>
+            </ul>
+          </div>
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-emerald-700">Medidas inmediatas</h2>
+            <ul class="list-disc pl-5 space-y-2 text-sm md:text-base text-zinc-700">
+              <li>Sella grietas con silicón o masilla, especialmente alrededor de tuberías y zócalos.</li>
+              <li>Guarda alimentos en envases herméticos y retira restos de comida cada noche.</li>
+              <li>Reduce la humedad reparando fugas y ventilando áreas cerradas.</li>
+              <li>Instala trampas adhesivas para monitorear la actividad y definir el foco.</li>
+            </ul>
+          </div>
+        </div>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold text-emerald-700">Cuándo llamar a profesionales</h2>
+          <p class="text-sm md:text-base text-zinc-700">Si observas actividad durante el día, encuentras ootecas constantemente o el problema se extiende a diferentes niveles de tu edificio, es momento de solicitar un tratamiento profesional. Ecoquimia utiliza productos certificados de baja toxicidad y estrategias integradas para erradicar la plaga con seguridad.</p>
+        </section>
+
+        <footer class="flex flex-wrap gap-3 justify-between items-center">
+          <a href="/aprende-de-las-plagas" class="btn btn-outline" data-astro-prefetch>Volver a guías</a>
+          <a href="/cotizacion?service=Cucarachas" class="btn btn-primary" data-astro-prefetch="hover">Solicitar inspección</a>
+        </footer>
+      </section>
+    </div>
+  </article>
+
+  <Footer slot="footer" />
+</Base>

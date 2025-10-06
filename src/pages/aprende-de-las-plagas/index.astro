@@ -26,26 +26,30 @@ const posts = [
 <Base title="Aprende de las plagas — Ecoquimia" description="Guías y consejos para prevenir y tratar plagas.">
   <Header slot="header" />
 
-  <section class="container-max py-16" aria-labelledby="aprende-title">
-    <div class="text-center mb-8 md:mb-10">
-      <h1 id="aprende-title" class="text-3xl md:text-4xl font-bold">Aprende de las plagas</h1>
-      <p class="mt-3 text-zinc-600">Consejos prácticos y guías rápidas para tu hogar o negocio.</p>
-    </div>
+  <section class="relative py-12 md:py-16" aria-labelledby="aprende-title">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-white via-emerald-50/40 to-white"></div>
+    <div class="container-max">
+      <div class="text-center mb-10 space-y-4">
+        <span class="inline-flex items-center gap-2 rounded-full bg-emerald-100/80 px-4 py-1 text-sm font-medium text-emerald-700">Centro de aprendizaje</span>
+        <h1 id="aprende-title" class="text-3xl md:text-4xl font-bold">Aprende de las plagas</h1>
+        <p class="text-zinc-600 max-w-2xl mx-auto">Consejos prácticos, señales de alerta y pasos sencillos para mantener tus espacios protegidos todo el año.</p>
+      </div>
 
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {posts.map((p) => (
-        <article class="card p-5">
-          <h2 class="text-lg font-semibold mb-2">{p.title}</h2>
-          <p class="text-sm text-zinc-700">{p.excerpt}</p>
-          <a href={p.href} class="btn btn-ghost mt-3" data-astro-prefetch>Leer más</a>
-        </article>
-      ))}
-    </div>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {posts.map((p) => (
+          <article class="rounded-3xl border border-emerald-100 bg-white/95 p-6 shadow-lg shadow-emerald-900/5 backdrop-blur-sm">
+            <h2 class="text-lg font-semibold text-emerald-700 mb-2">{p.title}</h2>
+            <p class="text-sm text-zinc-700">{p.excerpt}</p>
+            <a href={p.href} class="btn btn-primary mt-4" data-astro-prefetch="hover">Leer más</a>
+          </article>
+        ))}
+      </div>
 
-    <!-- CTA secundaria -->
-    <div class="mt-10 flex flex-wrap gap-3 justify-center">
-      <a href="/" class="btn btn-outline" data-astro-prefetch>Volver al inicio</a>
-      <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
+      <!-- CTA secundaria -->
+      <div class="mt-12 flex flex-wrap gap-3 justify-center">
+        <a href="/" class="btn btn-outline" data-astro-prefetch>Volver al inicio</a>
+        <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
+      </div>
     </div>
   </section>
 
