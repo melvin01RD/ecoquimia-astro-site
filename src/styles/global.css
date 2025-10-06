@@ -167,6 +167,23 @@
     100% { background-position: -200% 0; }
   }
 
+  /* Navegación responsive */
+  .nav-links {
+    display: none;
+  }
+
+  .nav-links[data-open="true"] {
+    display: flex;
+  }
+
+  @media (min-width: 768px) {
+    .nav-links,
+    .nav-links[data-open="false"],
+    .nav-links[data-open="true"] {
+      display: flex;
+    }
+  }
+
   /* Tarjetas */
   .card {
     @apply rounded-3xl shadow-sm border border-zinc-200 bg-white text-zinc-900;

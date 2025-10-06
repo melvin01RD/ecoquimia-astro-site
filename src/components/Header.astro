@@ -11,27 +11,62 @@ const links = [
 const { pathname } = Astro.url;
 ---
 <header class="site-header sticky top-0 z-50 bg-zinc-900 text-white border-b border-white/10">
-  <div class="container-max flex items-center justify-between h-16 pr-6 md:pr-10">
+  <div class="container-max relative flex items-center justify-between h-16 pr-6 md:pr-10">
     <a href="/" class="flex items-center gap-2 no-underline">
       <img src="/logo/ecoquimia.svg" alt="Ecoquimia" class="h-6 w-auto" loading="eager" />
     </a>
 
-    <nav class="flex items-center gap-6">
-      {links.map((l) => (
-        <a
-          href={l.href}
-          class={`nav-link ${pathname === l.href ? "is-active" : ""} text-white/80 hover:text-white`}
-        >
-          {l.label}
-        </a>
-      ))}
+    <button
+      type="button"
+      class="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+      aria-controls="primary-navigation"
+      aria-expanded="false"
+      data-menu-toggle
+    >
+      <span class="sr-only">Alternar navegación</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" x2="21" y1="6" y2="6"></line>
+        <line x1="3" x2="21" y1="12" y2="12"></line>
+        <line x1="3" x2="21" y1="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <nav
+      id="primary-navigation"
+      class="nav-links hidden md:flex absolute md:static top-16 left-4 right-4 md:left-auto md:right-auto flex-col md:flex-row gap-4 md:gap-6 rounded-2xl border border-white/10 bg-zinc-900/95 p-6 shadow-lg md:border-0 md:bg-transparent md:p-0 md:shadow-none md:items-center"
+      data-open="false"
+    >
+      <div class="flex flex-col md:flex-row gap-4 md:gap-6">
+        {links.map((l) => (
+          <a
+            href={l.href}
+            class={`nav-link ${pathname === l.href ? "is-active" : ""} text-white/80 hover:text-white`}
+          >
+            {l.label}
+          </a>
+        ))}
+      </div>
       <a
         href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, quiero una cotización de control de plagas.")}`}
         target="_blank" rel="noopener noreferrer"
-        class="btn btn-primary text-sm"
+        class="btn btn-primary text-sm md:ml-4"
       >
         WhatsApp
       </a>
     </nav>
   </div>
 </header>
+
+<script>
+  const menuToggle = document.querySelector('[data-menu-toggle]');
+  const nav = document.querySelector('#primary-navigation');
+
+  if (menuToggle && nav) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = nav.getAttribute('data-open') === 'true';
+      const nextState = (!isOpen).toString();
+      nav.setAttribute('data-open', nextState);
+      menuToggle.setAttribute('aria-expanded', nextState);
+    });
+  }
+</script>
