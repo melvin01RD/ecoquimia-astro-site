@@ -1,26 +1,26 @@
 ---
 const year = new Date().getFullYear();
 ---
-<footer class="mt-16 bg-zinc-950 text-white">
+<footer class="site-footer mt-16">
   <div class="container-max py-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
     <!-- Marca -->
     <div>
-      <a href="/" class="flex items-center gap-2 text-lg font-bold" aria-label="Ir al inicio">
+      <a href="/" class="flex items-center gap-2 text-lg font-semibold text-slate-800" aria-label="Ir al inicio">
         <img src="/favicon.svg" class="w-6 h-6" alt="Ecoquimia logo" />
         <span>Eco<span class="text-brand">quimia</span></span>
       </a>
-      <p class="text-sm text-white/70 mt-2">
+      <p class="text-sm text-slate-600 mt-2">
         Control integral de plagas para hogares y empresas. Santo Domingo, RD.
       </p>
     </div>
 
     <!-- Contacto -->
     <div>
-      <h4 class="font-semibold mb-2">Contacto</h4>
+      <h4 class="font-semibold text-slate-900 mb-2">Contacto</h4>
       <address class="not-italic">
-        <ul class="space-y-1 text-sm text-white/70">
-          <li>📞 <a href="tel:+18096172105" class="underline hover:text-white">+1&nbsp;(809)&nbsp;617&#8209;2105</a></li>
-          <li>✉️ <a href="mailto:contacto@ecoquimia.com" class="underline hover:text-white">contacto@ecoquimia.com</a></li>
+        <ul class="space-y-1 text-sm text-slate-600">
+          <li>📞 <a href="tel:+18096172105" class="footer-link">+1&nbsp;(809)&nbsp;617&#8209;2105</a></li>
+          <li>✉️ <a href="mailto:contacto@ecoquimia.com" class="footer-link">contacto@ecoquimia.com</a></li>
           <li>📍 Santo Domingo, RD</li>
         </ul>
       </address>
@@ -39,27 +39,27 @@ const year = new Date().getFullYear();
 
     <!-- Enlaces -->
     <nav aria-label="Enlaces del sitio">
-      <h4 class="font-semibold mb-2">Enlaces</h4>
-      <ul class="space-y-1 text-sm">
-        <li><a href="/" class="text-white/80 hover:text-white">Inicio</a></li>
-        <li><a href="/nosotros" class="text-white/80 hover:text-white">Nosotros</a></li>
-        <li><a href="/services" class="text-white/80 hover:text-white">Servicios</a></li>
-        <li><a href="/cotizacion" class="text-white/80 hover:text-white">Cotización</a></li>
-        <li><a href="/aprende-de-las-plagas" class="text-white/80 hover:text-white">Aprende de las plagas</a></li>
-        <li><a href="/contact" class="text-white/80 hover:text-white">Contacto</a></li>
-        <li><a href="/politicas" class="text-white/80 hover:text-white">Políticas</a></li>
+      <h4 class="font-semibold text-slate-900 mb-2">Enlaces</h4>
+      <ul class="space-y-1 text-sm text-slate-600">
+        <li><a href="/" class="footer-link">Inicio</a></li>
+        <li><a href="/nosotros" class="footer-link">Nosotros</a></li>
+        <li><a href="/services" class="footer-link">Servicios</a></li>
+        <li><a href="/cotizacion" class="footer-link">Cotización</a></li>
+        <li><a href="/aprende-de-las-plagas" class="footer-link">Aprende de las plagas</a></li>
+        <li><a href="/contact" class="footer-link">Contacto</a></li>
+        <li><a href="/politicas" class="footer-link">Políticas</a></li>
       </ul>
     </nav>
   </div>
 
-  <div class="border-t border-white/10">
-    <div class="container-max py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/60">
+  <div class="footer-divider">
+    <div class="container-max py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
       <span>© {year} Ecoquimia</span>
       <!-- Redes sociales -->
       <nav aria-label="Redes sociales" class="flex gap-3">
-        <a href="#" class="hover:text-white/80" target="_blank" rel="noopener noreferrer">Facebook</a>
-        <a href="#" class="hover:text-white/80" target="_blank" rel="noopener noreferrer">Instagram</a>
-        <a href="#" class="hover:text-white/80" target="_blank" rel="noopener noreferrer">TikTok</a>
+        <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">TikTok</a>
       </nav>
     </div>
   </div>

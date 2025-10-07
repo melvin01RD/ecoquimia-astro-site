@@ -114,6 +114,31 @@
   }
   .site-header, .site-header * { color: #fff; }
 
+  /* Footer luminoso */
+  .site-footer {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.06) 45%, #ffffff 100%);
+    color: rgb(24 24 27);
+  }
+  .site-footer :where(p, li, span, small) {
+    color: rgba(24, 24, 27, 0.76);
+  }
+  .site-footer h4 {
+    color: rgb(15 23 42);
+  }
+  .site-footer .footer-link {
+    color: rgb(4 95 67);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .site-footer .footer-link:hover {
+    color: rgb(5 122 85);
+  }
+  .site-footer .footer-divider {
+    border-top: 1px solid rgba(4, 120, 87, 0.18);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(236, 253, 245, 0.9) 100%);
+    backdrop-filter: blur(6px);
+  }
+
   /* Enlaces con subrayado solo al hover */
   a { text-underline-offset: 2px; }
   a:hover { text-decoration: underline; }
