@@ -1,0 +1,171 @@
+---
+import { getEntryBySlug } from "astro:content";
+import criticalStyles from "./_cucarachas-critical.css?inline";
+import deferredHref from "./_cucarachas-deferred.css?url";
+
+export const prerender = true;
+
+const entry = await getEntryBySlug("plagas", "cucarachas");
+if (!entry) {
+  throw new Error("No se encontró la guía de cucarachas en content/plagas.");
+}
+
+const { Content } = await entry.render();
+const data = entry.data;
+const tags = Array.isArray(data.tags) ? data.tags : [];
+const heroCover = data.cover && data.cover.length > 0 ? data.cover : "/brief/plagas.png";
+const excerpt = data.excerpt ?? "Control profesional de cucarachas con saneamiento, cebos dirigidos y monitoreo continuo.";
+const updatedLabel = data.updated
+  ? new Date(data.updated).toLocaleDateString("es-DO", { day: "numeric", month: "long", year: "numeric" })
+  : undefined;
+const heroHighlight = (data.title ?? "cucarachas").toLowerCase();
+
+const navLinks = [
+  { href: "/", label: "Inicio" },
+  { href: "/nosotros", label: "Nosotros" },
+  { href: "/services", label: "Servicios" },
+  { href: "/cotizacion", label: "Cotización" },
+  { href: "/aprende-de-las-plagas", label: "Aprende de las plagas" },
+  { href: "/contact", label: "Contacto" },
+  { href: "/politicas", label: "Políticas" },
+];
+
+const whatsappText = "Hola, quiero una cotización de control de plagas.";
+const whatsappUrl = `https://wa.me/18096172105?text=${encodeURIComponent(whatsappText)}`;
+const currentYear = new Date().getFullYear();
+---
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cucarachas — Ecoquimia</title>
+    <meta name="description" content={excerpt} />
+    <style is:inline>{criticalStyles}</style>
+    <link
+      rel="preload"
+      as="style"
+      href={deferredHref}
+      onload="this.rel='stylesheet';this.onload=null"
+      importance="low"
+    />
+    <noscript><link rel="stylesheet" href={deferredHref} /></noscript>
+  </head>
+  <body class="cucarachas-page">
+    <header class="pest-nav">
+      <div class="pest-nav__inner">
+        <a class="pest-nav__brand" href="/" aria-label="Ir al inicio de Ecoquimia">
+          <img src="/logo/ecoquimia.svg" alt="Ecoquimia" width="96" height="24" loading="eager" />
+          <span>Eco<strong>quimia</strong></span>
+        </a>
+        <nav class="pest-nav__links" aria-label="Navegación principal">
+          {navLinks.map((link) => (
+            <a class={`pest-nav__link${link.href === "/aprende-de-las-plagas" ? " is-active" : ""}`} href={link.href}>
+              {link.label}
+            </a>
+          ))}
+        </nav>
+        <a class="pest-nav__cta pest-button pest-button--primary" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+          WhatsApp
+        </a>
+      </div>
+    </header>
+
+    <main id="contenido-principal" class="pest-main">
+      <section class="pest-hero" style={{ "--hero-image": `url(${heroCover})` }}>
+        <div class="pest-hero__container">
+          <p class="pest-hero__eyebrow">Control integral de plagas</p>
+          <h1 class="pest-hero__title">
+            Controla las <span class="pest-hero__highlight">{heroHighlight}</span> con Ecoquimia
+          </h1>
+          {excerpt && <p class="pest-hero__excerpt">{excerpt}</p>}
+          <div class="pest-hero__actions">
+            <a class="pest-button pest-button--primary" href="/cotizacion">Solicitar inspección</a>
+            <a class="pest-button pest-button--ghost" href="/services">Planes y servicios</a>
+          </div>
+          {updatedLabel && <p class="pest-hero__meta">Actualizado {updatedLabel}</p>}
+        </div>
+      </section>
+
+      <div class="pest-main__body">
+        <div class="pest-main__inner">
+          <section class="pest-overview" aria-labelledby="resumen-cucarachas">
+            <div>
+              <h2 id="resumen-cucarachas">Panorama rápido</h2>
+              <p>
+                Identifica focos, hábitos y riesgos de las cucarachas para aplicar un plan de saneamiento, exclusión y control
+                profesional.
+              </p>
+            </div>
+            <dl class="pest-overview__meta">
+              <div>
+                <dt>Tiempo de respuesta</dt>
+                <dd>24&nbsp;h en Santo Domingo</dd>
+              </div>
+              {updatedLabel && (
+                <div>
+                  <dt>Actualizado</dt>
+                  <dd>{updatedLabel}</dd>
+                </div>
+              )}
+              {tags.length > 0 && (
+                <div>
+                  <dt>Etiquetas</dt>
+                  <dd>{tags.join(" · ")}</dd>
+                </div>
+              )}
+            </dl>
+            {tags.length > 0 && (
+              <div class="pest-chip-list" aria-label="Sectores relacionados">
+                {tags.map((tag) => (
+                  <span class="pest-chip">{tag}</span>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <article class="pest-article" id="guia" aria-label="Guía completa sobre cucarachas">
+            <Content />
+          </article>
+
+          <section class="pest-cta" aria-labelledby="cta-cucarachas">
+            <div class="pest-cta__info">
+              <h2 id="cta-cucarachas">Agenda una inspección profesional</h2>
+              <p>
+                Nuestros técnicos certificados evalúan la infestación, aplican cebos dirigidos y monitorean hasta erradicar el
+                problema.
+              </p>
+            </div>
+            <div class="pest-cta__actions">
+              <a class="pest-button pest-button--primary" href="/cotizacion">Solicitar cotización</a>
+              <a class="pest-button pest-button--outline" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                Escribir por WhatsApp
+              </a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="pest-footer">
+      <div class="pest-footer__inner">
+        <a class="pest-footer__brand" href="/" aria-label="Inicio Ecoquimia">
+          <img src="/logo/ecoquimia.svg" alt="Ecoquimia" width="96" height="24" loading="lazy" />
+          <span>Eco<strong>quimia</strong></span>
+        </a>
+        <p class="pest-footer__desc">
+          Control integral de plagas para hogares y negocios en República Dominicana. Protocolos seguros, reportes claros y
+          seguimiento experto.
+        </p>
+        <nav aria-label="Enlaces principales">
+          <div class="pest-footer__links">
+            {navLinks.map((link) => (
+              <a href={link.href}>{link.label}</a>
+            ))}
+          </div>
+        </nav>
+        <p class="pest-footer__legal">© {currentYear} Ecoquimia. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+  </body>
+</html>
