@@ -4,33 +4,101 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 export const prerender = true;
 
-import {
-  Grid2x2, Mail, User, AtSign, ListFilter, Hash,
-  Building2, Bed, Building, Utensils, Car,
-  Landmark, Factory, School, ShoppingBag, Hammer, Wrench, House
-} from "@lucide/astro";
+import { Grid2x2, Mail, User, AtSign, ListFilter, Hash } from "@lucide/astro";
 
 import categoriesDefault, { categories as categoriesNamed } from "../data/categories";
 
-const CATEGORIES: readonly string[] = (categoriesNamed ?? categoriesDefault ?? []);
+const CATEGORIES: readonly string[] = categoriesNamed ?? categoriesDefault ?? [];
 
-// Mapea iconos por categoría (solo los que usamos)
-const icons: Record<string, any> = {
-  "Apartamentos": Building2,
-  "Casas": House,
-  "Hoteles": Bed ?? Building2,
-  "Oficinas": Building,
-  "Restaurantes": Utensils,
-  "Vehículos": Car,
-  "Área Común": Landmark,
-  "Industria Farmacéutica": Factory,
-  "Colegios": School,
-  "Plazas Comerciales": ShoppingBag,
-  "Edificios Empresariales": Building2,
-  "Cimientos de Construcción": Hammer ?? Wrench ?? Building2,
+const url = new URL(Astro.request.url);
+const requestedService = url.searchParams.get("service")?.trim().toLowerCase();
+
+const normalize = (value?: string | null) => value?.trim().toLowerCase() ?? "";
+const selectedService = requestedService
+  ? CATEGORIES.find((entry) => normalize(entry) === requestedService) ?? ""
+  : "";
+
+type IconShape = { viewBox: string; paths: readonly string[] };
+const ICON_SHAPES: Record<string, IconShape> = {
+  building: {
+    viewBox: "0 0 24 24",
+    paths: [
+      "M3 21V3h18v18H3Z",
+      "M7 7h2v2H7V7Zm4 0h2v2h-2V7Zm4 0h2v2h-2V7Zm-8 4h2v2H7v-2Zm4 0h2v2h-2v-2Zm4 0h2v2h-2v-2Zm-6 4h6v4H9v-4Z",
+    ],
+  },
+  house: {
+    viewBox: "0 0 24 24",
+    paths: [
+      "M4 11.2 12 4l8 7.2V20a1 1 0 0 1-1 1h-5v-5h-4v5H5a1 1 0 0 1-1-1v-8.8Z",
+    ],
+  },
+  bed: {
+    viewBox: "0 0 24 24",
+    paths: [
+      "M3 6h18v12h-2v-4H5v4H3V6Zm4 6h10V8H7v4Zm1-1V9h2v2H8Zm6-2h2v2h-2V9Z",
+    ],
+  },
+  utensils: {
+    viewBox: "0 0 24 24",
+    paths: [
+      "M5 3h2v7h1V3h2v7c0 2.2-1.4 3.7-3 4v7H5V14c-1.6-.3-3-1.8-3-4V3h3Zm11 0h3v7h2v2h-2v9h-2v-9h-2V3Z",
+    ],
+  },
+  car: {
+    viewBox: "0 0 24 24",
+    paths: [
+      "M4.5 6h15l2 6v6.5H20a2.5 2.5 0 0 1-5 0H9a2.5 2.5 0 0 1-5 0H2.5V12L4.5 6Zm.8 7a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4Zm13.4 0a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4ZM6.2 8l-.9 3h13.4l-.9-3H6.2Z",
+    ],
+  },
+  landmark: {
+    viewBox: "0 0 24 24",
+    paths: [
+      "M4 10 12 3l8 7v2h-1v8h-2v-8h-2v8h-2v-8h-2v8H9v-8H7v8H5v-8H4v-2Z",
+    ],
+  },
+  factory: {
+    viewBox: "0 0 24 24",
+    paths: [
+      "M3 21V9l5 3V9l6 3V8l7 4v9h-3v-4h-3v4H9v-4H6v4H3Z",
+      "M6 11h2v2H6v-2Zm7 1h2v2h-2v-2Z",
+    ],
+  },
+  school: {
+    viewBox: "0 0 24 24",
+    paths: [
+      "M3 10 12 4l9 6v2h-2v8h-6v-4h-2v4H5v-8H3v-2Zm8 2h2v2h-2v-2Zm-4 0h2v2H7v-2Zm8 0h2v2h-2v-2Z",
+    ],
+  },
+  bag: {
+    viewBox: "0 0 24 24",
+    paths: [
+      "M7 7V5a5 5 0 0 1 10 0v2h3v14H4V7h3Zm2 0h6V5a3 3 0 0 0-6 0v2Zm-3 4h2v2H6v-2Zm12 0h-2v2h2v-2ZM9 17h6v2H9v-2Z",
+    ],
+  },
+  tools: {
+    viewBox: "0 0 24 24",
+    paths: [
+      "M16.6 2.6a5 5 0 0 1 5.7 6.6l-3-3-3.2 3.1 3 3A5 5 0 0 1 13.5 9L5 17.6V22H3v-5.4l9-9A5 5 0 0 1 16.6 2.6Z",
+    ],
+  },
 };
 
-// Honeypot estable (no depende de headers ni nada servidor)
+const categoryIcon: Record<string, IconShape> = {
+  "Apartamentos": ICON_SHAPES.building,
+  "Casas": ICON_SHAPES.house,
+  "Hoteles": ICON_SHAPES.bed,
+  "Oficinas": ICON_SHAPES.building,
+  "Restaurantes": ICON_SHAPES.utensils,
+  "Vehículos": ICON_SHAPES.car,
+  "Área Común": ICON_SHAPES.landmark,
+  "Industria Farmacéutica": ICON_SHAPES.factory,
+  "Colegios": ICON_SHAPES.school,
+  "Plazas Comerciales": ICON_SHAPES.bag,
+  "Edificios Empresariales": ICON_SHAPES.building,
+  "Cimientos de Construcción": ICON_SHAPES.tools,
+};
+
 const honeypotName = "website";
 ---
 
@@ -61,17 +129,34 @@ const honeypotName = "website";
           </div>
         ) : (
           <div class="auto-grid-sm md:auto-grid">
-            {CATEGORIES.map((c) => {
-              const IconComp = icons[c] ?? Building2;
+            {CATEGORIES.map((category) => {
+              const normalized = normalize(category);
+              const icon = categoryIcon[category] ?? ICON_SHAPES.building;
+              const isActive = normalize(selectedService) === normalized;
+              const query = encodeURIComponent(category);
+              const href = `/cotizacion?service=${query}#quoteForm`;
+              const baseClass =
+                "tile-light flex items-center gap-3 no-underline hover:no-underline transition-all";
+              const classes = `${baseClass}${isActive ? " ring-2 ring-emerald-500/70 shadow-sm" : ""}`;
+
               return (
                 <a
-                  href={`/cotizacion?service=${encodeURIComponent(c)}#quoteForm`}
+                  href={href}
                   data-astro-prefetch
-                  data-service={c}
-                  class="tile-light flex items-center gap-3 no-underline hover:no-underline"
+                  class={classes}
+                  aria-current={isActive ? "true" : undefined}
                 >
-                  <IconComp class="w-6 h-6 md:w-7 md:h-7 text-brand" />
-                  <span class="text-sm md:text-base font-medium">{c}</span>
+                  <svg
+                    class="w-6 h-6 md:w-7 md:h-7 text-brand"
+                    viewBox={icon.viewBox}
+                    role="presentation"
+                    aria-hidden="true"
+                  >
+                    {icon.paths.map((d) => (
+                      <path d={d} fill="currentColor"></path>
+                    ))}
+                  </svg>
+                  <span class="text-sm md:text-base font-medium">{category}</span>
                 </a>
               );
             })}
@@ -92,7 +177,6 @@ const honeypotName = "website";
           method="post"
           action="/api/cotizacion"
           aria-labelledby="form-legend"
-          novalidate
         >
           <fieldset class="grid gap-4">
             <legend id="form-legend" class="sr-only">Formulario de cotización</legend>
@@ -125,7 +209,14 @@ const honeypotName = "website";
                 <ListFilter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
                 <select id="serviceSelect" name="service" required class="select pl-9">
                   <option value="">Seleccione tipo de servicio</option>
-                  {CATEGORIES.map((c) => <option value={c}>{c}</option>)}
+                  {CATEGORIES.map((category) => (
+                    <option
+                      value={category}
+                      selected={normalize(category) === normalize(selectedService)}
+                    >
+                      {category}
+                    </option>
+                  ))}
                 </select>
               </div>
               <p class="help">También puedes elegir desde las tarjetas de la izquierda.</p>
@@ -144,10 +235,7 @@ const honeypotName = "website";
               <textarea id="message" name="message" rows={5} required placeholder="Cuéntanos detalles del servicio que necesitas" class="textarea"></textarea>
             </div>
 
-            <div class="flex items-center gap-3">
-              <button id="submitBtn" type="submit" class="btn btn-primary btn-block">Enviar</button>
-              <p id="status" class="text-sm" aria-live="polite"></p>
-            </div>
+            <button type="submit" class="btn btn-primary btn-block">Enviar</button>
           </fieldset>
         </form>
       </div>
@@ -155,82 +243,4 @@ const honeypotName = "website";
   </section>
 
   <Footer slot="footer" />
-
-  <!-- ÚNICO script -->
-  <script is:inline>
-    // Preseleccionar servicio desde ?service sin bloquear render
-    requestAnimationFrame(() => {
-      const select = document.getElementById("serviceSelect");
-      const params = new URLSearchParams(window.location.search);
-      const s = params.get("service");
-      if (s && select) {
-        const opts = Array.from(select.options);
-        const match = opts.find(o => o.value.toLowerCase() === s.toLowerCase());
-        if (match) select.value = match.value;
-      }
-    });
-
-    // Click en tarjetas para seleccionar servicio sin recargar
-    document.querySelectorAll('a[data-service]').forEach(a => {
-      a.addEventListener('click', (e) => {
-        if (location.pathname.endsWith('/cotizacion')) {
-          e.preventDefault();
-          const s = a.getAttribute('data-service');
-          const select = document.getElementById("serviceSelect");
-          if (select && s) {
-            select.value = s;
-            select.dispatchEvent(new Event('change', { bubbles: true }));
-            document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            history.replaceState(null, '', `/cotizacion?service=${encodeURIComponent(s)}#quoteForm`);
-          }
-        }
-      });
-    });
-
-    // Submit (POST) con fetch + redirección
-    const form = document.getElementById("quoteForm");
-    const status = document.getElementById("status");
-    const btn = document.getElementById("submitBtn");
-
-    form?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!status || !btn) return;
-
-      btn.setAttribute("aria-busy", "true");
-      status.textContent = "Enviando...";
-      status.className = "text-sm text-zinc-600";
-
-      const payload = Object.fromEntries(new FormData(form));
-
-      try {
-        const res = await fetch("/api/cotizacion", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        let data = {};
-        try { data = await res.json(); } catch {}
-
-        if (res.ok) {
-          // Si el server envía URL, úsala; si no, la construimos con los valores del form
-          const params = new URLSearchParams();
-          if (payload.name) params.set("name", String(payload.name));
-          if (payload.service) params.set("service", String(payload.service));
-          const url = (data && data.redirectTo) || `/gracias?${params.toString()}`;
-
-          window.location.href = url;
-          return;
-        }
-
-        status.textContent = (data && data.error) || "Error al enviar";
-        status.className = "text-sm text-red-600";
-      } catch {
-        status.textContent = "Error de red";
-        status.className = "text-sm text-red-600";
-      } finally {
-        btn.removeAttribute("aria-busy");
-      }
-    });
-  </script>
 </Base>
