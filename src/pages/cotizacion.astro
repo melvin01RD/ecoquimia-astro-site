@@ -85,7 +85,15 @@ const honeypotName = "website";
           <Mail class="w-5 h-5" /> Solicitar cotización
         </h2>
 
-        <form id="quoteForm" name="quoteForm" class="stack-sm max-w-xl" method="post" action="/api/cotizacion" aria-labelledby="form-legend" novalidate>
+        <form
+          id="quoteForm"
+          name="quoteForm"
+          class="stack-sm max-w-xl"
+          method="post"
+          action="/api/cotizacion"
+          aria-labelledby="form-legend"
+          novalidate
+        >
           <fieldset class="grid gap-4">
             <legend id="form-legend" class="sr-only">Formulario de cotización</legend>
 
@@ -148,6 +156,7 @@ const honeypotName = "website";
 
   <Footer slot="footer" />
 
+  <!-- ÚNICO script -->
   <script is:inline>
     // Preseleccionar servicio desde ?service sin bloquear render
     requestAnimationFrame(() => {
@@ -161,7 +170,7 @@ const honeypotName = "website";
       }
     });
 
-    // Interceptar clics en categorías si ya estamos en /cotizacion (evita recarga)
+    // Click en tarjetas para seleccionar servicio sin recargar
     document.querySelectorAll('a[data-service]').forEach(a => {
       a.addEventListener('click', (e) => {
         if (location.pathname.endsWith('/cotizacion')) {
@@ -178,7 +187,7 @@ const honeypotName = "website";
       });
     });
 
-    // Submit (POST) — no bloquea el load
+    // Submit (POST) con fetch + redirección
     const form = document.getElementById("quoteForm");
     const status = document.getElementById("status");
     const btn = document.getElementById("submitBtn");
@@ -191,22 +200,31 @@ const honeypotName = "website";
       status.textContent = "Enviando...";
       status.className = "text-sm text-zinc-600";
 
-      const data = Object.fromEntries(new FormData(form));
+      const payload = Object.fromEntries(new FormData(form));
+
       try {
-        const r = await fetch("/api/cotizacion", {
+        const res = await fetch("/api/cotizacion", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify(payload),
         });
-        const j = await r.json().catch(() => ({}));
-        if (r.ok) {
-          status.textContent = j.message || "¡Gracias! Te contactaremos pronto.";
-          status.className = "text-sm text-emerald-600";
-          form.reset();
-        } else {
-          status.textContent = j.error || "Error al enviar";
-          status.className = "text-sm text-red-600";
+
+        let data = {};
+        try { data = await res.json(); } catch {}
+
+        if (res.ok) {
+          // Si el server envía URL, úsala; si no, la construimos con los valores del form
+          const params = new URLSearchParams();
+          if (payload.name) params.set("name", String(payload.name));
+          if (payload.service) params.set("service", String(payload.service));
+          const url = (data && data.redirectTo) || `/gracias?${params.toString()}`;
+
+          window.location.href = url;
+          return;
         }
+
+        status.textContent = (data && data.error) || "Error al enviar";
+        status.className = "text-sm text-red-600";
       } catch {
         status.textContent = "Error de red";
         status.className = "text-sm text-red-600";
