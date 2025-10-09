@@ -1,5 +1,5 @@
 ---
-import Base from "../layouts/Base.astro";
+import Base from "../../layouts/Base.astro";
 const waPhone = "18096172105";
 const waText = "Hola, quiero una cotización de control de plagas.";
 const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}`;
@@ -41,7 +41,17 @@ const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}`;
           <h2 class="text-lg font-semibold text-zinc-900">Envíanos un mensaje</h2>
           <p class="text-zinc-600 mt-1">Te responderemos lo antes posible.</p>
 
-          <form id="contact-form" class="mt-6 space-y-5" method="post" action="/api/contact">
+          <form
+            id="contact-form"
+            class="mt-6 space-y-5"
+            method="post"
+            action="/api/contact"
+            aria-describedby="contact-helper"
+          >
+            <div class="hidden" aria-hidden="true">
+              <label for="company">Empresa</label>
+              <input id="company" name="company" type="text" tabindex="-1" autocomplete="organization" />
+            </div>
             <div class="grid gap-4 md:grid-cols-2">
               <div>
                 <label class="label" for="name">Nombre y apellido</label>
@@ -69,31 +79,12 @@ const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}`;
               <button class="btn btn-primary" type="submit">Enviar mensaje</button>
               <a class="btn btn-outline" href={waLink} target="_blank" rel="noopener">WhatsApp</a>
             </div>
-
-            <p id="contact-toast" class="hidden mt-4 text-sm"></p>
+            <p id="contact-helper" class="text-xs text-zinc-500">
+              Serás redirigido a una página de confirmación al enviar el formulario.
+            </p>
           </form>
         </div>
       </div>
     </div>
   </section>
-
-  <script>
-    const form = document.getElementById('contact-form');
-    const toast = document.getElementById('contact-toast');
-
-    form?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = new FormData(form);
-      try {
-        const res = await fetch(form.action, { method: 'POST', body: data });
-        const ok = res.ok;
-        toast.className = ok ? 'mt-4 text-sm text-emerald-700' : 'mt-4 text-sm text-red-600';
-        toast.textContent = ok ? '¡Gracias! Recibimos tu mensaje.' : 'No se pudo enviar. Intenta de nuevo.';
-        if (ok) form.reset();
-      } catch {
-        toast.className = 'mt-4 text-sm text-red-600';
-        toast.textContent = 'Error de red. Intenta nuevamente.';
-      }
-    });
-  </script>
 </Base>

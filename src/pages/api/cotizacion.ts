@@ -6,10 +6,12 @@ import nodemailer from "nodemailer";
 export const prerender = false;
 
 // ====== Config correo (ajusta si quieres) ======
-const TO_EMAIL = process.env.TO_EMAIL || "destinatario@ejemplo.com";
+const TO_EMAIL =
+  process.env.TO_EMAIL ?? process.env.CONTACT_TO ?? "melvin01rd@gmail.com";
 const FROM_EMAIL =
   process.env.FROM_EMAIL ||
   `no-reply@${new URL(process.env.PUBLIC_SITE_URL || "http://localhost").hostname}`;
+const ORIGIN = process.env.PUBLIC_SITE_ORIGIN ?? "*";
 
 // ====== Validaciones ======
 const schema = z.object({
@@ -27,7 +29,7 @@ const schema = z.object({
 });
 
 // ====== Handler ======
-export const POST: APIRoute = async ({ request, redirect }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     const input = await parseBody(request);
     const data = schema.parse(input);
@@ -47,29 +49,29 @@ export const POST: APIRoute = async ({ request, redirect }) => {
 
     await sendMail({ to: TO_EMAIL, from: FROM_EMAIL, subject, text, html: toHtml(text) });
 
-    // Redirección vs JSON según el tipo de submit
-    const ct = request.headers.get("content-type") ?? "";
-    const accept = request.headers.get("accept") ?? "";
-    const isNativeForm = !ct.includes("application/json") && accept.includes("text/html");
-
     const params = new URLSearchParams();
-if (data.name) params.set("name", String(data.name));
-if (data.service) params.set("service", String(data.service));
+    if (data.name) params.set("name", String(data.name));
+    if (data.service) params.set("service", String(data.service));
+    const location = `/gracias${params.toString() ? `?${params.toString()}` : ""}`;
 
-// SIEMPRE JSON: el cliente decide navegar
-return json({
-  ok: true,
-  message: "¡Gracias! Te contactaremos pronto.",
-  redirectTo: `/gracias?${params.toString()}`,
-});
+    if (expectsHtmlRedirect(request)) {
+      return new Response(null, {
+        status: 303,
+        headers: {
+          Location: location,
+          "Access-Control-Allow-Origin": ORIGIN,
+        },
+      });
+    }
 
-
-    // Submit con fetch/AJAX -> JSON con URL de destino
-    return json({
-      ok: true,
-      message: "¡Gracias! Te contactaremos pronto.",
-      redirectTo: `/gracias?${params.toString()}`,
-    });
+    return json(
+      {
+        ok: true,
+        message: "¡Gracias! Te contactaremos pronto.",
+        redirectTo: location,
+      },
+      200,
+    );
   } catch (err: any) {
     const msg = err?.issues?.[0]?.message || err?.message || "Error";
     return json({ ok: false, error: msg }, 400);
@@ -80,7 +82,10 @@ return json({
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json; charset=utf-8" },
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": ORIGIN,
+    },
   });
 }
 
@@ -106,6 +111,14 @@ async function sendMail({
   text: string;
   html: string;
 }) {
+  if (process.env.RESEND_API_KEY) {
+    const { Resend } = await import("resend");
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const { error } = await resend.emails.send({ to, from, subject, text, html });
+    if (error) throw new Error(error.message || "Fallo al enviar con Resend");
+    return;
+  }
+
   const host = process.env.SMTP_HOST;
   const port = Number(process.env.SMTP_PORT || 587);
   const user = process.env.SMTP_USER;
@@ -135,4 +148,10 @@ function toHtml(text: string) {
 }
 function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
+function expectsHtmlRedirect(request: Request) {
+  const contentType = request.headers.get("content-type") ?? "";
+  const accept = request.headers.get("accept") ?? "";
+  return !contentType.includes("application/json") && accept.includes("text/html");
 }

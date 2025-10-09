@@ -5,7 +5,8 @@ import { z } from "zod";
 export const prerender = false;
 
 const ORIGIN = process.env.PUBLIC_SITE_ORIGIN ?? "*";
-const TO_EMAIL = process.env.CONTACT_TO ?? "contacto@ecoquimia.com";
+const TO_EMAIL =
+  process.env.CONTACT_TO ?? process.env.TO_EMAIL ?? "melvin01rd@gmail.com";
 const FROM_EMAIL =
   process.env.CONTACT_FROM ??
   `no-reply@${new URL(process.env.PUBLIC_SITE_URL || "http://localhost").hostname}`;
@@ -51,7 +52,22 @@ export const POST: APIRoute = async ({ request }) => {
 
     await sendMail({ to: TO_EMAIL, from: FROM_EMAIL, subject, text, html: toHtml(text) });
 
-    return json({ ok: true, message: "¡Mensaje enviado! Te responderemos pronto." }, 200);
+    const params = new URLSearchParams();
+    if (data.name) params.set("name", data.name);
+    if (data.subject) params.set("subject", data.subject);
+    const location = `/contact/gracias${params.toString() ? `?${params.toString()}` : ""}`;
+
+    if (expectsHtmlRedirect(request)) {
+      return new Response(null, {
+        status: 303,
+        headers: {
+          Location: location,
+          "Access-Control-Allow-Origin": ORIGIN,
+        },
+      });
+    }
+
+    return json({ ok: true, message: "¡Mensaje enviado! Te responderemos pronto.", redirectTo: location }, 200);
   } catch (err: any) {
     const msg = err?.issues?.[0]?.message || err?.message || "Error";
     return json({ ok: false, error: msg }, 400);
@@ -86,6 +102,12 @@ function toHtml(text: string) {
 }
 function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
+function expectsHtmlRedirect(request: Request) {
+  const contentType = request.headers.get("content-type") ?? "";
+  const accept = request.headers.get("accept") ?? "";
+  return !contentType.includes("application/json") && accept.includes("text/html");
 }
 
 async function sendMail({

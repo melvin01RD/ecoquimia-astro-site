@@ -1,0 +1,101 @@
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { CheckCircle2, Mail, PhoneCall, ArrowLeft } from "@lucide/astro";
+
+export const prerender = true;
+
+const url = new URL(Astro.request.url);
+const name = url.searchParams.get("name") ?? "";
+const subject = url.searchParams.get("subject") ?? "";
+
+const WHATSAPP_NUMBER = "18096172105";
+const MAIL_TO = "contacto@ecoquimia.com";
+
+const headline = `Tu mensaje ha sido enviado${name ? `, ${name}` : ""}.`;
+const sub = subject
+  ? `Gracias por escribirnos acerca de “${subject}”. Un miembro del equipo se pondrá en contacto contigo en menos de un día laborable.`
+  : "Gracias por escribirnos. Nuestro equipo se pondrá en contacto contigo en menos de un día laborable.";
+
+const whatsappMessage = `Hola Ecoquimia, acabo de enviar un mensaje${
+  name ? ` a nombre de ${name}` : ""
+}${subject ? ` sobre ${subject}` : ""}.`;
+const mailSubject = `Seguimiento de contacto${subject ? `: ${subject}` : ""}`;
+const mailBody = `Hola Ecoquimia,\n\nEnvié un mensaje${subject ? ` sobre ${subject}` : ""}.${
+  name ? `\nNombre: ${name}` : ""
+}\n\nGracias.`;
+---
+
+<Base title="Gracias por contactarnos — Ecoquimia" description="Confirmación de contacto">
+  <Header slot="header" />
+
+  <section class="relative overflow-hidden pt-16 md:pt-20">
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(70%_70%_at_50%_0%,rgba(16,185,129,.14),rgba(255,255,255,0))]"></div>
+
+    <div class="container-max px-4 py-10 md:py-14">
+      <div class="mx-auto max-w-3xl">
+        <div class="rounded-app border bg-white/90 backdrop-blur p-6 md:p-8 shadow-sm">
+          <div class="flex items-start gap-4">
+            <div class="shrink-0 rounded-full bg-emerald-100 p-2">
+              <CheckCircle2 class="h-7 w-7 text-emerald-600" />
+            </div>
+            <div>
+              <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-900">
+                {headline}
+              </h1>
+              <p class="mt-2 text-zinc-600">
+                {sub}
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-xl border bg-zinc-50 p-5">
+            <h2 class="mb-2 text-lg font-semibold text-zinc-900">¿Qué sigue?</h2>
+            <ul class="list-disc space-y-1 pl-6 text-zinc-700">
+              <li>Revisa tu bandeja de entrada y la carpeta de spam.</li>
+              <li>Agrega a Ecoquimia a tus contactos para asegurar la recepción.</li>
+              <li>Prepárate con detalles como fotos, horarios y la ubicación del servicio.</li>
+            </ul>
+          </div>
+
+          <div class="mt-6 flex flex-col sm:flex-row gap-3">
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`}
+              class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+              <PhoneCall class="h-5 w-5" />
+              Continuar por WhatsApp
+            </a>
+
+            <a
+              href={`mailto:${MAIL_TO}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`}
+              class="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-zinc-800 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+              <Mail class="h-5 w-5" />
+              Escribir un correo
+            </a>
+
+            <a
+              href="/"
+              class="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-zinc-800 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 sm:ml-auto"
+            >
+              <ArrowLeft class="h-5 w-5" />
+              Volver al inicio
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+
+  <script is:inline>
+    (window as any).dataLayer = (window as any).dataLayer || [];
+    (window as any).dataLayer.push({
+      event: "contact_submitted",
+      subject: new URLSearchParams(location.search).get("subject") || "",
+    });
+  </script>
+</Base>
