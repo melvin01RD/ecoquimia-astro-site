@@ -4,7 +4,7 @@ const year = new Date().getFullYear();
 
 <footer class="mt-16 bg-zinc-950 relative isolate overflow-hidden text-zinc-200">
   <!-- Capa suave (menos oscura para no “apagar” el texto) -->
-  <div class="absolute inset-0 bg-gradient-to-b from-zinc-900/30 via-zinc-900/60 to-zinc-950" aria-hidden="true"></div>
+  <div class="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-zinc-900/30 via-zinc-900/60 to-zinc-950" aria-hidden="true"></div>
 
   <div class="container-max relative z-10 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
     <!-- Marca -->
@@ -71,12 +71,6 @@ const year = new Date().getFullYear();
 </footer>
 
 <style is:global>
-  /* Links del footer: buen contraste + foco accesible */
-  .footer-link {
-    @apply text-zinc-100 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500;
-  }
   /* Si tu logo es oscuro, lo invertimos (solo para PNG/SVG simples) */
-  .logo-invert {
-    filter: brightness(0) invert(1);
-  }
+  .logo-invert { filter: brightness(0) invert(1); }
 </style>
