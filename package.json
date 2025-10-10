@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "description": "Landing de Ecoquimia con Astro + Tailwind",
   "engines": {
     "node": "22.x"
   },
@@ -11,16 +12,20 @@
     "build": "astro build",
     "preview": "astro preview",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "check:astro": "astro check",
     "lint:html": "astro build && html-validate \"dist/**/*.html\"",
     "check": "npm run check:astro && npm run build && npm run lint:html",
+    "clean": "rimraf dist .astro",
     "deploy": "vercel --prod",
     "deploy:prebuilt": "vercel deploy --prod --prebuilt",
     "predeploy": "npm run check",
     "predeploy:prebuilt": "npm run check",
-    "clean": "rimraf dist .astro"
-  },
-  "dependencies": {
+    "logo:gen": "node tools/resize-logo.mjs",
+    "logo:from": "cross-env LOGO_SRC=public/logo/ecoq-logo@2x-transparent.png LOGO_OUT_2X=public/logo/ecoq-logo@2x-transparent-64h.png LOGO_OUT_1X=public/logo/ecoq-logo@1x-transparent-32h.png node tools/resize-logo.mjs"
+}
+,
+"dependencies": {
     "@astrojs/check": "^0.9.4",
     "nodemailer": "^7.0.6",
     "resend": "^6.1.0",
@@ -35,12 +40,14 @@
     "@types/nodemailer": "^7.0.1",
     "astro": "^5.14.1",
     "autoprefixer": "^10.4.19",
+    "cross-env": "^10.1.0",
     "html-validate": "^10.0.0",
     "postcss": "^8.4.40",
     "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "sharp": "^0.33.5",
+    "sharp-cli": "^5.2.0",
     "tailwindcss": "^3.4.10",
-    "typescript": "^5.9.2",
-    "rimraf": "^6.0.1"
-  },
-  "description": "Landing de Ecoquimia con Astro + Tailwind"
+    "typescript": "^5.9.2"
+  }
 }

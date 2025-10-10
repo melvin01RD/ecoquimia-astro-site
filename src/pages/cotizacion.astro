@@ -4,96 +4,61 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 export const prerender = true;
 
-import {
-  Grid2x2, Mail, User, AtSign, ListFilter, Hash,
-  Building2, Bed, Building, Utensils, Car,
-  Landmark, Factory, School, ShoppingBag, Hammer, Wrench, House
-} from "@lucide/astro";
+import { Grid2x2, Mail, User, AtSign, ListFilter, Hash } from "@lucide/astro";
+import { services, getServiceOptions } from "../data/services";
 
-import categoriesDefault, { categories as categoriesNamed } from "../data/categories";
-
-const CATEGORIES: readonly string[] = (categoriesNamed ?? categoriesDefault ?? []);
-
-// Mapea iconos por categoría (solo los que usamos)
-const icons: Record<string, any> = {
-  "Apartamentos": Building2,
-  "Casas": House,
-  "Hoteles": Bed ?? Building2,
-  "Oficinas": Building,
-  "Restaurantes": Utensils,
-  "Vehículos": Car,
-  "Área Común": Landmark,
-  "Industria Farmacéutica": Factory,
-  "Colegios": School,
-  "Plazas Comerciales": ShoppingBag,
-  "Edificios Empresariales": Building2,
-  "Cimientos de Construcción": Hammer ?? Wrench ?? Building2,
-};
-
-// Honeypot estable (no depende de headers ni nada servidor)
+const options = getServiceOptions();
 const honeypotName = "website";
 ---
 
-<Base title="Cotización — Ecoquimia" description="Solicita tu cotización de control de plagas. Respuesta rápida.">
+<Base title="Cotización — Ecoquimia" description="Solicita tu cotización de control de plagas.">
   <Header slot="header" />
 
-  <!-- Hero compacto -->
+  <!-- Hero -->
   <section class="relative overflow-hidden pt-16 md:pt-20">
     <div class="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(16,185,129,.15),rgba(255,255,255,0))]"></div>
     <div class="container-max py-8 md:py-12 text-center">
       <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Cotiza tu necesidad</h1>
-      <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">Selecciona una categoría o completa el formulario. Respuesta en horas laborales.</p>
+      <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">Elige un tipo de servicio y completa el formulario. Respuesta en horas laborales.</p>
     </div>
   </section>
 
-  <!-- Contenido principal -->
   <section class="section-pad">
     <div class="container-max grid gap-6 md:gap-8 lg:grid-cols-2">
-      <!-- Categorías -->
+      <!-- Tipos de servicio (cards) -->
       <div class="surface rounded-app p-5 md:p-6">
         <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
-          <Grid2x2 class="w-5 h-5" /> Categorías
+          <Grid2x2 class="w-5 h-5" /> Tipos de servicio
         </h2>
 
-        {CATEGORIES.length === 0 ? (
-          <div class="text-sm text-red-600">
-            No hay categorías configuradas. Revisa <code>src/data/categories.*</code>.
-          </div>
-        ) : (
-          <div class="auto-grid-sm md:auto-grid">
-            {CATEGORIES.map((c) => {
-              const IconComp = icons[c] ?? Building2;
-              return (
-                <a
-                  href={`/cotizacion?service=${encodeURIComponent(c)}#quoteForm`}
-                  data-astro-prefetch
-                  data-service={c}
-                  class="tile-light flex items-center gap-3 no-underline hover:no-underline"
-                >
-                  <IconComp class="w-6 h-6 md:w-7 md:h-7 text-brand" />
-                  <span class="text-sm md:text-base font-medium">{c}</span>
-                </a>
-              );
-            })}
-          </div>
-        )}
+        <div class="grid gap-3 sm:grid-cols-2">
+          {services.map((s) => (
+            <a
+              href={`/cotizacion?service=${s.slug}#quoteForm`}
+              data-astro-prefetch
+              data-service={s.slug}
+              class="tile-light no-underline hover:no-underline flex items-start gap-3"
+            >
+              <span class="text-xl">{s.emoji}</span>
+              <div class="flex-1">
+                <div class="font-medium">{s.title}</div>
+                <div class="text-xs text-zinc-500 line-clamp-2">{s.description}</div>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
 
-      <!-- Formulario -->
-      <div class="surface rounded-app p-5 md:p-6">
+      <!-- Formulario (oculto inicialmente) -->
+      <div id="formCard"
+           class="surface rounded-app p-5 md:p-6 transition-opacity duration-200 opacity-0 pointer-events-none"
+           aria-hidden="true" inert>
         <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
           <Mail class="w-5 h-5" /> Solicitar cotización
         </h2>
 
-        <form
-          id="quoteForm"
-          name="quoteForm"
-          class="stack-sm max-w-xl"
-          method="post"
-          action="/api/cotizacion"
-          aria-labelledby="form-legend"
-          novalidate
-        >
+        <form id="quoteForm" name="quoteForm" class="stack-sm max-w-xl"
+              method="post" action="/api/cotizacion" aria-labelledby="form-legend" novalidate>
           <fieldset class="grid gap-4">
             <legend id="form-legend" class="sr-only">Formulario de cotización</legend>
 
@@ -125,7 +90,7 @@ const honeypotName = "website";
                 <ListFilter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
                 <select id="serviceSelect" name="service" required class="select pl-9">
                   <option value="">Seleccione tipo de servicio</option>
-                  {CATEGORIES.map((c) => <option value={c}>{c}</option>)}
+                  {options.map(o => <option value={o.value}>{o.label}</option>)}
                 </select>
               </div>
               <p class="help">También puedes elegir desde las tarjetas de la izquierda.</p>
@@ -156,47 +121,65 @@ const honeypotName = "website";
 
   <Footer slot="footer" />
 
-  <!-- ÚNICO script -->
+  <!-- Lógica UI -->
   <script is:inline>
-    // Preseleccionar servicio desde ?service sin bloquear render
-    requestAnimationFrame(() => {
-      const select = document.getElementById("serviceSelect");
+    const qs = (s, r=document) => r.querySelector(s);
+    const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+    const formCard = qs("#formCard");
+    const form = qs("#quoteForm");
+    const select = qs("#serviceSelect");
+    const status = qs("#status");
+    const btn = qs("#submitBtn");
+
+    function showForm() {
+      if (!formCard) return;
+      formCard.classList.remove("opacity-0","pointer-events-none");
+      formCard.removeAttribute("aria-hidden");
+      formCard.removeAttribute("inert");
+      qs("#name")?.focus({ preventScroll: true });
+    }
+
+    function preselectFromURL() {
       const params = new URLSearchParams(window.location.search);
       const s = params.get("service");
       if (s && select) {
-        const opts = Array.from(select.options);
-        const match = opts.find(o => o.value.toLowerCase() === s.toLowerCase());
-        if (match) select.value = match.value;
+        const match = Array.from(select.options).find(o => o.value === s);
+        if (match) {
+          select.value = s;
+          showForm();
+          document.getElementById("quoteForm")?.scrollIntoView({ behavior:"smooth", block:"start" });
+        }
       }
-    });
+    }
 
-    // Click en tarjetas para seleccionar servicio sin recargar
-    document.querySelectorAll('a[data-service]').forEach(a => {
+    // Click en tarjetas
+    qsa('a[data-service]').forEach(a => {
       a.addEventListener('click', (e) => {
         if (location.pathname.endsWith('/cotizacion')) {
           e.preventDefault();
           const s = a.getAttribute('data-service');
-          const select = document.getElementById("serviceSelect");
           if (select && s) {
             select.value = s;
-            select.dispatchEvent(new Event('change', { bubbles: true }));
-            document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showForm();
             history.replaceState(null, '', `/cotizacion?service=${encodeURIComponent(s)}#quoteForm`);
+            document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         }
       });
     });
 
-    // Submit (POST) con fetch + redirección
-    const form = document.getElementById("quoteForm");
-    const status = document.getElementById("status");
-    const btn = document.getElementById("submitBtn");
+    // Cambio manual en el select
+    select?.addEventListener('change', () => { if (select.value) showForm(); });
 
+    requestAnimationFrame(preselectFromURL);
+
+    // Submit con fetch
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!status || !btn) return;
 
-      btn.setAttribute("aria-busy", "true");
+      btn.setAttribute("aria-busy","true");
       status.textContent = "Enviando...";
       status.className = "text-sm text-zinc-600";
 
@@ -213,14 +196,11 @@ const honeypotName = "website";
         try { data = await res.json(); } catch {}
 
         if (res.ok) {
-          // Si el server envía URL, úsala; si no, la construimos con los valores del form
           const params = new URLSearchParams();
           if (payload.name) params.set("name", String(payload.name));
           if (payload.service) params.set("service", String(payload.service));
           const url = (data && data.redirectTo) || `/gracias?${params.toString()}`;
-
-          window.location.href = url;
-          return;
+          window.location.href = url; return;
         }
 
         status.textContent = (data && data.error) || "Error al enviar";

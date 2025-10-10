@@ -6,23 +6,39 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  /** Útil para entornos de preview */
+  noIndex?: boolean;
 }
-const { title = "Ecoquimia", description = "Control de plagas en RD" } = Astro.props as Props;
+
+const {
+  title = "Ecoquimia",
+  description = "Control de plagas en RD",
+  noIndex = false,
+} = Astro.props as Props;
 
 const hasHeader = Astro.slots.has("header");
 const hasFooter = Astro.slots.has("footer");
 ---
+
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Íconos / assets (moverlos aquí, NO fuera del HTML) -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/ecoquimia.svg" as="image" />
+
     <title>{title}</title>
   </head>
   <body class="page-light">
     {hasHeader ? <slot name="header" /> : <Header />}
-    <main><slot /></main>
+    <main class="min-h-screen">
+      <slot />
+    </main>
     {hasFooter ? <slot name="footer" /> : <Footer />}
   </body>
 </html>

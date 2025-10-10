@@ -6,6 +6,15 @@
 /* =========================
    Variables y bases globales
    ========================= */
+
+@layer base {
+  footer { @apply text-white; }
+  footer :where(h1,h2,h3,h4){ @apply text-white; }
+  footer :where(p, li, span, small){ color: rgba(255,255,255,.85) !important; }
+  footer a{ @apply text-white/80 hover:text-white; }
+}
+
+
 @layer base {
   :root {
     /* Radios / elevación */
@@ -22,6 +31,14 @@
 
     /* Esquema de color por defecto (mejor integración nativa) */
     color-scheme: light;
+
+    /* ===== Alto real del header (ajústalo si cambias el tamaño) ===== */
+    --header-h-mobile: 5rem;   /* = h-20 (80px) */
+    --header-h-desktop: 5rem;  /* si tu header en desktop es mayor, sube aquí */
+  }
+
+  @media (min-width: 768px) {
+    :root { --header-h-desktop: 5rem; }
   }
 
   html {
@@ -30,24 +47,16 @@
   }
 
   body {
-    /* Por defecto: sitio claro */
+    /* Por defecto: sitio claro (coincide con tu Base.astro actual) */
     @apply antialiased bg-white text-zinc-900;
     background-image: none;
     overflow-x: hidden; /* evita scroll lateral en mobile */
   }
 
   /* ====== Tema oscuro opcional por clase ====== */
-  .theme-dark {
-    @apply bg-zinc-950 text-white;
-    color-scheme: dark;
-  }
-  .theme-dark,
-  .theme-dark :where(p, li, span, small) {
-    @apply text-white/90;
-  }
-  .theme-dark :where(h1, h2, h3, h4) {
-    @apply text-white font-semibold tracking-tight;
-  }
+  .theme-dark { @apply bg-zinc-950 text-white; color-scheme: dark; }
+  .theme-dark, .theme-dark :where(p, li, span, small) { @apply text-white/90; }
+  .theme-dark :where(h1, h2, h3, h4) { @apply text-white font-semibold tracking-tight; }
 
   /* Encabezados (mejor lectura cross-devices) */
   :where(h1) { @apply text-3xl md:text-4xl font-semibold leading-tight; }
@@ -68,29 +77,29 @@
   }
 
   /* Tap highlight sutil (móvil) */
-  :where(a, button) {
-    -webkit-tap-highlight-color: rgba(var(--ring-r), var(--ring-g), var(--ring-b), 0.2);
-  }
+  :where(a, button) { -webkit-tap-highlight-color: rgba(var(--ring-r), var(--ring-g), var(--ring-b), 0.2); }
 
   /* Scrollbar sutil (WebKit) */
   *::-webkit-scrollbar { width: 10px; height: 10px; }
-  *::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.15);
-    border-radius: 999px;
-  }
-  .theme-dark *::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.15);
-  }
+  *::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 999px; }
+  .theme-dark *::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
   *::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
   .theme-dark *::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
   @media (prefers-reduced-motion: reduce) {
-    * {
-      animation-duration: 0.001ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.001ms !important;
-      scroll-behavior: auto !important;
-    }
+    * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  }
+
+  /* ===== Altura mínima de la vista descontando el header ===== */
+  main { min-height: calc(100svh - var(--header-h-mobile)); }
+  @media (min-width: 768px) {
+    main { min-height: calc(100svh - var(--header-h-desktop)); }
+  }
+
+  /* ===== Offset para anclas/sections: que no las tape el header sticky ===== */
+  [id], [data-anchor], section, h1, h2, h3, h4 { scroll-margin-top: var(--header-h-mobile); }
+  @media (min-width: 768px) {
+    [id], [data-anchor], section, h1, h2, h3, h4 { scroll-margin-top: var(--header-h-desktop); }
   }
 }
 
@@ -100,31 +109,16 @@
 @layer components {
   /* Container */
   .container-max { @apply max-w-6xl mx-auto px-4; }
-  @media (max-width: 480px) {
-    .container-max { @apply px-4; }
-  }
+  @media (max-width: 480px) { .container-max { @apply px-4; } }
 
   /* Header sólido (requiere class="site-header" en <header>) */
-  .site-header {
-    background-color: #000 !important;
-    backdrop-filter: none !important; /* elimina blur si estaba */
-  }
+  .site-header { background-color: #000 !important; backdrop-filter: none !important; }
   .site-header, .site-header * { color: #fff; }
 
-  /* Enlaces del header por encima de los genéricos */
-  .site-header .nav-link { @apply text-white/80 hover:text-white; }
-  .site-header .nav-link.is-active { @apply text-white font-semibold; }
-  /* Evita subrayado en CTA del header */
-  .site-header .btn { text-decoration: none !important; }
-
-  /* Enlaces con subrayado solo al hover */
+  /* Enlaces con (des)subrayado */
   a { text-underline-offset: 2px; }
   a:hover { text-decoration: underline; }
-  /* Excepciones (CTA y tiles sin subrayado en hover) */
-  a.btn:hover,
-  .btn:hover,
-  .tile-light:hover,
-  a.no-underline:hover { text-decoration: none; }
+  a.btn:hover, .btn:hover, .tile-light:hover, a.no-underline:hover { text-decoration: none; }
 
   /* Botones base */
   .btn {
@@ -133,23 +127,13 @@
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500;
     @apply disabled:opacity-50 disabled:pointer-events-none;
     transform: translateZ(0);
-    white-space: nowrap; /* evita quiebres feos en mobile */
+    white-space: nowrap;
   }
-  .btn-primary {
-    @apply bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.98] shadow-sm shadow-black/10;
-  }
-  .btn-secondary {
-    @apply bg-zinc-900 text-white hover:bg-black active:scale-[0.98] border border-black/10;
-  }
-  .theme-dark .btn-secondary {
-    @apply bg-white/10 text-white hover:bg-white/20 border border-white/10 backdrop-blur-sm;
-  }
-  .btn-outline {
-    @apply border border-zinc-300 text-zinc-900 hover:bg-zinc-900 hover:text-white active:scale-[0.98];
-  }
-  .theme-dark .btn-outline {
-    @apply border-white/60 text-white hover:bg-white hover:text-black;
-  }
+  .btn-primary { @apply bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.98] shadow-sm shadow-black/10; }
+  .btn-secondary { @apply bg-zinc-900 text-white hover:bg-black active:scale-[0.98] border border-black/10; }
+  .theme-dark .btn-secondary { @apply bg-white/10 text-white hover:bg-white/20 border border-white/10 backdrop-blur-sm; }
+  .btn-outline { @apply border border-zinc-300 text-zinc-900 hover:bg-zinc-900 hover:text-white active:scale-[0.98]; }
+  .theme-dark .btn-outline { @apply border-white/60 text-white hover:bg-white hover:text-black; }
   .btn-ghost { @apply text-zinc-700 hover:text-zinc-900; }
   .theme-dark .btn-ghost { @apply text-white/70 hover:text-white hover:bg-white/10; }
   .btn-block { @apply w-full md:w-auto; } /* mobile-friendly */
@@ -165,89 +149,58 @@
   .theme-dark .btn[aria-busy="true"]::after {
     background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
   }
-  @keyframes btnShimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
+  @keyframes btnShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-  /* Tarjetas */
-  .card {
-    @apply rounded-3xl shadow-sm border border-zinc-200 bg-white text-zinc-900;
-  }
-  .theme-dark .card {
-    @apply border-white/10 bg-white/5 text-white backdrop-blur-md;
-  }
+  /* Tarjetas / superficies */
+  .card { @apply rounded-3xl shadow-sm border border-zinc-200 bg-white text-zinc-900; }
+  .theme-dark .card { @apply border-white/10 bg-white/5 text-white backdrop-blur-md; }
   .card-hover { @apply transition hover:-translate-y-0.5 hover:shadow-md; }
 
-  /* Superficie sólida (secciones claras) */
-  .surface {
-    @apply rounded-3xl border border-zinc-200 bg-white text-zinc-900;
-  }
-  .theme-dark .surface {
-    @apply border-white/10 bg-zinc-900/70 text-white backdrop-blur-sm;
-  }
-
-  /* ---------- OVERRIDES dentro de .surface ---------- */
+  .surface { @apply rounded-3xl border border-zinc-200 bg-white text-zinc-900; }
+  .theme-dark .surface { @apply border-white/10 bg-zinc-900/70 text-white backdrop-blur-sm; }
   .surface :where(h1, h2, h3, h4) { @apply text-zinc-900; }
   .surface :where(p, li, span, small) { @apply text-zinc-800; }
   .surface .label { @apply text-zinc-700; }
   .surface .help { @apply text-zinc-500; }
 
-  .surface .input,
-  .surface .select,
-  .surface .textarea {
+  .surface .input, .surface .select, .surface .textarea {
     @apply bg-white text-zinc-900 placeholder-zinc-400 border border-zinc-300;
   }
-  .surface .input:focus,
-  .surface .select:focus,
-  .surface .textarea:focus {
+  .surface .input:focus, .surface .select:focus, .surface .textarea:focus {
     @apply ring-emerald-500 border-emerald-500;
   }
 
-  /* Tiles claras para listas (categorías) dentro de .surface */
-  .tile-light {
-    @apply rounded-[var(--radius)] p-4 border border-zinc-200 bg-white text-zinc-900
-           hover:bg-zinc-50 transition card-hover no-underline;
-  }
+  /* Tiles claras */
+  .tile-light { @apply rounded-[var(--radius)] p-4 border border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50 transition card-hover no-underline; }
 
-  /* Inputs globales (tema claro por defecto) */
+  /* Inputs globales */
   .field { @apply space-y-2; }
   .label { @apply text-sm font-medium text-zinc-700; }
-  .input,
-  .select,
-  .textarea {
+  .input, .select, .textarea {
     @apply w-full rounded-xl px-3.5 py-2.5 bg-white text-zinc-900 placeholder-zinc-400
            border border-zinc-300 shadow-sm transition;
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-transparent;
   }
-  .input[disabled],
-  .select[disabled],
-  .textarea[disabled] { @apply opacity-60 cursor-not-allowed; }
+  .input[disabled], .select[disabled], .textarea[disabled] { @apply opacity-60 cursor-not-allowed; }
 
   /* Divisor */
   .divider { @apply h-px w-full bg-zinc-200; }
   .theme-dark .divider { @apply bg-white/10; }
 
   /* Badge */
-  .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium
-           border border-zinc-200 bg-zinc-50 text-zinc-700;
-  }
-  .theme-dark .badge {
-    @apply border-white/15 bg-white/5 text-white;
-  }
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium border border-zinc-200 bg-zinc-50 text-zinc-700; }
+  .theme-dark .badge { @apply border-white/15 bg-white/5 text-white; }
 
-  /* Nav links genéricos */
+  /* Nav links */
   .nav-link { @apply text-sm text-zinc-700 hover:text-zinc-900 transition; }
   .nav-link.is-active { @apply text-zinc-900 font-semibold; }
   .theme-dark .nav-link { @apply text-white/70 hover:text-white; }
   .theme-dark .nav-link.is-active { @apply text-white font-semibold; }
 
-  /* Enlaces del footer: alto contraste + foco accesible */
-  .footer-link {
-    @apply text-zinc-100 hover:text-white underline-offset-4 hover:underline
-           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500;
-  }
+  /* Fuerza menú del header en blanco (por encima de .nav-link por defecto) */
+  .site-header .nav-link { @apply text-white/80 hover:text-white; }
+  .site-header .nav-link.is-active { @apply text-white font-semibold; }
+  .site-header .btn { text-decoration: none !important; }
 }
 
 /* =========================
@@ -263,7 +216,6 @@
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
     gap: 1rem;
   }
-  /* Variante más compacta para móviles angostos */
   .auto-grid-sm {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
@@ -280,7 +232,7 @@
   .rounded-app { border-radius: var(--radius); }
 
   /* Helpers mobile */
-  .stack-sm { @apply space-y-3 md:space-y-4; } /* pilas verticales */
+  .stack-sm { @apply space-y-3 md:space-y-4; }
   .hide-on-mobile { @apply hidden sm:block; }
   .only-mobile { @apply sm:hidden; }
 
@@ -290,8 +242,40 @@
 
   /* Media cover */
   .media-cover { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Utilidad para logos en fondos oscuros */
+  .logo-invert { filter: brightness(0) invert(1); }
 }
-picture > img { max-width: 100%; height: auto; display: block; }
+
+/* =========================
+   Ajustes MOBILE (<= 640px)
+   ========================= */
+@media (max-width: 640px) {
+  /* Header RESPIRA */
+  .site-header .container-max {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    min-height: var(--header-h-mobile);
+    height: auto;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  /* El logo no se encoge */
+  .site-header a[aria-label="Inicio"] { flex-shrink: 0; }
+  .site-header a[aria-label="Inicio"] img { height: 64px; max-height: 64px; width: auto; }
+
+  /* Nav desplazable si no cabe */
+  .site-header nav {
+    display: flex; align-items: center; gap: 0.5rem !important;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-behavior: smooth;
+    flex-wrap: nowrap; flex: 1 1 auto; justify-content: flex-end; padding-bottom: 0.25rem;
+  }
+  .site-header nav::-webkit-scrollbar { display: none; }
+  .site-header nav { scrollbar-width: none; }
+
+  .site-header .nav-link { font-size: 0.9rem !important; padding: 0.5rem 0.25rem; white-space: nowrap; }
+  .site-header .btn { padding: 0.5rem 0.75rem !important; border-radius: 9999px; font-size: 0.9rem !important; line-height: 1rem; flex-shrink: 0; }
+}
 
 /* ====== Variación “page-light” (si una vista debe forzarse clara) ====== */
 @layer base {
@@ -301,195 +285,31 @@ picture > img { max-width: 100%; height: auto; display: block; }
     @apply text-zinc-900;
     color-scheme: light;
   }
-  body.page-light :where(p, li, span, small) { @apply text-zinc-900; }
-  body.page-light :where(h1, h2, h3, h4) { @apply text-zinc-900; }
+  /* ANTES aplicaba a todo el documento; AHORA solo dentro de <main> */
+  body.page-light main :where(p, li, span, small) { @apply text-zinc-900; }
+  body.page-light main :where(h1, h2, h3, h4) { @apply text-zinc-900; }
 }
 
 /* =========================
    Estados de formularios / a11y extra
    ========================= */
-
-/* Estados de validez (no molestan hasta que el campo recibe foco) */
-.input:focus-visible:invalid,
-.select:focus-visible:invalid,
-.textarea:focus-visible:invalid {
-  @apply border-red-500 ring-2 ring-red-500;
+.input:focus-visible:invalid, .select:focus-visible:invalid, .textarea:focus-visible:invalid { @apply border-red-500 ring-2 ring-red-500; }
+.input:focus-visible:valid,   .select:focus-visible:valid,   .textarea:focus-visible:valid   { @apply border-emerald-500 ring-2 ring-emerald-500; }
+.input:focus-visible, .select:focus-visible, .textarea:focus-visible {
+  outline: none; box-shadow: 0 0 0 2px rgba(var(--ring-r), var(--ring-g), var(--ring-b), 0.35);
 }
 
-.input:focus-visible:valid,
-.select:focus-visible:valid,
-.textarea:focus-visible:valid {
-  @apply border-emerald-500 ring-2 ring-emerald-500;
-}
+/* Autofill (Chrome/Safari) */
+.input:-webkit-autofill, .select:-webkit-autofill, .textarea:-webkit-autofill { -webkit-text-fill-color: #18181b; transition: background-color 5000s ease-in-out 0s; }
+.theme-dark .input:-webkit-autofill, .theme-dark .select:-webkit-autofill, .theme-dark .textarea:-webkit-autofill { -webkit-text-fill-color: #fff; }
 
-/* Mejor feedback de focus */
-.input:focus-visible,
-.select:focus-visible,
-.textarea:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(var(--ring-r), var(--ring-g), var(--ring-b), 0.35);
-}
 
-/* Autofill (Chrome/Safari) — respeta colores de tema claro/oscuro */
-.input:-webkit-autofill,
-.select:-webkit-autofill,
-.textarea:-webkit-autofill {
-  -webkit-text-fill-color: #18181b;
-  transition: background-color 5000s ease-in-out 0s;
-}
-.theme-dark .input:-webkit-autofill,
-.theme-dark .select:-webkit-autofill,
-.theme-dark .textarea:-webkit-autofill {
-  -webkit-text-fill-color: #fff;
-}
-
-/* ==== Ajustes UI para página de Contacto ==== */
-@layer components {
-  /* Tarjetas laterales y del formulario */
-  .info-card { @apply card p-6 md:p-8; }
-  .form-card { @apply card p-6 md:p-8; }
-
-  /* Labels más legibles y consistentes */
-  .label { @apply block mb-1; }
-
-  /* Área de texto con altura mínima y resize vertical */
-  .textarea { @apply min-h-[140px] resize-y; }
-}
-
-/* ==== Soporte layout Base/Header (actualizado) ==== */
-@layer base {
-  /* Altura mínima de la vista descontando el header (h-16 = 4rem) */
-  main { min-height: calc(100svh - 4rem); }
-}
-
-@layer components {
-  /* Fuerza menú del header en blanco (por encima de .nav-link por defecto) */
-  .site-header .nav-link { @apply text-white/80 hover:text-white; }
-  .site-header .nav-link.is-active { @apply text-white font-semibold; }
-  /* Evita subrayado en CTA del header */
-  .site-header .btn { text-decoration: none !important; }
-}
-
-/* =========================
-   Ajustes MOBILE (<= 640px)
-   ========================= */
 @media (max-width: 640px) {
-  /* ---------- HEADER ---------- */
-  .site-header .container-max {
-    /* reduce padding lateral y asegura altura */
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-    height: 4rem;
+  .site-header nav{
+    display:flex; align-items:center; gap:.5rem!important;
+    overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-behavior:smooth;
+    flex-wrap:nowrap; flex:1 1 auto; justify-content:flex-end; padding-bottom:.25rem;
   }
-
-  .site-header nav {
-    /* evita que se rompa: scroll horizontal suave */
-    display: flex;
-    align-items: center;
-    gap: 0.5rem !important;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    padding-bottom: 0.25rem; /* para no tapar con la barra del SO */
-    flex-wrap: nowrap;       /* que no salte a otra línea */
-  }
-  .site-header nav::-webkit-scrollbar { display: none; } /* oculta scrollbar iOS */
-  .site-header nav { scrollbar-width: none; }            /* oculta scrollbar Firefox */
-
-  .site-header .nav-link {
-    /* compáctalas un poco y mejora área de toque */
-    font-size: 0.9rem !important;
-    padding: 0.5rem 0.25rem;
-    white-space: nowrap; /* no partir palabras */
-  }
-
-  /* WhatsApp del header más compacto en mobile */
-  .site-header .btn {
-    padding: 0.5rem 0.75rem !important;
-    border-radius: 9999px;
-    font-size: 0.9rem !important;
-    line-height: 1rem;
-  }
-
-  /* Evita saltos por tipografías grandes */
-  :where(h1) { font-size: 1.875rem !important; line-height: 1.2; }   /* ~30px */
-  :where(h2) { font-size: 1.5rem !important; line-height: 1.25; }    /* ~24px */
-  :where(h3) { font-size: 1.25rem !important; line-height: 1.3; }    /* ~20px */
+  .site-header nav::-webkit-scrollbar{ display:none; }
+  .site-header nav{ scrollbar-width:none; }
 }
-
-/* Afinado extra para móviles muy angostos (<= 360px) */
-@media (max-width: 360px) {
-  .site-header .nav-link { font-size: 0.85rem !important; }
-  .site-header .btn { font-size: 0.85rem !important; padding-inline: 0.6rem !important; }
-}
-
-/* ---------- HERO/IMAGENES (robustez móvil) ---------- */
-@layer utilities {
-  .media-cover {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-picture > img { max-width: 100%; height: auto; display: block; }
-
-/* =========================
-   FOOTER mobile friendly
-   ========================= */
-footer .container-max {
-  /* grid base ya definida via Tailwind en el componente;
-     aquí reforzamos colapso y espaciado en mobile */
-}
-@media (max-width: 640px) {
-  footer .container-max {
-    /* fuerza columna única y centra */
-    display: grid;
-    grid-template-columns: 1fr !important;
-    gap: 1.5rem !important;
-    text-align: center !important;
-  }
-
-  footer address ul,
-  footer nav ul { margin-inline: auto; }
-
-  footer a,
-  footer li {
-    /* evita que números/URLs se salgan en móvil */
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-
-  /* Botón de WhatsApp a ancho completo en el footer */
-  footer .btn { width: 100% !important; }
-
-  /* Separador inferior seguro para iPhone con notch */
-  footer { padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem); }
-}
-
-/* =========================
-   Anti overflow general
-   ========================= */
-html, body { overflow-x: hidden; }
-.break-anywhere { overflow-wrap: anywhere; word-break: break-word; }
-
-/* Mejora de tap highlight en móvil (ya sutil) */
-:where(a, button) { -webkit-tap-highlight-color: rgba(var(--ring-r), var(--ring-g), var(--ring-b), 0.2); }
-
-/* Asegura altura visible total respetando barras del SO */
-main { min-height: calc(100svh - 4rem) !important; }
-
-/* =========================
-   Utilidad para logos oscuros en fondos oscuros
-   ========================= */
-.logo-invert { filter: brightness(0) invert(1); }
-
-/* ==============
-   Notas rápidas:
-   ==============
-   - Por defecto el sitio es CLARO (bg blanco + texto oscuro). Para secciones
-     con fondo oscuro, usa contenedores con clases .theme-dark en el body o
-     secciones específicas (o aplica utilidades de Tailwind).
-   - Usa .surface para bloques “claros”; dentro ya ajusta inputs/labels.
-   - Grids: .auto-grid / .auto-grid-sm para colapsar bien en mobile.
-   - .btn-block deja botones a 100% ancho en móviles automáticamente.
-*/
