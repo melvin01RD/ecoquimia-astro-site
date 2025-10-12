@@ -2,47 +2,30 @@
 const year = new Date().getFullYear();
 ---
 
-<footer class="mt-16 bg-zinc-950 relative isolate overflow-hidden text-white">
-  <!-- Capa suave para no ‘apagar’ el texto -->
-  <div
-    class="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-zinc-900/10 via-zinc-900/30 to-zinc-950"
-    aria-hidden="true"
-  ></div>
+<footer class="mt-16 bg-zinc-950 relative isolate overflow-hidden text-zinc-200">
+  <!-- Capa suave (no tapa texto ni clics) -->
+  <div class="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-zinc-900/20 via-zinc-900/40 to-zinc-950" aria-hidden="true"></div>
 
   <div class="container-max relative z-10 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
     <!-- Marca -->
     <div class="text-center sm:text-left">
       <a href="/" class="flex items-center justify-center sm:justify-start gap-2 text-lg font-bold" aria-label="Ir al inicio">
-        <!-- <img src="/logo/ecoq-logo@2x-transparent.png" alt="Ecoquimia" class="h-8 w-auto logo-invert" /> -->
-        <span>Ecoquimia</span>
+        <img src="/favicon.svg" class="w-6 h-6 logo-invert" alt="Ecoquimia logo" />
+        <span class="text-white">Eco<span class="text-emerald-400">quimia</span></span>
       </a>
-      <p class="mt-3 text-base tracking-wide !text-white/85">
+      <p class="mt-3 text-base tracking-wide">
         Control integral de plagas para hogares y empresas. Santo Domingo, RD.
       </p>
     </div>
 
     <!-- Contacto -->
     <div class="text-center sm:text-left">
-      <h4 class="font-semibold mb-3">Contacto</h4>
+      <h4 class="font-semibold mb-3 text-white">Contacto</h4>
       <address class="not-italic">
         <ul class="space-y-2 text-base tracking-wide">
-          <li>
-            📞
-            <a
-              href="tel:+18096172105"
-              class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-              >+1&nbsp;(809)&nbsp;617&#8209;2105</a
-            >
-          </li>
-          <li>
-            ✉️
-            <a
-              href="mailto:contacto@ecoquimia.com"
-              class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-              >contacto@ecoquimia.com</a
-            >
-          </li>
-          <li>📍 Santo Domingo, RD</li>
+          <li>Tel: <a href="tel:+18096172105" class="footer-link">+1&nbsp;(809)&nbsp;617&#8209;2105</a></li>
+          <li>Email: <a href="mailto:contacto@ecoquimia.com" class="footer-link">contacto@ecoquimia.com</a></li>
+          <li>Ciudad: Santo Domingo, RD</li>
         </ul>
       </address>
       <div class="mt-4 flex justify-center sm:justify-start">
@@ -60,8 +43,32 @@ const year = new Date().getFullYear();
 
     <!-- Enlaces -->
     <nav aria-label="Enlaces del sitio" class="text-center sm:text-left">
-      <h4 class="font-semibold mb-3">Enlaces</h4>
+      <h4 class="font-semibold mb-3 text-white">Enlaces</h4>
       <ul class="space-y-2 text-base tracking-wide">
-        <li><a href="/"                      class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">Inicio</a></li>
-        <li><a href="/nosotros"              class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">Nosotros</a></li>
-        <li><a href="/services"              class="text-white/80 hover:text-white under
+        <li><a href="/"                    class="footer-link">Inicio</a></li>
+        <li><a href="/nosotros"            class="footer-link">Nosotros</a></li>
+        <li><a href="/services"            class="footer-link">Servicios</a></li>
+        <li><a href="/cotizacion"          class="footer-link">Cotización</a></li>
+        <li><a href="/aprende-de-las-plagas" class="footer-link">Aprende de las plagas</a></li>
+        <li><a href="/contact"             class="footer-link">Contacto</a></li>
+        <li><a href="/politicas"           class="footer-link">Políticas</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="relative border-t border-white/10">
+    <div class="container-max relative z-10 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm tracking-wide">
+      <span class="text-center sm:text-left">© {year} Ecoquimia</span>
+      <nav aria-label="Redes sociales" class="flex gap-6">
+        <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">TikTok</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<style is:global>
+  .logo-invert { filter: brightness(0) invert(1); }
+</style>
+

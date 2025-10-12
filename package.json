@@ -23,12 +23,13 @@
     "predeploy:prebuilt": "npm run check",
     "logo:gen": "node tools/resize-logo.mjs",
     "logo:from": "cross-env LOGO_SRC=public/logo/ecoq-logo@2x-transparent.png LOGO_OUT_2X=public/logo/ecoq-logo@2x-transparent-64h.png LOGO_OUT_1X=public/logo/ecoq-logo@1x-transparent-32h.png node tools/resize-logo.mjs"
-}
-,
-"dependencies": {
+  },
+  "dependencies": {
     "@astrojs/check": "^0.9.4",
+    "dotenv": "^17.2.3",
     "nodemailer": "^7.0.6",
-    "resend": "^6.1.0",
+    "resend": "^6.1.2",
+    "svg-captcha": "^1.4.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

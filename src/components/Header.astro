@@ -12,15 +12,17 @@ const { pathname } = Astro.url;
 ---
 
 <header class="site-header sticky top-0 z-50 bg-zinc-900 text-white border-b border-white/10">
-  <div class="container-max flex items-center justify-between h-20">
+
+  <div class="container-max flex items-center justify-between h-20 md:h-24">
     <!-- Logo -->
     <a href="/" class="inline-flex items-center gap-2 no-underline flex-shrink-0" aria-label="Inicio">
-      <img
-        src="/logo/ecoq-logo@2x-transparent.png"
-        alt="Ecoquimia — Creamos un Ambiente sin Plagas"
-        class="h-12 w-auto select-none md:h-14"
-        width="115" height="64" loading="eager" decoding="async" fetchpriority="high"
-      />
+   <img
+  src="/logo/ecoq-logo@2x-transparent.png"
+  alt="Ecoquimia — Creamos un ambiente sin plagas"
+  class="h-12 md:h-20 lg:h-[5.5rem] w-auto select-none"
+  width="115" height="64" loading="eager" decoding="async" fetchpriority="high"
+/>
+
     </a>
 
     <!-- Desktop nav -->
@@ -134,3 +136,4 @@ const { pathname } = Astro.url;
     if (!panel.contains(e.target) && !btn.contains(e.target)) setOpen(false);
   });
 </script>
+
