@@ -48,7 +48,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const { data, error } = await resend.emails.send({
       from,
       to,
-      reply_to: email || undefined,
+      replyTo: email || undefined,
       subject,
       text: [
         `Nombre: ${name}`,
