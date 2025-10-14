@@ -1,129 +1,79 @@
-// src/pages/api/cotizacion.ts
 import type { APIRoute } from "astro";
-import { z } from "zod";
-import { ServiceSlugEnum, getServiceBySlug } from "../../data/services";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+import { createHmac, timingSafeEqual } from "node:crypto";
 
-export const prerender = false;
+const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
-/** CORS (opcional; igual que contact.ts si lo usas) */
-const ORIGIN = process.env.PUBLIC_SITE_ORIGIN ?? "*";
+// HMAC(hex)
+function hmac(text: string, secret: string) {
+  return createHmac("sha256", secret).update(text, "utf8").digest("hex");
+}
+// Comparación segura de hex strings
+function safeEqualHex(aHex: string, bHex: string) {
+  const a = Buffer.from(aHex, "hex");
+  const b = Buffer.from(bHex, "hex");
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]!));
+}
 
-/** Destinos y remitente */
-const TO_EMAIL =
-  process.env.CONTACT_TO ?? process.env.TO_EMAIL ?? "contacto@ecoquimia.com";
-const FROM_EMAIL =
-  process.env.CONTACT_FROM ??
-  process.env.FROM_EMAIL ??
-  `no-reply@${new URL(process.env.PUBLIC_SITE_URL || "http://localhost").hostname}`;
-
-/** Schema de validación: NOTA usa slug del servicio */
-const schema = z.object({
-  name: z.string().trim().min(2, "El nombre es obligatorio"),
-  email: z.string().trim().email("Correo electrónico no válido"),
-  service: ServiceSlugEnum, // <- slug válido del catálogo
-  quantity: z
-    .union([z.string(), z.number()])
-    .optional()
-    .transform((v) => (v === undefined || v === "" ? undefined : Number(v)))
-    .refine((v) => v === undefined || (Number.isFinite(v) && v > 0), "Cantidad inválida"),
-  message: z.string().trim().min(10, "Describe tu necesidad con más detalle"),
-  website: z.string().max(0).optional(), // honeypot
-});
-
-/* =========================
-   Handlers
-   ========================= */
-export const OPTIONS: APIRoute = async () =>
-  new Response(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": ORIGIN,
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-      Allow: "POST, OPTIONS",
-    },
-  });
-
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   try {
-    const body = await request.json().catch(() => ({}));
-    const parsed = schema.safeParse(body);
-    if (!parsed.success) {
-      const error = parsed.error.issues.at(0)?.message ?? "Datos inválidos";
-      return json({ error }, 400);
+    const fd = await request.formData();
+
+    // 1) CAPTCHA
+    const input = String(fd.get("captcha") || "");
+    const cookieMac = cookies.get("captcha_token")?.value || "";
+    const secret = import.meta.env.CAPTCHA_SECRET || "";
+    const mac = hmac(input, secret);
+
+    if (!cookieMac || !safeEqualHex(cookieMac, mac)) {
+      return new Response(JSON.stringify({ error: "Captcha inválido" }), { status: 400 });
     }
 
-    const { name, email, service, quantity, message } = parsed.data;
-    const svc = getServiceBySlug(service)!; // existe por el enum
-    const subject = `Nueva cotización: ${svc.title}`;
-    const text = [
-      `Servicio: ${svc.title} (${service})`,
-      `Nombre: ${name}`,
-      `Email: ${email}`,
-      quantity ? `Cantidad: ${quantity}` : null,
-      "",
-      "Mensaje:",
-      message,
-    ]
-      .filter(Boolean)
-      .join("\n");
+    // 2) Datos del formulario
+    const name = String(fd.get("name") ?? fd.get("nombre") ?? "");
+    const email = String(fd.get("email") ?? fd.get("correo") ?? "");
+    const service = String(fd.get("service") ?? fd.get("tipoServicio") ?? "");
+    const quantity = String(fd.get("quantity") ?? fd.get("cantidad") ?? "");
+    const details = String(fd.get("details") ?? fd.get("descripcion") ?? fd.get("message") ?? "");
 
-    // Enviar email si hay SMTP; si no, no romper UX
-    await sendMail({
-      to: TO_EMAIL,
-      from: FROM_EMAIL,
+    // 3) Email via Resend
+    const to = import.meta.env.CONTACT_TO!;
+    const from = import.meta.env.CONTACT_FROM!;
+    const subject = `Nueva cotización${service ? `: ${service}` : ""}`;
+
+    const { data, error } = await resend.emails.send({
+      from,
+      to,
+      replyTo: email || undefined,
       subject,
-      text,
-      html: `<pre style="font:14px ui-sans-serif,system-ui,Segoe UI,Roboto,Arial">${escapeHtml(text)}</pre>`,
+      text: [
+        `Nombre: ${name}`,
+        `Correo: ${email}`,
+        `Servicio: ${service}`,
+        `Cantidad: ${quantity || "N/A"}`,
+        `Detalles:`,
+        details,
+      ].join("\n"),
+      html: `
+        <h2>Nueva cotización</h2>
+        <p><b>Nombre:</b> ${escapeHtml(name)}</p>
+        <p><b>Correo:</b> ${escapeHtml(email)}</p>
+        <p><b>Servicio:</b> ${escapeHtml(service)}</p>
+        <p><b>Cantidad:</b> ${escapeHtml(quantity || "N/A")}</p>
+        <p><b>Detalles:</b><br/>${escapeHtml(details).replace(/\n/g,"<br/>")}</p>
+      `,
     });
 
-    return json({ ok: true, redirectTo: "/gracias" }, 200);
-  } catch (err) {
-    console.error("[cotizacion] error", err);
-    return json({ error: "Error interno" }, 500);
+    if (error) throw new Error(error.message);
+    return new Response(JSON.stringify({ ok: true, id: data?.id ?? null }), { status: 200 });
+  } catch (err: any) {
+    return new Response(
+      JSON.stringify({ error: "Email failed", reason: String(err?.message || err) }),
+      { status: 500 }
+    );
   }
 };
-
-function json(payload: any, status = 200) {
-  return new Response(JSON.stringify(payload), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": ORIGIN,
-      "Cache-Control": "no-store",
-    },
-  });
-}
-
-/* =========================
-   SMTP helper (simple)
-   ========================= */
-type MailInput = { to: string; from: string; subject: string; text: string; html: string };
-async function sendMail({ to, from, subject, text, html }: MailInput) {
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT || 587);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  const secure = String(process.env.SMTP_SECURE || "false").toLowerCase() === "true";
-
-  if (!host || !user || !pass) {
-    console.warn("[cotizacion] SMTP no configurado; simulando envío.");
-    return;
-  }
-
-  const transporter = nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth: { user, pass },
-    requireTLS: !secure,
-    tls: { minVersion: "TLSv1.2", servername: host },
-  });
-
-  await transporter.sendMail({ to, from, subject, text, html });
-}
-
-function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
-}

@@ -4,6 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 export const prerender = true;
 
+import CaptchaField from "../components/CaptchaField.astro";
 import { Grid2x2, Mail, User, AtSign, ListFilter, Hash } from "@lucide/astro";
 import { services, getServiceOptions } from "../data/services";
 
@@ -11,7 +12,7 @@ const options = getServiceOptions();
 const honeypotName = "website";
 ---
 
-<Base title="Cotización — Ecoquimia" description="Solicita tu cotización de control de plagas.">
+<Base title="Cotización | Ecoquimia" description="Solicita tu cotización de control de plagas.">
   <Header slot="header" />
 
   <!-- Hero -->
@@ -49,10 +50,8 @@ const honeypotName = "website";
         </div>
       </div>
 
-      <!-- Formulario (oculto inicialmente) -->
-      <div id="formCard"
-           class="surface rounded-app p-5 md:p-6 transition-opacity duration-200 opacity-0 pointer-events-none"
-           aria-hidden="true" inert>
+      <!-- Formulario (SIEMPRE visible) -->
+      <div id="formCard" class="surface rounded-app p-5 md:p-6">
         <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
           <Mail class="w-5 h-5" /> Solicitar cotización
         </h2>
@@ -100,16 +99,20 @@ const honeypotName = "website";
               <label class="label" for="quantity">Cantidad (opcional)</label>
               <div class="relative">
                 <Hash class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                <input id="quantity" name="quantity" type="number" inputmode="numeric" min="1" step="1" placeholder="Ej: 2" class="input pl-9" />
+                <input id="quantity" name="quantity" type="number" inputmode="numeric" min="1" step="1" placeholder="Ej: 1" class="input pl-9" />
               </div>
             </div>
 
+
             <div class="field">
-              <label class="label" for="message">Describe tu necesidad</label>
-              <textarea id="message" name="message" rows={5} required placeholder="Cuéntanos detalles del servicio que necesitas" class="textarea"></textarea>
+              <label class="label" for="details">Describe tu necesidad</label>
+              <textarea id="details" name="details" rows={5} required placeholder="Cuéntanos detalles del servicio que necesitas" class="textarea"></textarea>
             </div>
 
-            <div class="flex items-center gap-3">
+            <!-- CAPTCHA -->
+            <CaptchaField />
+
+            <div class="flex flex-col sm:flex-row items-center gap-3">
               <button id="submitBtn" type="submit" class="btn btn-primary btn-block">Enviar</button>
               <p id="status" class="text-sm" aria-live="polite"></p>
             </div>
@@ -126,34 +129,12 @@ const honeypotName = "website";
     const qs = (s, r=document) => r.querySelector(s);
     const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-    const formCard = qs("#formCard");
     const form = qs("#quoteForm");
     const select = qs("#serviceSelect");
     const status = qs("#status");
     const btn = qs("#submitBtn");
 
-    function showForm() {
-      if (!formCard) return;
-      formCard.classList.remove("opacity-0","pointer-events-none");
-      formCard.removeAttribute("aria-hidden");
-      formCard.removeAttribute("inert");
-      qs("#name")?.focus({ preventScroll: true });
-    }
-
-    function preselectFromURL() {
-      const params = new URLSearchParams(window.location.search);
-      const s = params.get("service");
-      if (s && select) {
-        const match = Array.from(select.options).find(o => o.value === s);
-        if (match) {
-          select.value = s;
-          showForm();
-          document.getElementById("quoteForm")?.scrollIntoView({ behavior:"smooth", block:"start" });
-        }
-      }
-    }
-
-    // Click en tarjetas
+    // Al hacer click en una tarjeta, preselecciona y hace scroll
     qsa('a[data-service]').forEach(a => {
       a.addEventListener('click', (e) => {
         if (location.pathname.endsWith('/cotizacion')) {
@@ -161,20 +142,25 @@ const honeypotName = "website";
           const s = a.getAttribute('data-service');
           if (select && s) {
             select.value = s;
-            showForm();
-            history.replaceState(null, '', `/cotizacion?service=${encodeURIComponent(s)}#quoteForm`);
             document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         }
       });
     });
 
-    // Cambio manual en el select
-    select?.addEventListener('change', () => { if (select.value) showForm(); });
+    // Preselección desde URL
+    (function preselectFromURL(){
+      const params = new URLSearchParams(window.location.search);
+      const s = params.get("service");
+      if (s && select) {
+        const match = Array.from(select.options).find(o => o.value === s);
+        if (match) {
+          select.value = s;
+        }
+      }
+    })();
 
-    requestAnimationFrame(preselectFromURL);
-
-    // Submit con fetch
+    // Submit con fetch (FormData)
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!status || !btn) return;
@@ -183,13 +169,12 @@ const honeypotName = "website";
       status.textContent = "Enviando...";
       status.className = "text-sm text-zinc-600";
 
-      const payload = Object.fromEntries(new FormData(form));
+      const fd = new FormData(form); // incluye captcha + todos los campos
 
       try {
         const res = await fetch("/api/cotizacion", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: fd,
         });
 
         let data = {};
@@ -197,20 +182,25 @@ const honeypotName = "website";
 
         if (res.ok) {
           const params = new URLSearchParams();
-          if (payload.name) params.set("name", String(payload.name));
-          if (payload.service) params.set("service", String(payload.service));
+          const name = fd.get("name"); const service = fd.get("service");
+          if (name) params.set("name", String(name));
+          if (service) params.set("service", String(service));
           const url = (data && data.redirectTo) || `/gracias?${params.toString()}`;
           window.location.href = url; return;
         }
 
-        status.textContent = (data && data.error) || "Error al enviar";
+        status.textContent = (data && (data.message || data.error)) || "Error al enviar";
         status.className = "text-sm text-red-600";
+        // refresca captcha si falla
+        document.getElementById('captcha-img')?.setAttribute('src','/api/captcha?ts='+Date.now());
       } catch {
         status.textContent = "Error de red";
         status.className = "text-sm text-red-600";
+        document.getElementById('captcha-img')?.setAttribute('src','/api/captcha?ts='+Date.now());
       } finally {
         btn.removeAttribute("aria-busy");
       }
     });
   </script>
 </Base>
+

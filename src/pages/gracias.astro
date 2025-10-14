@@ -16,10 +16,10 @@ const MAIL_TO = "contacto@ecoquimia.com";
 
 // Copys
 const headline = `Hemos recibido tu solicitud${name ? `, ${name}` : ""}.`;
-const sub = `Gracias por elegirnos${service ? ` para “${service}”` : ""}. Un asesor te contactará en un plazo no mayor a 1 día laborable.`;
+const sub = `Gracias por elegirnos${service ? ` para ${service}` : ""}. Un asesor te contactará en un plazo no mayor a 1 día laborable.`;
 ---
 
-<Base title="Gracias — Ecoquimia" description="Solicitud recibida">
+<Base title="Gracias | Ecoquimia" description="Solicitud recibida">
   <Header slot="header" />
 
   <!-- fondo suave -->
@@ -58,7 +58,7 @@ const sub = `Gracias por elegirnos${service ? ` para “${service}”` : ""}. Un
           <div class="mt-6 flex flex-col sm:flex-row gap-3">
             <a
               href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                `Hola Ecoquimia, hice una solicitud${service ? ` para “${service}”` : ""}${name ? ` a nombre de ${name}` : ""}.`
+                `Hola Ecoquimia, hice una solicitud${service ? ` para ${service}` : ""}${name ? ` a nombre de ${name}` : ""}.`
               )}`}
               class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
@@ -102,3 +102,4 @@ const sub = `Gracias por elegirnos${service ? ` para “${service}”` : ""}. Un
     });
   </script>
 </Base>
+
