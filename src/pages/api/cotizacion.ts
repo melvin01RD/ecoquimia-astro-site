@@ -1,82 +1,79 @@
 import type { APIRoute } from "astro";
 import { Resend } from "resend";
+import { createHmac, timingSafeEqual } from "node:crypto";
 
-// Fuerza leer .env incluso si Vite no lo inyecta
-import { config as loadEnv } from "dotenv";
-loadEnv();
+const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
-export const POST: APIRoute = async ({ request }) => {
+// HMAC(hex)
+function hmac(text: string, secret: string) {
+  return createHmac("sha256", secret).update(text, "utf8").digest("hex");
+}
+// Comparación segura de hex strings
+function safeEqualHex(aHex: string, bHex: string) {
+  const a = Buffer.from(aHex, "hex");
+  const b = Buffer.from(bHex, "hex");
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]!));
+}
+
+export const POST: APIRoute = async ({ request, cookies }) => {
   try {
-    const apiKey =
-      (import.meta as any).env?.RESEND_API_KEY || process.env.RESEND_API_KEY;
+    const fd = await request.formData();
 
-    if (!apiKey) {
-      console.error("[cotizacion] Falta RESEND_API_KEY | cwd=", process.cwd());
-      return new Response(JSON.stringify({ error: "Missing RESEND_API_KEY" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
+    // 1) CAPTCHA
+    const input = String(fd.get("captcha") || "");
+    const cookieMac = cookies.get("captcha_token")?.value || "";
+    const secret = import.meta.env.CAPTCHA_SECRET || "";
+    const mac = hmac(input, secret);
+
+    if (!cookieMac || !safeEqualHex(cookieMac, mac)) {
+      return new Response(JSON.stringify({ error: "Captcha inválido" }), { status: 400 });
     }
 
-    const resend = new Resend(apiKey);
+    // 2) Datos del formulario
+    const name = String(fd.get("name") ?? fd.get("nombre") ?? "");
+    const email = String(fd.get("email") ?? fd.get("correo") ?? "");
+    const service = String(fd.get("service") ?? fd.get("tipoServicio") ?? "");
+    const quantity = String(fd.get("quantity") ?? fd.get("cantidad") ?? "");
+    const details = String(fd.get("details") ?? fd.get("descripcion") ?? fd.get("message") ?? "");
 
-    const form = await request.formData();
-
-    // Honeypot
-    if ((form.get("website") as string)?.trim()) {
-      return new Response(JSON.stringify({ error: "Bot detected" }), { status: 400 });
-    }
-
-    // TODO: verifica tu captcha aquí si aplica
-
-    const name = String(form.get("name") || "");
-    const email = String(form.get("email") || "");
-    const service = String(form.get("service") || "");
-    const quantity = String(form.get("quantity") || "");
-    const details = String(form.get("details") || "");
-
-    const subject = `Nueva cotización: ${service || "sin servicio"}`;
-    const html = `
-      <h2>Solicitud de cotización</h2>
-      <ul>
-        <li><b>Nombre:</b> ${name || "(no enviado)"}</li>
-        <li><b>Correo:</b> ${email || "(no enviado)"}</li>
-        <li><b>Servicio:</b> ${service || "(no enviado)"}</li>
-        <li><b>Cantidad:</b> ${quantity || "(no enviado)"}</li>
-      </ul>
-      <p><b>Detalles:</b></p>
-      <pre style="white-space:pre-wrap">${details || "(sin detalles)"}</pre>
-    `;
-
-    const from =
-      (import.meta as any).env?.CONTACT_FROM ||
-      process.env.CONTACT_FROM ||
-      "onboarding@resend.dev";
-
-    const to =
-      (import.meta as any).env?.CONTACT_TO ||
-      process.env.CONTACT_TO ||
-      "melvin01rd@gmail.com";
+    // 3) Email via Resend
+    const to = import.meta.env.CONTACT_TO!;
+    const from = import.meta.env.CONTACT_FROM!;
+    const subject = `Nueva cotización${service ? `: ${service}` : ""}`;
 
     const { data, error } = await resend.emails.send({
       from,
       to,
       reply_to: email || undefined,
       subject,
-      html,
+      text: [
+        `Nombre: ${name}`,
+        `Correo: ${email}`,
+        `Servicio: ${service}`,
+        `Cantidad: ${quantity || "N/A"}`,
+        `Detalles:`,
+        details,
+      ].join("\n"),
+      html: `
+        <h2>Nueva cotización</h2>
+        <p><b>Nombre:</b> ${escapeHtml(name)}</p>
+        <p><b>Correo:</b> ${escapeHtml(email)}</p>
+        <p><b>Servicio:</b> ${escapeHtml(service)}</p>
+        <p><b>Cantidad:</b> ${escapeHtml(quantity || "N/A")}</p>
+        <p><b>Detalles:</b><br/>${escapeHtml(details).replace(/\n/g,"<br/>")}</p>
+      `,
     });
 
     if (error) throw new Error(error.message);
-
-    return new Response(JSON.stringify({ ok: true, sentTo: to, id: data?.id }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify({ ok: true, id: data?.id ?? null }), { status: 200 });
   } catch (err: any) {
-    console.error("[cotizacion] resend error:", err?.message || err);
     return new Response(
-      JSON.stringify({ error: "Email failed", detail: err?.message || String(err) }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      JSON.stringify({ error: "Email failed", reason: String(err?.message || err) }),
+      { status: 500 }
     );
   }
 };

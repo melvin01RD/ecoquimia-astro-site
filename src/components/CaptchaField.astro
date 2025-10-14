@@ -1,53 +1,25 @@
 ---
-import { randomUUID } from "node:crypto";
-
-// Permite pasar <CaptchaField id="mi-captcha" />, si no, usa "captcha-img"
-const { id: propId } = Astro.props as { id?: string };
-const imgId = propId ?? "captcha-img";
-const btnId = `${imgId}-refresh`;
+// Campo de Captcha para el formulario de cotización
 ---
 
-<div class="stack-sm">
-  <div class="flex items-center gap-3">
-    <img
-      id={imgId}
-      src={`/api/captcha?ts=${Date.now()}`}
-      alt="Captcha numÃ©rico de 6 dÃ­gitos"
-      width="120"
-      height="40"
-      class="rounded-md border border-zinc-300 bg-white"
-      loading="eager"
-      onerror="this.onerror=null; this.src='/api/captcha?ts='+Date.now();"
-    />
+<img
+  id="captcha-img"
+  src={`/api/captcha?ts=${Date.now()}`}
+  alt="Captcha numérico de 6 dígitos"
+  width="120"
+  height="40"
+  class="rounded-md border border-zinc-300 bg-white"
+  loading="eager"
+  onerror="this.onerror=null; this.src='/api/captcha?ts='+Date.now();"
+/>
 
-    <button
-      id={btnId}
-      type="button"
-      class="btn btn-outline"
-      aria-label="Refrescar captcha"
-      title="Refrescar captcha"
-    >
-      â†» Nuevo cÃ³digo
-    </button>
-  </div>
-
-  <input
-    type="text"
-    name="captcha"
-    inputmode="numeric"
-    pattern="\d{6}"
-    autocomplete="one-time-code"
-    placeholder="Ingrese el cÃ³digo mostrado arriba"
-    class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
-    required
-  />
-</div>
-
-<script is:inline>
-  (function () {
-    const btn = document.getElementById(/* @once */ "{{btnId}}".replace(/^{|}$/g, "") ) || document.getElementById({btnId}.toString());
-    const img = document.getElementById(/* @once */ "{{imgId}}".replace(/^{|}$/g, "") ) || document.getElementById({imgId}.toString());
-    const refresh = () => { if (img) img.setAttribute("src", "/api/captcha?ts=" + Date.now()); };
-    btn?.addEventListener("click", refresh);
-  })();
-</script>
+<input
+  type="text"
+  name="captcha"
+  inputmode="numeric"
+  pattern="\d{6}"
+  autocomplete="one-time-code"
+  placeholder="Ingrese el código mostrado arriba"
+  class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+  required
+/>
