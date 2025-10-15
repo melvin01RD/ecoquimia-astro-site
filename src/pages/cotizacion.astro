@@ -24,9 +24,10 @@ const honeypotName = "website";
   </section>
 
   <section class="section-pad">
-    <div class="container-max grid gap-6 md:gap-8 lg:grid-cols-2">
+    <!-- Grid con columna derecha sticky -->
+    <div class="container-max grid gap-6 md:gap-8 md:grid-cols-[1fr_420px] lg:grid-cols-[1fr_480px]">
       <!-- Tipos de servicio (cards) -->
-      <div class="surface rounded-app p-5 md:p-6">
+      <div class="surface rounded-app p-5 md:p-6 min-h-[60vh]">
         <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
           <Grid2x2 class="w-5 h-5" /> Tipos de servicio
         </h2>
@@ -49,73 +50,85 @@ const honeypotName = "website";
         </div>
       </div>
 
-      <!-- Formulario (oculto inicialmente) -->
-      <div id="formCard"
-           class="surface rounded-app p-5 md:p-6 transition-opacity duration-200 opacity-0 pointer-events-none"
-           aria-hidden="true" inert>
-        <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
-          <Mail class="w-5 h-5" /> Solicitar cotización
-        </h2>
+      <!-- Formulario: SIEMPRE visible + sticky en desktop -->
+      <aside class="self-start md:sticky md:top-24">
+        <div id="formCard" class="surface rounded-app p-5 md:p-6">
+          <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
+            <Mail class="w-5 h-5" /> Solicitar cotización
+          </h2>
 
-        <form id="quoteForm" name="quoteForm" class="stack-sm max-w-xl"
-              method="post" action="/api/cotizacion" aria-labelledby="form-legend" novalidate>
-          <fieldset class="grid gap-4">
-            <legend id="form-legend" class="sr-only">Formulario de cotización</legend>
+          <form id="quoteForm" name="quoteForm" class="stack-sm max-w-xl"
+                method="post" action="/api/cotizacion" aria-labelledby="form-legend" novalidate>
+            <fieldset class="grid gap-4">
+              <legend id="form-legend" class="sr-only">Formulario de cotización</legend>
 
-            <!-- Honeypot -->
-            <div class="hidden" aria-hidden="true">
-              <label for="hp-field">No llenar</label>
-              <input id="hp-field" name={honeypotName} type="text" tabindex="-1" autocomplete="organization" />
-            </div>
-
-            <div class="field">
-              <label class="label" for="name">Nombre</label>
-              <div class="relative">
-                <User class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                <input id="name" name="name" type="text" autocomplete="name" required placeholder="Tu nombre" class="input pl-9" />
+              <!-- Honeypot -->
+              <div class="hidden" aria-hidden="true">
+                <label for="hp-field">No llenar</label>
+                <input id="hp-field" name={honeypotName} type="text" tabindex="-1" autocomplete="organization" />
               </div>
-            </div>
 
-            <div class="field">
-              <label class="label" for="email">Correo</label>
-              <div class="relative">
-                <AtSign class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                <input id="email" name="email" type="email" autocomplete="email" required placeholder="tucorreo@dominio.com" class="input pl-9" />
+              <div class="field">
+                <label class="label" for="name">Nombre</label>
+                <div class="relative">
+                  <User class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                  <input id="name" name="name" type="text" autocomplete="name" required placeholder="Tu nombre" class="input pl-9" />
+                </div>
               </div>
-            </div>
 
-            <div class="field">
-              <label class="label" for="serviceSelect">Tipo de servicio</label>
-              <div class="relative">
-                <ListFilter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                <select id="serviceSelect" name="service" required class="select pl-9">
-                  <option value="">Seleccione tipo de servicio</option>
-                  {options.map(o => <option value={o.value}>{o.label}</option>)}
-                </select>
+              <div class="field">
+                <label class="label" for="email">Correo</label>
+                <div class="relative">
+                  <AtSign class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                  <input id="email" name="email" type="email" autocomplete="email" required placeholder="tucorreo@dominio.com" class="input pl-9" />
+                </div>
               </div>
-              <p class="help">También puedes elegir desde las tarjetas de la izquierda.</p>
-            </div>
 
-            <div class="field">
-              <label class="label" for="quantity">Cantidad (opcional)</label>
-              <div class="relative">
-                <Hash class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                <input id="quantity" name="quantity" type="number" inputmode="numeric" min="1" step="1" placeholder="Ej: 2" class="input pl-9" />
+              <div class="field">
+                <label class="label" for="serviceSelect">Tipo de servicio</label>
+                <div class="relative">
+                  <ListFilter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                  <select id="serviceSelect" name="service" required class="select pl-9">
+                    <option value="">Seleccione tipo de servicio</option>
+                    {options.map(o => <option value={o.value}>{o.label}</option>)}
+                  </select>
+                </div>
+                <p class="help">También puedes elegir desde las tarjetas de la izquierda.</p>
               </div>
-            </div>
 
-            <div class="field">
-              <label class="label" for="message">Describe tu necesidad</label>
-              <textarea id="message" name="message" rows={5} required placeholder="Cuéntanos detalles del servicio que necesitas" class="textarea"></textarea>
-            </div>
+              <div class="field">
+                <label class="label" for="quantity">Cantidad (opcional)</label>
+                <div class="relative">
+                  <Hash class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                  <input id="quantity" name="quantity" type="number" inputmode="numeric" min="1" step="1" placeholder="Ej: 2" class="input pl-9" />
+                </div>
+              </div>
 
-            <div class="flex items-center gap-3">
-              <button id="submitBtn" type="submit" class="btn btn-primary btn-block">Enviar</button>
-              <p id="status" class="text-sm" aria-live="polite"></p>
-            </div>
-          </fieldset>
-        </form>
-      </div>
+              <div class="field">
+                <label class="label" for="message">Describe tu necesidad</label>
+                <textarea id="message" name="message" rows={5} required placeholder="Cuéntanos detalles del servicio que necesitas" class="textarea"></textarea>
+              </div>
+
+              <!-- CAPTCHA -->
+              <div class="grid gap-2">
+                <label class="label" for="captcha">Código de verificación</label>
+                <div class="flex items-center gap-3">
+                  <img id="captchaImage" src="/api/captcha?t={Date.now()}" alt="Captcha" class="h-10 w-[120px] rounded border" loading="lazy" />
+                  <button type="button" id="refreshCaptcha" class="btn btn-secondary">Actualizar</button>
+                </div>
+                <input id="captcha" name="captcha" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required
+                      placeholder="Escribe los 6 números" class="input" />
+                <p class="help">Escribe los 6 dígitos tal como aparecen.</p>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <button id="submitBtn" type="submit" class="btn btn-primary btn-block">Enviar</button>
+                <p id="status" class="text-sm" aria-live="polite"></p>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      </aside>
     </div>
   </section>
 
@@ -126,20 +139,12 @@ const honeypotName = "website";
     const qs = (s, r=document) => r.querySelector(s);
     const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-    const formCard = qs("#formCard");
     const form = qs("#quoteForm");
     const select = qs("#serviceSelect");
     const status = qs("#status");
     const btn = qs("#submitBtn");
 
-    function showForm() {
-      if (!formCard) return;
-      formCard.classList.remove("opacity-0","pointer-events-none");
-      formCard.removeAttribute("aria-hidden");
-      formCard.removeAttribute("inert");
-      qs("#name")?.focus({ preventScroll: true });
-    }
-
+    // --- Preselección desde URL ---
     function preselectFromURL() {
       const params = new URLSearchParams(window.location.search);
       const s = params.get("service");
@@ -147,13 +152,13 @@ const honeypotName = "website";
         const match = Array.from(select.options).find(o => o.value === s);
         if (match) {
           select.value = s;
-          showForm();
           document.getElementById("quoteForm")?.scrollIntoView({ behavior:"smooth", block:"start" });
+          qs("#name")?.focus({ preventScroll: true });
         }
       }
     }
 
-    // Click en tarjetas
+    // --- Click en tarjetas: preseleccionar + scroll sin recargar ---
     qsa('a[data-service]').forEach(a => {
       a.addEventListener('click', (e) => {
         if (location.pathname.endsWith('/cotizacion')) {
@@ -161,20 +166,26 @@ const honeypotName = "website";
           const s = a.getAttribute('data-service');
           if (select && s) {
             select.value = s;
-            showForm();
-            history.replaceState(null, '', `/cotizacion?service=${encodeURIComponent(s)}#quoteForm`);
+            history.replaceState(null, '', \`/cotizacion?service=\${encodeURIComponent(s)}#quoteForm\`);
             document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            qs("#name")?.focus({ preventScroll: true });
           }
         }
       });
     });
 
-    // Cambio manual en el select
-    select?.addEventListener('change', () => { if (select.value) showForm(); });
+    // --- Refresh CAPTCHA ---
+    const img = qs("#captchaImage");
+    const btnRefresh = qs("#refreshCaptcha");
+    btnRefresh?.addEventListener("click", () => {
+      if (!img) return;
+      img.src = \`/api/captcha?t=\${Date.now()}\`;
+    });
 
-    requestAnimationFrame(preselectFromURL);
 
-    // Submit con fetch
+    
+
+    // --- Submit con FormData (y cookies del captcha) ---
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!status || !btn) return;
@@ -183,34 +194,35 @@ const honeypotName = "website";
       status.textContent = "Enviando...";
       status.className = "text-sm text-zinc-600";
 
-      const payload = Object.fromEntries(new FormData(form));
+      const fd = new FormData(form);
 
       try {
         const res = await fetch("/api/cotizacion", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: fd,
+          credentials: "same-origin"
         });
 
         let data = {};
         try { data = await res.json(); } catch {}
 
         if (res.ok) {
-          const params = new URLSearchParams();
-          if (payload.name) params.set("name", String(payload.name));
-          if (payload.service) params.set("service", String(payload.service));
-          const url = (data && data.redirectTo) || `/gracias?${params.toString()}`;
+          const url = (data && data.redirectTo) || "/gracias";
           window.location.href = url; return;
         }
 
         status.textContent = (data && data.error) || "Error al enviar";
         status.className = "text-sm text-red-600";
+        img && (img.src = \`/api/captcha?t=\${Date.now()}\`);
       } catch {
         status.textContent = "Error de red";
         status.className = "text-sm text-red-600";
+        img && (img.src = \`/api/captcha?t=\${Date.now()}\`);
       } finally {
         btn.removeAttribute("aria-busy");
       }
     });
+
+    requestAnimationFrame(preselectFromURL);
   </script>
 </Base>

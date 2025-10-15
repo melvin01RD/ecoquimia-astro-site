@@ -14,7 +14,6 @@
   footer a{ @apply text-white/80 hover:text-white; }
 }
 
-
 @layer base {
   :root {
     /* Radios / elevación */
@@ -245,6 +244,12 @@
 
   /* Utilidad para logos en fondos oscuros */
   .logo-invert { filter: brightness(0) invert(1); }
+
+  /* Rendimiento: difiere render hasta que entre en viewport (ideal para listas grandes) */
+  .cv-auto { content-visibility: auto; contain-intrinsic-size: 800px 1000px; }
+
+  /* Suaviza animaciones/transiciones sin recalcular layout */
+  .will-change-transform { will-change: transform; }
 }
 
 /* =========================
@@ -302,14 +307,3 @@
 /* Autofill (Chrome/Safari) */
 .input:-webkit-autofill, .select:-webkit-autofill, .textarea:-webkit-autofill { -webkit-text-fill-color: #18181b; transition: background-color 5000s ease-in-out 0s; }
 .theme-dark .input:-webkit-autofill, .theme-dark .select:-webkit-autofill, .theme-dark .textarea:-webkit-autofill { -webkit-text-fill-color: #fff; }
-
-
-@media (max-width: 640px) {
-  .site-header nav{
-    display:flex; align-items:center; gap:.5rem!important;
-    overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-behavior:smooth;
-    flex-wrap:nowrap; flex:1 1 auto; justify-content:flex-end; padding-bottom:.25rem;
-  }
-  .site-header nav::-webkit-scrollbar{ display:none; }
-  .site-header nav{ scrollbar-width:none; }
-}
