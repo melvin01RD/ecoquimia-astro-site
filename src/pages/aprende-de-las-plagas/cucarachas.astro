@@ -1,0 +1,52 @@
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+export const prerender = true;
+---
+
+<Base title="Cucarachas: prevención básica — Ecoquimia" description="Consejos para prevenir y controlar cucarachas.">
+  <Header slot="header" />
+  <main class="bg-zinc-50">
+    <section class="container-max py-12 sm:py-16">
+      <nav class="mb-6 text-sm">
+        <a href="/aprende-de-las-plagas" class="text-emerald-700 hover:underline">← Volver a “Aprende de las plagas”</a>
+      </nav>
+
+      <header class="max-w-3xl">
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900">Cucarachas: prevención básica</h1>
+        <p class="mt-3 text-zinc-600">Sellado de grietas, manejo de basura y control de humedad.</p>
+      </header>
+
+      <article class="mt-8 prose prose-zinc max-w-3xl">
+        <h2>Cómo identificarlas</h2>
+        <ul>
+          <li>Excrementos en forma de gránulos, mudas de piel y olor característico.</li>
+          <li>Mayor actividad nocturna en cocinas y baños.</li>
+        </ul>
+
+        <h2>Prevención esencial</h2>
+        <ul>
+          <li>Sellar grietas y pasos de tuberías.</li>
+          <li>Guardar alimentos en envases herméticos; sacar basura a diario.</li>
+          <li>Corregir fugas y reducir la humedad.</li>
+        </ul>
+
+        <h2>Control recomendado</h2>
+        <ul>
+          <li>Geles y cebos en bisagras, zócalos y áreas cálidas.</li>
+          <li>Monitoreo con trampas adhesivas y seguimiento semanal.</li>
+          <li>Evitar aerosoles indiscriminados que dispersen la población.</li>
+        </ul>
+      </article>
+
+      <div class="mt-10 flex gap-3 flex-wrap">
+        <a href="/aprende-de-las-plagas" class="btn btn-outline">Volver</a>
+        <a href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, tengo cucarachas y necesito ayuda profesional.")}`} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          Solicitar cotización
+        </a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

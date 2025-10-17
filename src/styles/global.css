@@ -111,7 +111,7 @@
   @media (max-width: 480px) { .container-max { @apply px-4; } }
 
   /* Header sólido (requiere class="site-header" en <header>) */
-  .site-header { background-color: #000 !important; backdrop-filter: none !important; }
+  .site-header { background-color: #1f2937 !important; backdrop-filter: none !important; }
   .site-header, .site-header * { color: #fff; }
 
   /* Enlaces con (des)subrayado */
@@ -253,21 +253,25 @@
 }
 
 /* =========================
-   Ajustes MOBILE (<= 640px)
+   Ajustes MOBILE (<= 740px)
    ========================= */
-@media (max-width: 640px) {
+@media (max-width: 740px) {
   /* Header RESPIRA */
   .site-header .container-max {
-    padding-left: 0.75rem !important;
+    padding-left: 1.75rem !important;
     padding-right: 0.75rem !important;
     min-height: var(--header-h-mobile);
     height: auto;
-    display: flex; align-items: center; gap: 0.5rem;
+    display: flex; align-items: center; gap: 1.5rem;
   }
 
   /* El logo no se encoge */
   .site-header a[aria-label="Inicio"] { flex-shrink: 0; }
-  .site-header a[aria-label="Inicio"] img { height: 64px; max-height: 64px; width: auto; }
+  .site-header a[aria-label="Inicio"] img {
+    height: auto;
+    max-height: 48px; /* h-12 como tope en mobile */
+    width: auto;
+  }
 
   /* Nav desplazable si no cabe */
   .site-header nav {
@@ -278,7 +282,7 @@
   .site-header nav::-webkit-scrollbar { display: none; }
   .site-header nav { scrollbar-width: none; }
 
-  .site-header .nav-link { font-size: 0.9rem !important; padding: 0.5rem 0.25rem; white-space: nowrap; }
+  .site-header .nav-link { font-size: 1.2rem !important; padding: 0.5rem 0.25rem; white-space: nowrap; }
   .site-header .btn { padding: 0.5rem 0.75rem !important; border-radius: 9999px; font-size: 0.9rem !important; line-height: 1rem; flex-shrink: 0; }
 }
 

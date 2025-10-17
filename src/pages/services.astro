@@ -5,21 +5,59 @@ import Footer from "../components/Footer.astro";
 import { services } from "../data/services";
 import ServiceCard from "../components/ServiceCard.astro";
 export const prerender = true;
+
+// Helper: JSON-LD para SEO (lista de servicios)
+const listJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Servicios de control de plagas",
+  "itemListElement": services.map((s, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "item": {
+      "@type": "Service",
+      "name": s?.title ?? "Servicio",
+      "description": s?.description ?? undefined
+    }
+  }))
+};
 ---
+
 <Base title="Servicios — Ecoquimia" description="Planes residenciales y comerciales de control de plagas.">
   <Header slot="header" />
 
-  <section class="container-max py-16" aria-labelledby="services-title">
-    <div class="text-center">
-      <h1 id="services-title" class="text-3xl md:text-4xl font-bold">Nuestros servicios</h1>
-      <div class="mx-auto mt-3 h-1.5 w-20 rounded-full bg-brand"></div>
-      <p class="mt-3 text-zinc-600">Tratamientos efectivos y seguros, con seguimiento.</p>
-    </div>
+  <main>
+    <section class="container-max py-12 sm:py-16" aria-labelledby="services-title">
+      <div class="text-center max-w-3xl mx-auto">
+        <h1 id="services-title" class="text-3xl md:text-4xl font-extrabold tracking-tight">
+          Nuestros servicios
+        </h1>
+        <div class="mx-auto mt-3 h-1.5 w-24 rounded-full bg-emerald-600"></div>
+        <p class="mt-3 text-zinc-600">
+          Tratamientos efectivos y seguros, con seguimiento y garantía.
+        </p>
+      </div>
 
-    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {services.map((s) => <ServiceCard service={s} />)}
-    </div>
-  </section>
+      <!-- Grid mobile-first -->
+      <div class="mt-10 grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {services.map((s) => <ServiceCard service={s} />)}
+      </div>
+
+      <!-- CTA general -->
+      <div class="mt-10 text-center">
+        <a
+          href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, quiero una cotización de control de plagas.")}`}
+          target="_blank" rel="noopener noreferrer"
+          class="btn btn-primary rounded-full"
+        >
+          Solicitar cotización por WhatsApp
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- JSON-LD SEO -->
+  <script type="application/ld+json">{JSON.stringify(listJsonLd)}</script>
 
   <Footer slot="footer" />
 </Base>

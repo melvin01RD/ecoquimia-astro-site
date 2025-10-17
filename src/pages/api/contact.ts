@@ -130,3 +130,4 @@ async function sendMail({
   // 3) No hay transporte configurado: no rompas UX en prod
   console.warn("[contact] Sin RESEND ni SMTP configurado: mensaje no enviado");
 }
+

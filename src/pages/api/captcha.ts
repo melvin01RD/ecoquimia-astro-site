@@ -1,4 +1,4 @@
-export const runtime = 'node'; // 👈 importante en Vercel
+export const runtime = 'node'; // importante en Vercel
 
 import type { APIRoute } from "astro";
 import svgCaptcha from "svg-captcha";
@@ -55,3 +55,4 @@ export const GET: APIRoute = async ({ cookies }) => {
     },
   });
 };
+

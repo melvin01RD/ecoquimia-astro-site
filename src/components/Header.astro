@@ -11,29 +11,30 @@ const links = [
 const { pathname } = Astro.url;
 ---
 
-<header class="site-header sticky top-0 z-50 bg-zinc-900 text-white border-b border-white/10" data-js="header">
+<header class="site-header sticky top-0 z-50 text-white border-b border-white/10" data-js="header">
+
+  <!-- Control de visibilidad del nav desktop -->
+  <style is:global>
+    @media (max-width: 767.98px){ .site-header .nav-desktop{ display: none !important; } }
+    @media (min-width: 768px){ .site-header .nav-desktop{ display: flex !important; } }
+  </style>
+
   <div class="container-max flex items-center justify-between h-20">
     <!-- Logo -->
     <a href="/" class="inline-flex items-center gap-2 no-underline flex-shrink-0" aria-label="Inicio">
+      <!-- OJO: este archivo EXISTE: /public/logo/logo.png -->
       <img
-        src="/logo/ecoq-logo@2x-transparent.png"
-        alt="Ecoquimia — Creamos un Ambiente sin Plagas"
-        class="h-12 w-auto select-none md:h-14"
-        width="115" height="64" loading="eager" decoding="async" fetchpriority="high"
-      />
+  src="/logo/logo-transparent.png"
+  alt="Ecoquimia — Creamos un Ambiente sin Plagas"
+  width="210" height="120"
+  class="logo block h-10 md:h-12 w-auto select-none"
+  loading="eager" decoding="async" fetchpriority="high"
+/>
 
-    <style is:global>
-  /* Forzar visibilidad correcta del nav de escritorio frente a reglas globales */
-  @media (max-width: 767.98px){
-    .site-header .nav-desktop{ display: none !important; }
-  }
-  @media (min-width: 768px){
-    .site-header .nav-desktop{ display: flex !important; }
-  }
-</style>
-
-
-
+      <!-- Si tu PNG es oscuro y el fondo es negro, activa el filtro claro:
+           cambia la clase anterior por: class="logo block h-10 md:h-12 w-auto select-none logo-invert"
+           (ya tienes .logo-invert en global.css) -->
+      <span class="sr-only">Ecoquimia</span>
     </a>
 
     <!-- Desktop nav -->
@@ -48,7 +49,7 @@ const { pathname } = Astro.url;
       ))}
     </nav>
 
-    <!-- Acciones mobile (derecha): WhatsApp + Burger) -->
+    <!-- Acciones mobile: WhatsApp + Burger -->
     <div class="md:hidden flex items-center gap-2">
       <a
         href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, quiero una cotización de control de plagas.")}`}
@@ -66,7 +67,6 @@ const { pathname } = Astro.url;
         aria-controls="mobileMenu"
         aria-expanded="false"
       >
-        <!-- icon hamburguesa -->
         <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
           <path id="burgerPath" stroke-linecap="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
@@ -104,69 +104,42 @@ const { pathname } = Astro.url;
           </a>
         </li>
       </ul>
-      <!-- safe area bottom para iOS -->
       <div class="pb-[max(env(safe-area-inset-bottom),0.5rem)]"></div>
     </nav>
   </div>
 </header>
 
 <script is:inline>
-  // Registramos los listeners cuando el hilo esté libre (no bloquear LCP)
-  (window.requestIdleCallback || setTimeout)(() => {
+  document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('navToggle');
     const panel = document.getElementById('mobileMenu');
     const burgerPath = document.getElementById('burgerPath');
-
     if (!btn || !panel) return;
 
-    const mqDesktop = window.matchMedia('(min-width: 768px)');
+    const mqDesktop = matchMedia('(min-width: 768px)');
 
-    function lockBodyScroll(lock) {
-      // Solo en mobile; en desktop jamás abrimos este menú
+    function lockBodyScroll(lock){
       if (mqDesktop.matches) return;
       document.documentElement.classList.toggle('overflow-hidden', lock);
       document.body.classList.toggle('overflow-hidden', lock);
     }
-
-    function setOpen(open) {
+    function setOpen(open){
       btn.setAttribute('aria-expanded', String(open));
       panel.classList.toggle('hidden', !open);
       panel.setAttribute('aria-hidden', String(!open));
       lockBodyScroll(open);
-
-      // Cambia icono (hamburguesa <-> X)
-      if (burgerPath) {
-        burgerPath.setAttribute(
-          'd',
-          open ? 'M6 6l12 12M18 6l-12 12' : 'M4 6h16M4 12h16M4 18h16'
-        );
+      if (burgerPath){
+        burgerPath.setAttribute('d', open ? 'M6 6l12 12M18 6l-12 12' : 'M4 6h16M4 12h16M4 18h16');
       }
     }
 
-    btn.addEventListener('click', () => {
-      const open = btn.getAttribute('aria-expanded') === 'true';
-      setOpen(!open);
-    }, { passive: true });
-
-    // Cierra al pulsar en enlaces del panel
-    panel.addEventListener('click', (e) => {
-      const t = e.target;
-      if (t && t.closest('[data-close]')) setOpen(false);
-    }, { passive: true });
-
-    // Cierra con Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') setOpen(false);
-    });
-
-    // Cierra al pulsar fuera
+    btn.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'), {passive:true});
+    panel.addEventListener('click', (e) => { if (e.target.closest('[data-close]')) setOpen(false); }, {passive:true});
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
     document.addEventListener('click', (e) => {
-      const open = btn.getAttribute('aria-expanded') === 'true';
-      if (!open) return;
+      if (btn.getAttribute('aria-expanded') !== 'true') return;
       if (!panel.contains(e.target) && !btn.contains(e.target)) setOpen(false);
-    }, { passive: true });
-
-    // Si pasamos a desktop, asegúrate de cerrar/limpiar bloqueo
+    }, {passive:true});
     mqDesktop.addEventListener?.('change', () => setOpen(false));
-  }, 1);
+  });
 </script>
