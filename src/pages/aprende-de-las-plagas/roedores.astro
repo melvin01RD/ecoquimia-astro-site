@@ -1,0 +1,51 @@
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+export const prerender = true;
+---
+
+<Base title="Roedores: señales y control — Ecoquimia" description="Cómo detectar roedores y estrategias de control seguras.">
+  <Header slot="header" />
+  <main class="bg-zinc-50">
+    <section class="container-max py-12 sm:py-16">
+      <nav class="mb-6 text-sm">
+        <a href="/aprende-de-las-plagas" class="text-emerald-700 hover:underline">← Volver a “Aprende de las plagas”</a>
+      </nav>
+
+      <header class="max-w-3xl">
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900">Roedores: señales y control</h1>
+        <p class="mt-3 text-zinc-600">Excrementos, roídas y ruidos nocturnos. Trampas y exclusión.</p>
+      </header>
+
+      <article class="mt-8 prose prose-zinc max-w-3xl">
+        <h2>Señales de presencia</h2>
+        <ul>
+          <li>Excrementos pequeños, rastro de grasa y marcas de roído.</li>
+          <li>Ruidos nocturnos en techos, falsos plafones y sótanos.</li>
+        </ul>
+
+        <h2>Prevención y exclusión</h2>
+        <ul>
+          <li>Sellar huecos ≥ 6–8 mm (lana de acero + sellador).</li>
+          <li>Orden y limpieza: quitar refugios y fuentes de alimento/agua.</li>
+          <li>Rejillas en desagües y ventilaciones.</li>
+        </ul>
+
+        <h2>Control profesional</h2>
+        <ul>
+          <li>Estaciones seguras con cebo/trampa sin acceso a niños o mascotas.</li>
+          <li>Mapeo de riesgo, reposición y reporte técnico.</li>
+        </ul>
+      </article>
+
+      <div class="mt-10 flex gap-3 flex-wrap">
+        <a href="/aprende-de-las-plagas" class="btn btn-outline">Volver</a>
+        <a href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, tengo roedores y necesito control y sellado de puntos críticos.")}`} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          Solicitar cotización
+        </a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

@@ -1,0 +1,50 @@
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+export const prerender = true;
+---
+
+<Base title="Termitas: protege tu estructura — Ecoquimia" description="Inspección, tratamiento y prevención de termitas.">
+  <Header slot="header" />
+  <main class="bg-zinc-50">
+    <section class="container-max py-12 sm:py-16">
+      <nav class="mb-6 text-sm">
+        <a href="/aprende-de-las-plagas" class="text-emerald-700 hover:underline">← Volver a “Aprende de las plagas”</a>
+      </nav>
+
+      <header class="max-w-3xl">
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900">Termitas: protege tu estructura</h1>
+        <p class="mt-3 text-zinc-600">Inspecciones periódicas y barreras químicas certificadas.</p>
+      </header>
+
+      <article class="mt-8 prose prose-zinc max-w-3xl">
+        <h2>Detección</h2>
+        <ul>
+          <li>Túneles de barro, madera hueca/sonora y alas desechadas.</li>
+          <li>Mayor actividad en épocas lluviosas y zonas húmedas.</li>
+        </ul>
+
+        <h2>Tratamientos</h2>
+        <ul>
+          <li>Perimetral: perforación e inyección de termiticida certificado.</li>
+          <li>Cebos con monitoreo y reposición por técnico autorizado.</li>
+        </ul>
+
+        <h2>Prevención</h2>
+        <ul>
+          <li>Eliminar madera en contacto directo con el suelo y fuentes de humedad.</li>
+          <li>Inspecciones anuales y mantenimiento preventivo.</li>
+        </ul>
+      </article>
+
+      <div class="mt-10 flex gap-3 flex-wrap">
+        <a href="/aprende-de-las-plagas" class="btn btn-outline">Volver</a>
+        <a href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, necesito inspección y tratamiento contra termitas.")}`} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          Solicitar cotización
+        </a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

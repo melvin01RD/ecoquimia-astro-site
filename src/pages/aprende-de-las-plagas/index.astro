@@ -4,50 +4,70 @@ import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 export const prerender = true;
 
-// Rutas internas para cada guía (puedes crear los .md/.astro luego)
+// Tarjetas (linkean a las guías internas)
 const posts = [
   {
+    slug: "cucarachas",
     title: "Cucarachas: prevención básica",
     excerpt: "Sellado de grietas, manejo de basura y control de humedad.",
     href: "/aprende-de-las-plagas/cucarachas",
   },
   {
+    slug: "roedores",
     title: "Roedores: señales y control",
     excerpt: "Excrementos, roídas y ruidos nocturnos. Trampas y exclusión.",
     href: "/aprende-de-las-plagas/roedores",
   },
   {
+    slug: "termitas",
     title: "Termitas: protege tu estructura",
     excerpt: "Inspecciones periódicas y barreras químicas certificadas.",
     href: "/aprende-de-las-plagas/termitas",
   },
 ];
+
+// JSON-LD simple para SEO
+const listJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Guías de plagas",
+  "itemListElement": posts.map((p, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "item": { "@type": "Article", "name": p.title, "url": p.href, "description": p.excerpt }
+  }))
+};
 ---
+
 <Base title="Aprende de las plagas — Ecoquimia" description="Guías y consejos para prevenir y tratar plagas.">
   <Header slot="header" />
 
-  <section class="container-max py-16" aria-labelledby="aprende-title">
-    <div class="text-center mb-8 md:mb-10">
-      <h1 id="aprende-title" class="text-3xl md:text-4xl font-bold">Aprende de las plagas</h1>
-      <p class="mt-3 text-zinc-600">Consejos prácticos y guías rápidas para tu hogar o negocio.</p>
-    </div>
+  <main class="bg-zinc-50">
+    <section class="container-max py-12 sm:py-16" aria-labelledby="aprende-title">
+      <div class="text-center mb-8 md:mb-10">
+        <h1 id="aprende-title" class="text-3xl md:text-4xl font-bold">Aprende de las plagas</h1>
+        <p class="mt-3 text-zinc-600">Consejos prácticos y guías rápidas para tu hogar o negocio.</p>
+      </div>
 
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {posts.map((p) => (
-        <article class="card p-5">
-          <h2 class="text-lg font-semibold mb-2">{p.title}</h2>
-          <p class="text-sm text-zinc-700">{p.excerpt}</p>
-          <a href={p.href} class="btn btn-ghost mt-3" data-astro-prefetch>Leer más</a>
-        </article>
-      ))}
-    </div>
+      <div class="grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {posts.map((p) => (
+          <article class="card p-5 rounded-3xl hover:-translate-y-0.5 hover:shadow-md transition">
+            <h2 class="text-lg font-semibold text-zinc-900">{p.title}</h2>
+            <p class="mt-1 text-sm text-zinc-700">{p.excerpt}</p>
+            <a href={p.href} class="btn btn-ghost mt-4" data-astro-prefetch="viewport" aria-label={`Leer más sobre ${p.title}`}>
+              Leer más
+            </a>
+          </article>
+        ))}
+      </div>
 
-    <!-- CTA secundaria -->
-    <div class="mt-10 flex flex-wrap gap-3 justify-center">
-      <a href="/" class="btn btn-outline" data-astro-prefetch>Volver al inicio</a>
-      <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
-    </div>
-  </section>
+      <div class="mt-10 flex flex-wrap gap-3 justify-center">
+        <a href="/" class="btn btn-outline" data-astro-prefetch>Volver al inicio</a>
+        <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
+      </div>
+    </section>
+  </main>
 
+  <script type="application/ld+json">{JSON.stringify(listJsonLd)}</script>
   <Footer slot="footer" />
 </Base>

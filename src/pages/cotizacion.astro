@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
-// ✅ SSR (mejor para /api y control de caché)
+// Nota: SSR (mejor para /api y control de caché)
 export const prerender = false;
 
 import { Grid2x2, Mail, User, AtSign, ListFilter, Hash } from "@lucide/astro";
@@ -12,10 +12,13 @@ import { services, getServiceOptions } from "../data/services";
 const options = getServiceOptions();
 const honeypotName = "website";
 
-// ✅ Lee el query param para error ligero (e=c => captcha_required)
+// Nota: Lee el query param para error ligero (e=c => captcha_required, e=mx => mail error)
 const url = new URL(Astro.request.url);
 const e = url.searchParams.get("e");
-const errorMsg = e === "c" ? "Por favor completa el CAPTCHA." : null;
+const errorMsg =
+  e === "c"  ? "Por favor completa el CAPTCHA."
+: e === "mx" ? "Tuvimos un problema enviando el correo. Intenta nuevamente en unos minutos."
+: null;
 ---
 
 <Base title="Cotización — Ecoquimia" description="Solicita tu cotización de control de plagas.">
@@ -64,14 +67,13 @@ const errorMsg = e === "c" ? "Por favor completa el CAPTCHA." : null;
             <Mail class="w-5 h-5" /> Solicitar cotización
           </h2>
 
-          <!-- ✅ Aviso de error ligero, SSR, sin JS -->
+          <!-- Nota: Aviso de error ligero, SSR, sin JS -->
           {errorMsg && (
             <p role="alert" class="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-red-800">
               {errorMsg}
             </p>
           )}
 
-          
           <form id="quoteForm" name="quoteForm" class="stack-sm max-w-xl"
                 method="post" action="/api/cotizacion" aria-labelledby="form-legend">
             <fieldset class="grid gap-4">
@@ -119,8 +121,7 @@ const errorMsg = e === "c" ? "Por favor completa el CAPTCHA." : null;
                 </div>
               </div>
 
-
-                            <!-- Mensaje -->
+              <!-- Mensaje -->
               <div class="field">
                 <label class="label" for="message">Describe tu necesidad</label>
                 <textarea
@@ -134,17 +135,15 @@ const errorMsg = e === "c" ? "Por favor completa el CAPTCHA." : null;
                 <p class="help">Mientras más detalles, mejor te cotizamos.</p>
               </div>
 
-
               <div class="field" id="captcha">
                 <label class="label" for="captchaInput">Código de verificación</label>
                 <div class="flex items-center gap-3">
-                  <!-- ⚠️ No interpolar {Date.now()} en atributo estático.
-                       Lo recargamos por JS cuando el usuario pida refrescar. -->
+                  <!-- Nota: No interpolar {Date.now()} en atributo estático. Se refresca vía JS. -->
                   <img id="captchaImage" src="/api/captcha" alt="Captcha" class="h-10 w-[120px] rounded border" loading="lazy" decoding="async" />
                   <button type="button" id="refreshCaptcha" class="btn btn-secondary">Actualizar</button>
                 </div>
                 <input id="captchaInput" name="captcha" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required
-                      placeholder="Escribe los 6 números" class="input" />
+                       placeholder="Escribe los 6 números" class="input" />
                 <p class="help">Escribe los 6 dígitos tal como aparecen.</p>
               </div>
 
@@ -163,6 +162,7 @@ const errorMsg = e === "c" ? "Por favor completa el CAPTCHA." : null;
 
   <!-- Lógica UI mínima: sin fetch para mantener PE y reducir JS -->
   <script is:inline>
+  (() => {
     const qs = (s, r=document) => r.querySelector(s);
     const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
@@ -208,5 +208,7 @@ const errorMsg = e === "c" ? "Por favor completa el CAPTCHA." : null;
       u.searchParams.set('t', String(Date.now()));
       img.src = u.toString();
     });
+  })();
   </script>
 </Base>
+
