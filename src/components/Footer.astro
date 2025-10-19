@@ -78,9 +78,16 @@ const year = new Date().getFullYear();
   </div>
 
   <!-- Legal -->
-  <div class="border-t border-white/10">
+  <div class="border-t border-white/10 relative z-10">
     <div class="container-max py-6 text-center text-sm text-white/70">
-      © {year} Ecoquimia. Todos los derechos reservados.
+      © <span id="js-current-year">2025</span> Ecoquimia. Todos los derechos reservados.
     </div>
   </div>
-</footer>
+
+  <script>
+    // Pinta el año actual en el cliente (evita que quede “congelado” por el build)
+    (() => {
+      const el = document.getElementById('js-current-year');
+      if (el) el.textContent = String(new Date().getFullYear());
+    })();
+  </script>
