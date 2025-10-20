@@ -21,6 +21,17 @@ const errorMsg =
 : null;
 ---
 
+-const errorMsg =
+-  e === "c"  ? "Por favor completa el CAPTCHA."
+-: e === "mx" ? "Tuvimos un problema enviando el correo. Intenta nuevamente en unos minutos."
+-: null;
++const errorMsg =
++  e === "c"  ? "Código CAPTCHA incorrecto o expirado."
++: e === "mx" ? "Tuvimos un problema enviando el correo. Intenta nuevamente en unos minutos."
++: e === "f"  ? "Completa los campos requeridos."
++: null;
+
+
 <Base title="Cotización — Ecoquimia" description="Solicita tu cotización de control de plagas.">
   <Header slot="header" />
 

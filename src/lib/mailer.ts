@@ -22,7 +22,7 @@ async function sendViaResend({
 }: { subject: string; html: string; text?: string; to?: string; from?: string; replyTo?: string }) {
   if (!RESEND_API_KEY) throw Object.assign(new Error("RESEND_API_KEY missing"), { code: "RESEND_MISSING" });
   const resend = new Resend(RESEND_API_KEY);
-  const res = await resend.emails.send({ from, to, subject, html, text, reply_to: replyTo });
+  const res = await resend.emails.send({ from, to, subject, html, text, replyTo });
   if (res.error) {
     console.error("Resend error:", res.error);
     throw Object.assign(new Error(res.error.message || "Resend send failed"), { code: "RESEND_ERR" });
