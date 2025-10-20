@@ -1,7 +1,7 @@
 // src/pages/api/cotizacion.ts
 import type { APIRoute } from "astro";
 import crypto from "crypto";
-import sendMail from "../../lib/mailer";
+import { sendMail } from "../../lib/mailer";
 
 const SECRET =
   process.env.CAPTCHA_SECRET ||

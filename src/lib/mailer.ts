@@ -1,114 +1,92 @@
-// src/lib/mailer.ts
-export const runtime = 'node';
-
+import { Resend } from "resend";
 import nodemailer from "nodemailer";
 
-type Payload = {
-  name: string;
-  email: string;
-  service: string;
-  quantity?: string;
-  message: string;
-};
+const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
+const RESEND_FROM    = process.env.RESEND_FROM    || "Ecoquimia <onboarding@resend.dev>";
 
-function htmlEscape(s: string) {
-  return s.replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" } as const)[c]!
-  );
+const CONTACT_FROM = process.env.CONTACT_FROM || import.meta.env.CONTACT_FROM; // SMTP from
+const CONTACT_TO   = process.env.CONTACT_TO   || import.meta.env.CONTACT_TO;
+
+const SMTP_HOST   = process.env.SMTP_HOST || "";
+const SMTP_PORT   = Number(process.env.SMTP_PORT || 465);
+const SMTP_SECURE = String(process.env.SMTP_SECURE || "true") === "true";
+const SMTP_USER   = process.env.SMTP_USER || "";
+const SMTP_PASS   = process.env.SMTP_PASS || "";
+
+function hasSmtp() {
+  return Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS);
 }
 
-function renderHTML(p: Payload) {
-  return `
-  <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;line-height:1.5;color:#0a0a0a">
-    <h2 style="margin:0 0 12px 0">Nueva solicitud de cotización</h2>
-    <table style="border-collapse:collapse;width:100%;max-width:560px">
-      <tbody>
-        <tr><td style="padding:8px;border:1px solid #e5e7eb;width:160px;background:#f9fafb"><strong>Nombre</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${htmlEscape(p.name)}</td></tr>
-        <tr><td style="padding:8px;border:1px solid #e5e7eb;background:#f9fafb"><strong>Correo</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${htmlEscape(p.email)}</td></tr>
-        <tr><td style="padding:8px;border:1px solid #e5e7eb;background:#f9fafb"><strong>Servicio</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${htmlEscape(p.service || "(no especificado)")}</td></tr>
-        <tr><td style="padding:8px;border:1px solid #e5e7eb;background:#f9fafb"><strong>Cantidad</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${htmlEscape(p.quantity || "(no aplica)")}</td></tr>
-      </tbody>
-    </table>
-    <h3 style="margin:16px 0 8px 0">Detalle</h3>
-    <pre style="white-space:pre-wrap;padding:12px;border:1px solid #e5e7eb;border-radius:8px;background:#f9fafb">${htmlEscape(p.message || "")}</pre>
-  </div>`;
+async function sendViaResend({
+  subject, html, to = CONTACT_TO!, from = RESEND_FROM,
+}: { subject: string; html: string; to?: string; from?: string }) {
+  if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY missing");
+  const resend = new Resend(RESEND_API_KEY);
+  const res = await resend.emails.send({ from, to, subject, html });
+  if (res.error) {
+    console.error("Resend error:", res.error);
+    throw Object.assign(new Error(res.error.message || "Resend send failed"), { code: "RESEND_ERR" });
+  }
+  console.log("Resend send OK ->", { to, messageId: res.data?.id });
+  return { id: res.data?.id || null, provider: "resend" as const };
 }
 
-function makeTransport({ host, port, secure }: { host: string; port: number; secure: boolean }) {
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  return nodemailer.createTransport({
-    host,
+async function sendViaSmtpOnce({
+  subject, html, to = CONTACT_TO!, from = CONTACT_FROM || SMTP_USER,
+  port, secure,
+}: { subject: string; html: string; to?: string; from?: string; port: number; secure: boolean }) {
+  const transporter = nodemailer.createTransport({
+    host: SMTP_HOST,
     port,
-    secure, // 465 = SSL, 587 = STARTTLS
-    auth: user && pass ? { user, pass } : undefined,
-    requireTLS: !secure,
-    tls: { minVersion: "TLSv1.2", servername: host },
+    secure, // true=SSL(465), false=STARTTLS(587)
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
   });
+  await transporter.verify().catch((e) => {
+    console.error(`SMTP verify failed (${port}/${secure ? "SSL" : "STARTTLS"}):`, e);
+    throw e;
+  });
+  const info = await transporter.sendMail({ from, to, subject, html });
+  console.log(`SMTP send OK (${port}/${secure ? "SSL" : "STARTTLS"}) ->`, {
+    to, messageId: info.messageId, accepted: info.accepted, rejected: info.rejected,
+  });
+  if (info.rejected?.length) throw Object.assign(new Error(`SMTP rejected: ${info.rejected.join(",")}`), { code: "SMTP_REJECTED" });
+  return { id: info.messageId || null };
 }
 
-export async function sendQuoteMail(p: Payload) {
-  const {
-    RESEND_API_KEY,
-    RESEND_FROM_EMAIL,
-    CONTACT_FROM,
-    CONTACT_TO,
-    SMTP_HOST = "smtp.gmail.com",
-    SMTP_USER,
-  } = process.env as Record<string, string | undefined>;
+async function sendViaSmtp({
+  subject, html, to, from,
+}: { subject: string; html: string; to?: string; from?: string }) {
+  // 1) intenta 465/SSL (según tus ENV)
+  try {
+    return { provider: "smtp" as const, ...(await sendViaSmtpOnce({ subject, html, to, from, port: SMTP_PORT, secure: SMTP_SECURE })) };
+  } catch (e) {
+    console.error("SMTP 465 failed, trying 587/STARTTLS ->", e);
+  }
+  // 2) intenta 587/STARTTLS (fallback)
+  return { provider: "smtp" as const, ...(await sendViaSmtpOnce({ subject, html, to, from, port: 587, secure: false })) };
+}
 
-  const to = CONTACT_TO || SMTP_USER || "";
-  const subject = `Nueva solicitud — ${p.service || "Servicio"}`;
-  const text =
-    `Nueva solicitud de cotización\n` +
-    `Nombre: ${p.name}\n` +
-    `Email: ${p.email}\n` +
-    `Servicio: ${p.service || "(no especificado)"}\n` +
-    `Cantidad: ${p.quantity || "(no aplica)"}\n\n` +
-    `Detalle:\n${p.message || ""}`;
+export async function sendMail({
+  subject, html, to, from,
+}: { subject: string; html: string; to?: string; from?: string }) {
+  console.log("sendMail called ->", { to: to || CONTACT_TO, from: from || RESEND_FROM, subject });
 
-  // 1) Resend si hay API key
+  // Preferimos Resend (entrega rápida, menos bloqueos)
   if (RESEND_API_KEY) {
     try {
-      const { Resend } = await import("resend");
-      const resend = new Resend(RESEND_API_KEY);
-      const from = RESEND_FROM_EMAIL || CONTACT_FROM || "no-reply@" + (new URL(process.env.PUBLIC_SITE_URL || "http://localhost")).hostname;
-      const { error } = await resend.emails.send({ to, from, subject, text, html: renderHTML(p) });
-      if (error) throw new Error(error.message || "Fallo al enviar con Resend");
-      return { ok: true as const };
-    } catch (err) {
-      console.warn("[MAIL][RESEND] fallo, se intentará SMTP →", err);
-      // continúa a SMTP
+      const r = await sendViaResend({ subject, html, to, from: RESEND_FROM });
+      console.log("Provider used:", r.provider, r.id);
+      return r;
+    } catch (e) {
+      console.error("Resend error, falling back to SMTP:", e);
     }
   }
 
-  // 2) SMTP con verificación 465 y fallback 587
-  const fromHeader = CONTACT_FROM || (SMTP_USER ? `Ecoquimia <${SMTP_USER}>` : "Ecoquimia <no-reply@localhost>");
-
-  // 2.1: 465 (SSL)
-  try {
-    let tx = makeTransport({ host: SMTP_HOST!, port: 465, secure: true });
-    await tx.verify().catch(() => {});
-    const info = await tx.sendMail({ from: fromHeader, to, replyTo: p.email || undefined, subject, text, html: renderHTML(p) });
-    console.log("[MAIL][SMTP] enviado 465:", info.messageId);
-    return { ok: true as const };
-  } catch (err) {
-    console.warn("[MAIL][SMTP] fallo 465/SSL, reintento en 587/STARTTLS →", err);
+  if (hasSmtp()) {
+    const r = await sendViaSmtp({ subject, html, to, from: CONTACT_FROM || SMTP_USER });
+    console.log("Provider used:", r.provider, r.id);
+    return r;
   }
 
-  // 2.2: 587 (STARTTLS)
-  try {
-    let tx = makeTransport({ host: SMTP_HOST!, port: 587, secure: false });
-    await tx.verify().catch(() => {});
-    const info2 = await tx.sendMail({ from: fromHeader, to, replyTo: p.email || undefined, subject, text, html: renderHTML(p) });
-    console.log("[MAIL][SMTP] enviado 587:", info2.messageId);
-    return { ok: true as const };
-  } catch (err2) {
-    console.error("[MAIL][SMTP] error definitivo:", err2);
-    return { ok: false as const, reason: "smtp_error", error: err2 };
-  }
+  throw new Error("No mail provider available (missing Resend and SMTP)");
 }
-
-export async function sendMail(opts: { subject: string; html: string; to?: string; from?: string }) { /* ... */ }
-export { sendMail as sendEmail };
-export default sendMail; 
