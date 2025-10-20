@@ -1,69 +1,78 @@
 // src/pages/api/cotizacion.ts
-export const runtime = 'node';
-
 import type { APIRoute } from "astro";
-import { sendQuoteMail } from "../../lib/mailer";
-import { createHmac } from "node:crypto";
+import crypto from "crypto";
+import sendMail from "../../lib/mailer";
 
-function hmac(text: string, secret: string) {
-  return createHmac("sha256", secret).update(text, "utf8").digest("hex");
-}
-function wantsJSON(req: Request) {
-  const accept = req.headers.get("accept") || "";
-  return accept.includes("application/json");
-}
-async function verifyCaptcha(cookies: any, code: string): Promise<boolean> {
+const SECRET =
+  process.env.CAPTCHA_SECRET ||
+  import.meta.env.CAPTCHA_SECRET ||
+  "dev-secret";
+
+/** Verifica token HMAC del captcha almacenado en cookie */
+function verifyToken(text: string, token: string) {
+  const [value, mac] = token.split(".");
+  if (!value || !mac) return false;
+  const expected = crypto.createHmac("sha256", SECRET).update(value).digest("hex");
+
   try {
-    const token = cookies.get("captcha_token")?.value || "";
-    const secret = import.meta.env.CAPTCHA_SECRET as string | undefined;
-    if (!token || !secret || !code) return false;
-    const expected = hmac(code.trim(), secret);
-    return token === expected;
+    const okMac = crypto.timingSafeEqual(Buffer.from(mac), Buffer.from(expected));
+    const okVal = value.toLowerCase() === text.toLowerCase();
+    return okMac && okVal;
   } catch {
     return false;
   }
 }
 
-export const POST: APIRoute = async ({ request, cookies }) => {
-  const ct = request.headers.get("content-type") || "";
-  if (!ct.includes("application/x-www-form-urlencoded") && !ct.includes("multipart/form-data")) {
-    return new Response("Unsupported Media Type", { status: 415 });
+export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+  try {
+    const data = await request.formData();
+
+    const name     = String(data.get("name")     || "").trim();
+    const email    = String(data.get("email")    || "").trim();
+    const service  = String(data.get("service")  || "").trim();
+    const message  = String(data.get("message")  || "").trim();
+    const quantity = String(data.get("quantity") || "").trim();
+    const captcha  = String(data.get("captcha")  || "").trim();
+
+    // Honeypot (el input se llama "website" en tu .astro)
+    const honeypot = String(data.get("website") || "");
+    if (honeypot) return new Response("OK", { status: 204 });
+
+    // Requeridos mínimos
+    if (!name || !email || !service || !captcha) {
+      return redirect("/cotizacion?e=f#quoteForm", 303);
+    }
+
+    // CAPTCHA
+    const token = cookies.get("captcha_token")?.value || "";
+    if (!token || !verifyToken(captcha, token)) {
+      return redirect("/cotizacion?e=c#quoteForm", 303);
+    }
+
+    // Email HTML
+    const subject = `Nueva solicitud de cotización — ${service}`;
+    const html = `
+      <div style="font-family:ui-sans-serif,system-ui;line-height:1.5">
+        <h2 style="margin:0 0 8px">Nueva solicitud de cotización</h2>
+        <p><b>Nombre:</b> ${name}</p>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Servicio:</b> ${service}</p>
+        ${quantity ? `<p><b>Cantidad:</b> ${quantity}</p>` : ""}
+        ${message ? `<p><b>Mensaje:</b> ${message}</p>` : ""}
+        <hr style="margin:16px 0;border:none;border-top:1px solid #e5e7eb" />
+        <small>Ecoquimia · ${new Date().toLocaleString("es-DO")}</small>
+      </div>
+    `;
+
+    await sendMail({ subject, html });
+
+    // Limpia cookie y redirige a /gracias con params
+    cookies.delete("captcha_token", { path: "/" });
+    const params = new URLSearchParams({ name, service });
+    return redirect(`/gracias?${params.toString()}`, 303);
+  } catch (err) {
+    console.error("Error en /api/cotizacion:", err);
+    // Tu UI usa e=mx para error de envío de correo
+    return redirect("/cotizacion?e=mx#quoteForm", 303);
   }
-
-  const fd = await request.formData();
-  const name     = (fd.get("name")     || "").toString().trim();
-  const email    = (fd.get("email")    || "").toString().trim();
-  const service  = (fd.get("service")  || "").toString().trim();
-  const quantity = (fd.get("quantity") || "").toString().trim();
-  const message  = (fd.get("message")  || "").toString().trim();
-  const captcha  = (fd.get("captcha")  || "").toString().trim();
-  const honey    = (fd.get("website")  || "").toString().trim();
-
-  if (honey) return new Response("Bad Request", { status: 400 });
-  if (!name || !email || !service || !message) return new Response("Bad Request", { status: 400 });
-
-  const okCaptcha = await verifyCaptcha(cookies, captcha);
-  if (!okCaptcha) {
-    const u = new URL("/cotizacion", request.url);
-    u.searchParams.set("e", "c");
-    u.hash = "quoteForm";
-    return Response.redirect(u, 303);
-  }
-
-  console.log("[MAIL] intentando envío…");
-  const mailRes = await sendQuoteMail({ name, email, service, quantity, message });
-
-  if (!mailRes.ok) {
-    console.error("[MAIL] fallo de envío:", mailRes);
-    const u = new URL("/cotizacion", request.url);
-    u.searchParams.set("e", "mx");
-    u.hash = "quoteForm";
-    return Response.redirect(u, 303);
-  }
-
-  const thanks = new URL("/gracias", request.url);
-  if (name) thanks.searchParams.set("name", name);
-  if (service) thanks.searchParams.set("service", service);
-  return Response.redirect(thanks, 303);
 };
-

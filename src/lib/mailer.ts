@@ -109,3 +109,6 @@ export async function sendQuoteMail(p: Payload) {
   }
 }
 
+export async function sendMail(opts: { subject: string; html: string; to?: string; from?: string }) { /* ... */ }
+export { sendMail as sendEmail };
+export default sendMail; 

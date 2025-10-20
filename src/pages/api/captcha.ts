@@ -1,58 +1,42 @@
-export const runtime = 'node'; // importante en Vercel
-
 import type { APIRoute } from "astro";
 import svgCaptcha from "svg-captcha";
-import { createHmac } from "node:crypto";
+import crypto from "crypto";
 
-function hmac(text: string, secret: string) {
-  return createHmac("sha256", secret).update(text, "utf8").digest("hex");
+const SECRET = process.env.CAPTCHA_SECRET || import.meta.env.CAPTCHA_SECRET || "dev-secret";
+
+// 🔐 Firma correcta: valor.HMAC
+function sign(value: string) {
+  const mac = crypto.createHmac("sha256", SECRET).update(value).digest("hex");
+  return `${value}.${mac}`;
 }
 
 export const GET: APIRoute = async ({ cookies }) => {
-  const secret = import.meta.env.CAPTCHA_SECRET;
-  if (!secret) {
-    // Respuesta SVG legible si falta la env (debug visual).
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="60">
-      <rect width="100%" height="100%" fill="#fee2e2"/>
-      <text x="12" y="38" font-family="monospace" font-size="16" fill="#991b1b">
-        Missing CAPTCHA_SECRET
-      </text>
-    </svg>`;
-    return new Response(svg, {
-      status: 500,
-      headers: { "Content-Type": "image/svg+xml", "Cache-Control":"no-store" },
-    });
-  }
-
   const captcha = svgCaptcha.create({
     size: 6,
     charPreset: "0123456789",
-    color: false,           // texto negro fijo
-    background: "#ffffff",  // fondo blanco puro
-    noise: 2,
-    width: 140,
-    height: 44,
-    fontSize: 46,
+    noise: 3,
+    color: true,
+    background: "#f9fafb",
+    width: 120,
+    height: 40,
   });
 
-  const mac = hmac(captcha.text, secret);
+  const token = sign(captcha.text);
 
-  cookies.set("captcha_token", mac, {
+  cookies.set("captcha_token", token, {
     path: "/",
-    secure: import.meta.env.MODE === "production",
+    // ⚙️ Importante: en localhost no usar secure=true
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     sameSite: "lax",
-    maxAge: 60 * 5,
+    maxAge: 60 * 5, // 5 minutos
   });
 
   return new Response(captcha.data, {
     status: 200,
     headers: {
       "Content-Type": "image/svg+xml",
-      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
-      "Pragma": "no-cache",
-      "Expires": "0",
+      "Cache-Control": "no-store",
     },
   });
 };
-
