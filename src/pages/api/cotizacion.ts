@@ -64,7 +64,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
       </div>
     `;
 
-    await sendMail({ subject, html });
+  
 
     // Limpia cookie y redirige a /gracias con params
     cookies.delete("captcha_token", { path: "/" });
