@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import nodemailer from "nodemailer";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
-const RESEND_FROM    = process.env.RESEND_FROM    || "Ecoquimia <onboarding@resend.dev>";
+const RESEND_FROM    = process.env.RESEND_FROM    || "Ecoquimia <notificaciones@ecoquimia.com.do>";
 
 const CONTACT_FROM = process.env.CONTACT_FROM || import.meta.env.CONTACT_FROM; // SMTP from
 const CONTACT_TO   = process.env.CONTACT_TO   || import.meta.env.CONTACT_TO;

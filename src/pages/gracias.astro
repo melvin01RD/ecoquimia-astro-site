@@ -95,8 +95,8 @@ const sub = `Gracias por elegirnos${service ? ` para “${service}”` : ""}. Un
 
   <!-- Analytics opcional -->
   <script is:inline>
-    (window as any).dataLayer = (window as any).dataLayer || [];
-    (window as any).dataLayer.push({
+    (window).dataLayer = (window).dataLayer || [];
+    window.dataLayer.push({
       event: "quote_submitted",
       service: new URLSearchParams(location.search).get("service") || "",
     });
