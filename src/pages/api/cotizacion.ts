@@ -1,4 +1,8 @@
-// /src/pages/api/cotizacion.ts
+
+export const runtime = "node";
+export const prerender = false;
+
+
 import type { APIRoute } from "astro";
 import { sendMail } from "../../lib/mailer";
 import crypto from "node:crypto";
