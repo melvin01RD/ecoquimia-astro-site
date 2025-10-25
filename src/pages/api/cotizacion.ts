@@ -1,8 +1,3 @@
-
-export const runtime = "node";
-export const prerender = false;
-
-
 import type { APIRoute } from "astro";
 import { sendMail } from "../../lib/mailer";
 import crypto from "node:crypto";
@@ -98,3 +93,5 @@ if (!captcha || !token || captcha.toLowerCase() !== token) {
     return ctx.redirect("/cotizacion?e=mx&d=Error#quoteForm", 303);
   }
 };
+
+// ------------- src/lib/mailer.ts -------------
