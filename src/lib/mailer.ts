@@ -1,80 +1,102 @@
+// src/lib/mailer.ts
 import { Resend } from "resend";
 import nodemailer from "nodemailer";
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
-const RESEND_FROM    = process.env.RESEND_FROM    || "Ecoquimia <notificaciones@ecoquimia.com.do>";
+/** ------------- ENV ------------- **/
+const RESEND_API_KEY =
+  process.env.RESEND_API_KEY ?? import.meta.env.RESEND_API_KEY;
 
-const CONTACT_FROM = process.env.CONTACT_FROM || import.meta.env.CONTACT_FROM; // SMTP from
-const CONTACT_TO   = process.env.CONTACT_TO   || import.meta.env.CONTACT_TO;
+const CONTACT_TO =
+  process.env.CONTACT_TO ?? import.meta.env.CONTACT_TO;
 
-const SMTP_HOST   = process.env.SMTP_HOST || "";
-const SMTP_PORT   = Number(process.env.SMTP_PORT || 465);
-const SMTP_SECURE = String(process.env.SMTP_SECURE || "true") === "true";
-const SMTP_USER   = process.env.SMTP_USER || "";
-const SMTP_PASS   = process.env.SMTP_PASS || "";
+const CONTACT_FROM =
+  process.env.CONTACT_FROM ?? import.meta.env.CONTACT_FROM;
 
-function hasSmtp() {
+// Si usas un remitente específico para Resend (dominio verificado o onboarding@resend.dev)
+const RESEND_FROM_EMAIL =
+  process.env.RESEND_FROM_EMAIL ?? import.meta.env.RESEND_FROM_EMAIL ?? CONTACT_FROM;
+
+// SMTP config (fallback)
+const SMTP_HOST = process.env.SMTP_HOST ?? import.meta.env.SMTP_HOST ?? "";
+const SMTP_PORT = Number(process.env.SMTP_PORT ?? import.meta.env.SMTP_PORT ?? 465);
+const SMTP_SECURE = String(process.env.SMTP_SECURE ?? import.meta.env.SMTP_SECURE ?? "true") === "true";
+const SMTP_USER = process.env.SMTP_USER ?? import.meta.env.SMTP_USER ?? "";
+const SMTP_PASS = process.env.SMTP_PASS ?? import.meta.env.SMTP_PASS ?? "";
+const SMTP_FROM_EMAIL =
+  process.env.SMTP_FROM_EMAIL ?? import.meta.env.SMTP_FROM_EMAIL ?? CONTACT_FROM;
+
+/** ------------- Tipos ------------- **/
+export type SendPayload = {
+  to?: string | string[];       // si no lo pasas, usa CONTACT_TO
+  from?: string;                // si no lo pasas, usa RESEND_FROM_EMAIL / SMTP_FROM_EMAIL
+  subject: string;
+  html?: string;
+  text?: string;
+  replyTo?: string | string[];  // “Responder a”
+};
+
+function canUseResend() {
+  return Boolean(RESEND_API_KEY);
+}
+
+function canUseSmtp() {
   return Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS);
 }
 
-async function sendViaResend({
-  subject, html, to = CONTACT_TO!, from = RESEND_FROM,
-}: { subject: string; html: string; to?: string; from?: string }) {
-  if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY missing");
-  const resend = new Resend(RESEND_API_KEY);
-  const res = await resend.emails.send({ from, to, subject, html });
-  if (res.error) {
-    console.error("Resend error:", res.error);
-    throw Object.assign(new Error(res.error.message || "Resend send failed"), { code: "RESEND_ERR" });
-  }
-  console.log("Resend send OK ->", { to, messageId: res.data?.id });
-  return { id: res.data?.id || null, provider: "resend" as const };
+/** ------------- Proveedor: Resend ------------- **/
+async function sendViaResend(payload: SendPayload) {
+  const resend = new Resend(RESEND_API_KEY as string);
+
+  const to = payload.to ?? CONTACT_TO;
+  const from = payload.from ?? RESEND_FROM_EMAIL;
+
+  if (!to || !from) throw new Error("Faltan 'to' o 'from' para Resend.");
+
+  // Nota: el SDK acepta 'reply_to' (snake_case)
+const result = await (resend.emails as any).send({
+  to,
+  from,
+  subject: payload.subject,
+  html: payload.html,
+  text: payload.text,
+  reply_to: payload.replyTo,
+});
+
+  return { provider: "resend", id: (result as any)?.id ?? null };
 }
 
-async function sendViaSmtpOnce({
-  subject, html, to = CONTACT_TO!, from = CONTACT_FROM || SMTP_USER,
-  port, secure,
-}: { subject: string; html: string; to?: string; from?: string; port: number; secure: boolean }) {
+/** ------------- Proveedor: SMTP (Nodemailer) ------------- **/
+async function sendViaSmtp(payload: SendPayload) {
   const transporter = nodemailer.createTransport({
     host: SMTP_HOST,
-    port,
-    secure, // true=SSL(465), false=STARTTLS(587)
+    port: SMTP_PORT,
+    secure: SMTP_SECURE,
     auth: { user: SMTP_USER, pass: SMTP_PASS },
   });
-  await transporter.verify().catch((e) => {
-    console.error(`SMTP verify failed (${port}/${secure ? "SSL" : "STARTTLS"}):`, e);
-    throw e;
+
+  const to = payload.to ?? CONTACT_TO;
+  const from = payload.from ?? SMTP_FROM_EMAIL ?? SMTP_USER;
+
+  if (!to || !from) throw new Error("Faltan 'to' o 'from' para SMTP.");
+
+  const info = await transporter.sendMail({
+    to,
+    from,
+    subject: payload.subject,
+    html: payload.html,
+    text: payload.text,
+    replyTo: payload.replyTo, // nodemailer usa camelCase
   });
-  const info = await transporter.sendMail({ from, to, subject, html });
-  console.log(`SMTP send OK (${port}/${secure ? "SSL" : "STARTTLS"}) ->`, {
-    to, messageId: info.messageId, accepted: info.accepted, rejected: info.rejected,
-  });
-  if (info.rejected?.length) throw Object.assign(new Error(`SMTP rejected: ${info.rejected.join(",")}`), { code: "SMTP_REJECTED" });
-  return { id: info.messageId || null };
+
+  return { provider: "smtp", id: info.messageId ?? null };
 }
 
-async function sendViaSmtp({
-  subject, html, to, from,
-}: { subject: string; html: string; to?: string; from?: string }) {
-  // 1) intenta 465/SSL (según tus ENV)
-  try {
-    return { provider: "smtp" as const, ...(await sendViaSmtpOnce({ subject, html, to, from, port: SMTP_PORT, secure: SMTP_SECURE })) };
-  } catch (e) {
-    console.error("SMTP 465 failed, trying 587/STARTTLS ->", e);
-  }
-  // 2) intenta 587/STARTTLS (fallback)
-  return { provider: "smtp" as const, ...(await sendViaSmtpOnce({ subject, html, to, from, port: 587, secure: false })) };
-}
-
-export async function sendMail({
-  subject, html, to, from,
-}: { subject: string; html: string; to?: string; from?: string }) {
-  console.log("sendMail called ->", { to: to || CONTACT_TO, from: from || RESEND_FROM, subject });
-
-  // Preferimos Resend (entrega rápida, menos bloqueos)
-  if (RESEND_API_KEY) {
+/** ------------- Facade principal ------------- **/
+export async function sendMail(payload: SendPayload) {
+  // 1) Intenta Resend si hay API key
+  if (canUseResend()) {
     try {
-      const r = await sendViaResend({ subject, html, to, from: RESEND_FROM });
+      const r = await sendViaResend(payload);
       console.log("Provider used:", r.provider, r.id);
       return r;
     } catch (e) {
@@ -82,11 +104,13 @@ export async function sendMail({
     }
   }
 
-  if (hasSmtp()) {
-    const r = await sendViaSmtp({ subject, html, to, from: CONTACT_FROM || SMTP_USER });
+  // 2) Fallback a SMTP si está configurado
+  if (canUseSmtp()) {
+    const r = await sendViaSmtp(payload);
     console.log("Provider used:", r.provider, r.id);
     return r;
   }
 
-  throw new Error("No mail provider available (missing Resend and SMTP)");
+  // 3) Si no hay ninguno, error controlado
+  throw new Error("No hay proveedor de correo disponible (Resend o SMTP).");
 }

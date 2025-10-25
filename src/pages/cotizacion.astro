@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
-// Nota: SSR (mejor para /api y control de caché)
+// SSR (mejor para /api y control de caché)
 export const prerender = false;
 
 import { Grid2x2, Mail, User, AtSign, ListFilter, Hash } from "@lucide/astro";
@@ -12,12 +12,13 @@ import { services, getServiceOptions } from "../data/services";
 const options = getServiceOptions();
 const honeypotName = "website";
 
-// Nota: Lee el query param para error ligero (e=c => captcha_required, e=mx => mail error)
+// Lee el query param para error ligero (e=c => captcha_required, e=mx => mail error)
 const url = new URL(Astro.request.url);
 const e = url.searchParams.get("e");
 const errorMsg =
-  e === "c"  ? "Por favor completa el CAPTCHA."
+  e === "c"  ? "Código CAPTCHA incorrecto o expirado."
 : e === "mx" ? "Tuvimos un problema enviando el correo. Intenta nuevamente en unos minutos."
+: e === "f"  ? "Completa los campos requeridos."
 : null;
 ---
 
@@ -35,7 +36,6 @@ const errorMsg =
 
   <section class="section-pad">
     <div class="container-max grid gap-6 md:gap-8 md:grid-cols-[1fr_420px] lg:grid-cols-[1fr_480px]">
-
       <!-- Tipos de servicio -->
       <div class="surface rounded-app p-5 md:p-6 min-h-[60vh]">
         <h2 class="text-base md:text-lg font-semibold mb-4 flex items-center gap-2">
@@ -67,7 +67,6 @@ const errorMsg =
             <Mail class="w-5 h-5" /> Solicitar cotización
           </h2>
 
-          <!-- Nota: Aviso de error ligero, SSR, sin JS -->
           {errorMsg && (
             <p role="alert" class="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-red-800">
               {errorMsg}
@@ -121,7 +120,6 @@ const errorMsg =
                 </div>
               </div>
 
-              <!-- Mensaje -->
               <div class="field">
                 <label class="label" for="message">Describe tu necesidad</label>
                 <textarea
@@ -138,12 +136,20 @@ const errorMsg =
               <div class="field" id="captcha">
                 <label class="label" for="captchaInput">Código de verificación</label>
                 <div class="flex items-center gap-3">
-                  <!-- Nota: No interpolar {Date.now()} en atributo estático. Se refresca vía JS. -->
                   <img id="captchaImage" src="/api/captcha" alt="Captcha" class="h-10 w-[120px] rounded border" loading="lazy" decoding="async" />
                   <button type="button" id="refreshCaptcha" class="btn btn-secondary">Actualizar</button>
                 </div>
-                <input id="captchaInput" name="captcha" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required
-                       placeholder="Escribe los 6 números" class="input" />
+                <input
+                  id="captchaInput"
+                  name="captcha"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]{6}"
+                  maxlength="6"
+                  required
+                  placeholder="Escribe los 6 números"
+                  class="input"
+                />
                 <p class="help">Escribe los 6 dígitos tal como aparecen.</p>
               </div>
 
@@ -160,55 +166,51 @@ const errorMsg =
 
   <Footer slot="footer" />
 
-  <!-- Lógica UI mínima: sin fetch para mantener PE y reducir JS -->
+  <!-- Lógica UI mínima -->
   <script is:inline>
-  (() => {
-    const qs = (s, r=document) => r.querySelector(s);
-    const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
+    (() => {
+      const qs = (s, r=document) => r.querySelector(s);
+      const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-    const select = qs("#serviceSelect");
+      const select = qs("#serviceSelect");
 
-    // Preselección desde URL (mejora UX, sin recarga)
-    function preselectFromURL() {
-      const params = new URLSearchParams(window.location.search);
-      const s = params.get("service");
-      if (s && select) {
-        const match = Array.from(select.options).find(o => o.value === s);
-        if (match) {
-          select.value = s;
-          document.getElementById("quoteForm")?.scrollIntoView({ behavior:"smooth", block:"start" });
-          qs("#name")?.focus({ preventScroll: true });
-        }
-      }
-    }
-    requestAnimationFrame(preselectFromURL);
-
-    // Click en tarjetas: preseleccionar + scroll sin recargar
-    qsa('a[data-service]').forEach(a => {
-      a.addEventListener('click', (e) => {
-        if (location.pathname.endsWith('/cotizacion')) {
-          e.preventDefault();
-          const s = a.getAttribute('data-service');
-          if (select && s) {
+      function preselectFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const s = params.get("service");
+        if (s && select) {
+          const match = Array.from(select.options).find(o => o.value === s);
+          if (match) {
             select.value = s;
-            history.replaceState(null, '', `/cotizacion?service=${encodeURIComponent(s)}#quoteForm`);
-            document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById("quoteForm")?.scrollIntoView({ behavior:"smooth", block:"start" });
             qs("#name")?.focus({ preventScroll: true });
           }
         }
-      });
-    });
+      }
+      requestAnimationFrame(preselectFromURL);
 
-    // Refresh CAPTCHA (evitar cache con timestamp)
-    const img = qs("#captchaImage");
-    const btnRefresh = qs("#refreshCaptcha");
-    btnRefresh?.addEventListener("click", () => {
-      if (!img) return;
-      const u = new URL('/api/captcha', window.location.origin);
-      u.searchParams.set('t', String(Date.now()));
-      img.src = u.toString();
-    });
-  })();
+      qsa('a[data-service]').forEach(a => {
+        a.addEventListener('click', (e) => {
+          if (location.pathname.endsWith('/cotizacion')) {
+            e.preventDefault();
+            const s = a.getAttribute('data-service');
+            if (select && s) {
+              select.value = s;
+              history.replaceState(null, '', `/cotizacion?service=${encodeURIComponent(s)}#quoteForm`);
+              document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              qs("#name")?.focus({ preventScroll: true });
+            }
+          }
+        });
+      });
+
+      const img = qs("#captchaImage");
+      const btnRefresh = qs("#refreshCaptcha");
+      btnRefresh?.addEventListener("click", () => {
+        if (!img) return;
+        const u = new URL('/api/captcha', window.location.origin);
+        u.searchParams.set('t', String(Date.now()));
+        img.src = u.toString();
+      });
+    })();
   </script>
 </Base>
-

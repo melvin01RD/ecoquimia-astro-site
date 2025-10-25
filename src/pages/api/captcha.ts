@@ -1,14 +1,5 @@
 import type { APIRoute } from "astro";
 import svgCaptcha from "svg-captcha";
-import crypto from "crypto";
-
-const SECRET = process.env.CAPTCHA_SECRET || import.meta.env.CAPTCHA_SECRET || "dev-secret";
-
-// 🔐 Firma correcta: valor.HMAC
-function sign(value: string) {
-  const mac = crypto.createHmac("sha256", SECRET).update(value).digest("hex");
-  return `${value}.${mac}`;
-}
 
 export const GET: APIRoute = async ({ cookies }) => {
   const captcha = svgCaptcha.create({
@@ -21,11 +12,9 @@ export const GET: APIRoute = async ({ cookies }) => {
     height: 40,
   });
 
-  const token = sign(captcha.text);
-
-  cookies.set("captcha_token", token, {
+  // guarda el valor en texto plano (solo válido 5 min)
+  cookies.set("captcha_token", captcha.text.toLowerCase(), {
     path: "/",
-    // ⚙️ Importante: en localhost no usar secure=true
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     sameSite: "lax",
@@ -34,9 +23,6 @@ export const GET: APIRoute = async ({ cookies }) => {
 
   return new Response(captcha.data, {
     status: 200,
-    headers: {
-      "Content-Type": "image/svg+xml",
-      "Cache-Control": "no-store",
-    },
+    headers: { "Content-Type": "image/svg+xml" },
   });
 };

@@ -1,79 +1,97 @@
-// src/pages/api/cotizacion.ts
 import type { APIRoute } from "astro";
-import crypto from "crypto";
 import { sendMail } from "../../lib/mailer";
+import crypto from "node:crypto";
 
-const SECRET =
-  process.env.CAPTCHA_SECRET ||
-  import.meta.env.CAPTCHA_SECRET ||
-  "dev-secret";
+export const prerender = false;
+export const runtime = "node"; // MUY IMPORTANTE para Resend/SMTP
 
-/** Verifica token HMAC del captcha almacenado en cookie */
-function verifyToken(text: string, token: string) {
-  const [value, mac] = token.split(".");
-  if (!value || !mac) return false;
-  const expected = crypto.createHmac("sha256", SECRET).update(value).digest("hex");
-
-  try {
-    const okMac = crypto.timingSafeEqual(Buffer.from(mac), Buffer.from(expected));
-    const okVal = value.toLowerCase() === text.toLowerCase();
-    return okMac && okVal;
-  } catch {
-    return false;
-  }
+function safeEqual(a: string, b: string) {
+  if (a.length !== b.length) return false;
+  let x = 0;
+  for (let i = 0; i < a.length; i++) x |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return x === 0;
+}
+function signCaptchaText(text: string, secret: string) {
+  return crypto.createHmac("sha256", secret).update(text).digest("hex");
 }
 
-export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+export const POST: APIRoute = async (ctx) => {
   try {
+    const { request, cookies, redirect } = ctx;
     const data = await request.formData();
 
-    const name     = String(data.get("name")     || "").trim();
-    const email    = String(data.get("email")    || "").trim();
-    const service  = String(data.get("service")  || "").trim();
-    const message  = String(data.get("message")  || "").trim();
+    const name = String(data.get("name") || "").trim();
+    const email = String(data.get("email") || "").trim();
+    const service = String(data.get("service") || "").trim();
     const quantity = String(data.get("quantity") || "").trim();
-    const captcha  = String(data.get("captcha")  || "").trim();
+    const message = String(data.get("message") || "").trim();
+    const captcha = String(data.get("captcha") || "").trim();
+    const honeypot = String(data.get("website") || "").trim(); // honeypot
 
-    // Honeypot (el input se llama "website" en tu .astro)
-    const honeypot = String(data.get("website") || "");
-    if (honeypot) return new Response("OK", { status: 204 });
+    // Honeypot
+    if (honeypot) return redirect("/cotizacion?e=f#quoteForm", 303);
 
-    // Requeridos mínimos
-    if (!name || !email || !service || !captcha) {
+    // Requeridos
+    if (!name || !email || !service || !message) {
       return redirect("/cotizacion?e=f#quoteForm", 303);
     }
+const token = cookies.get("captcha_token")?.value?.toLowerCase() || "";
+if (!captcha || !token || captcha.toLowerCase() !== token) {
+  console.warn("[captcha] incorrecto o expirado");
+  return redirect("/cotizacion?e=c#quoteForm", 303);
+}
 
-    // CAPTCHA
-    const token = cookies.get("captcha_token")?.value || "";
-    if (!token || !verifyToken(captcha, token)) {
-      return redirect("/cotizacion?e=c#quoteForm", 303);
+
+
+    // ENV correo
+    const CONTACT_FROM = import.meta.env.CONTACT_FROM as string | undefined;
+    const CONTACT_TO = import.meta.env.CONTACT_TO as string | undefined;
+    if (!CONTACT_FROM || !CONTACT_TO) {
+      console.error("[mail] Falta CONTACT_FROM/CONTACT_TO");
+      return redirect("/cotizacion?e=mx&d=EnvMissing#quoteForm", 303);
     }
 
-    // Email HTML
-    const subject = `Nueva solicitud de cotización — ${service}`;
+    const subject = `Nueva cotización — ${service} (${name})`;
     const html = `
-      <div style="font-family:ui-sans-serif,system-ui;line-height:1.5">
-        <h2 style="margin:0 0 8px">Nueva solicitud de cotización</h2>
-        <p><b>Nombre:</b> ${name}</p>
-        <p><b>Email:</b> ${email}</p>
-        <p><b>Servicio:</b> ${service}</p>
-        ${quantity ? `<p><b>Cantidad:</b> ${quantity}</p>` : ""}
-        ${message ? `<p><b>Mensaje:</b> ${message}</p>` : ""}
-        <hr style="margin:16px 0;border:none;border-top:1px solid #e5e7eb" />
-        <small>Ecoquimia · ${new Date().toLocaleString("es-DO")}</small>
-      </div>
+      <h2>Solicitud de cotización</h2>
+      <ul>
+        <li><b>Nombre:</b> ${name}</li>
+        <li><b>Correo:</b> ${email}</li>
+        <li><b>Servicio:</b> ${service}</li>
+        ${quantity ? `<li><b>Cantidad:</b> ${quantity}</li>` : ""}
+      </ul>
+      <p><b>Mensaje:</b></p>
+      <p>${message.replace(/\n/g, "<br/>")}</p>
     `;
+    const text =
+      `Solicitud de cotización\n\n` +
+      `Nombre: ${name}\n` +
+      `Correo: ${email}\n` +
+      `Servicio: ${service}\n` +
+      (quantity ? `Cantidad: ${quantity}\n` : "") +
+      `\nMensaje:\n${message}\n`;
 
-  // Enviar email al destinatario configurado (CONTACT_TO)
-  await sendMail({ subject, html });
+    const res = await sendMail({
+      from: CONTACT_FROM,
+      to: CONTACT_TO,
+      subject,
+      html,
+      text,
+      replyTo: email,
+    });
 
-    // Limpia cookie y redirige a /gracias con params
+    if ((res as any).error) {
+      console.error("[mail] Error:", (res as any).error);
+      return redirect("/cotizacion?e=mx&d=SendFail#quoteForm", 303);
+    }
+
     cookies.delete("captcha_token", { path: "/" });
-    const params = new URLSearchParams({ name, service });
-    return redirect(`/gracias?${params.toString()}`, 303);
+    const qp = new URLSearchParams({ name, service });
+    return redirect(`/gracias?${qp.toString()}`, 303);
   } catch (err) {
-    console.error("Error en /api/cotizacion:", err);
-    // Tu UI usa e=mx para error de envío de correo
-    return redirect("/cotizacion?e=mx#quoteForm", 303);
+    console.error("[cotizacion] Excepción:", err);
+    return ctx.redirect("/cotizacion?e=mx&d=Error#quoteForm", 303);
   }
 };
+
+// ------------- src/lib/mailer.ts -------------
