@@ -1,30 +1,38 @@
 // src/data/services.ts
 import { z } from "zod";
 
+// Agregamos imgSrc y imgAlt al tipo
 export type Service = {
-  title: string;        // label visible
-  description: string;  // resumen para card/listas
-  bullets: string[];    // puntos de valor (detalle)
-  emoji: string;        // puedes reemplazar por iconos luego
-  slug: string;         // ID estable para URL/API (no cambiar una vez publicado)
+  title: string;
+  description: string;
+  bullets: string[];
+  emoji: string;
+  slug: string;
+  imgSrc?: string;
+  imgAlt?: string;
 };
+
+// Usamos la misma imagen de termitas para TODOS
+const TERMINAS_IMG = "/img/servicios/tratamiento-de-termitas.jpeg";
 
 export const services: Service[] = [
   {
     title: "Desinsectación",
-    description:
-      "Eliminación de insectos rastreros y voladores con geles, cebos y aspersión de baja toxicidad.",
+    description: "Eliminación de insectos rastreros y voladores con geles, cebos y aspersión.",
     bullets: ["Cucarachas y hormigas", "Mosquitos y moscas", "Arañas y chinches"],
     emoji: "🐞",
     slug: "desinsectacion",
+    imgSrc: TERMINAS_IMG, // Prueba
+    imgAlt: "Desinsectación",
   },
   {
     title: "Desratización",
-    description:
-      "Control de roedores con estaciones seguras, trampeo y sellado de puntos críticos.",
+    description: "Control de roedores con estaciones seguras, trampeo y sellado de puntos críticos.",
     bullets: ["Monitoreo con placas", "Mapeo de riesgo", "Reporte técnico"],
     emoji: "🪤",
     slug: "desratizacion",
+    imgSrc: TERMINAS_IMG, // Prueba
+    imgAlt: "Desratización",
   },
   {
     title: "Sanitización / Desinfección",
@@ -32,6 +40,8 @@ export const services: Service[] = [
     bullets: ["Protocolos MIP", "Ficha técnica y MSDS", "Certificación de servicio"],
     emoji: "🧴",
     slug: "sanitizacion",
+    imgSrc: TERMINAS_IMG, // Prueba
+    imgAlt: "Sanitización",
   },
   {
     title: "Tratamiento antitermitas",
@@ -39,6 +49,8 @@ export const services: Service[] = [
     bullets: ["Inspección con sonda", "Garantía por escrito", "Plan de mantenimiento"],
     emoji: "🪵",
     slug: "antitermitas",
+    imgSrc: TERMINAS_IMG, // La original
+    imgAlt: "Tratamiento de termitas",
   },
   {
     title: "Limpieza de tanques",
@@ -46,6 +58,8 @@ export const services: Service[] = [
     bullets: ["Análisis microbiológico", "Registro fotográfico", "Informe técnico"],
     emoji: "💧",
     slug: "tanques",
+    imgSrc: TERMINAS_IMG, // Prueba
+    imgAlt: "Limpieza de tanques",
   },
   {
     title: "Control de palomas",
@@ -53,18 +67,14 @@ export const services: Service[] = [
     bullets: ["Evaluación de riesgo", "Soluciones no letales", "Limpieza y desinfección"],
     emoji: "🕊️",
     slug: "palomas",
+    imgSrc: TERMINAS_IMG, // Prueba
+    imgAlt: "Control de palomas",
   },
 ] as const;
 
-/* ===== Helpers reutilizables ===== */
+/* ===== Helpers (sin cambios) ===== */
 export const SERVICE_SLUGS = services.map(s => s.slug) as readonly string[];
 export const ServiceSlugEnum = z.enum(SERVICE_SLUGS as [string, ...string[]]);
-
-export const SERVICE_BY_SLUG: Record<string, Service> =
-  Object.fromEntries(services.map(s => [s.slug, s]));
-
-export const getServiceBySlug = (slug?: string | null) =>
-  slug ? SERVICE_BY_SLUG[slug] : undefined;
-
-export const getServiceOptions = () =>
-  services.map(s => ({ value: s.slug, label: s.title }));
+export const SERVICE_BY_SLUG: Record<string, Service> = Object.fromEntries(services.map(s => [s.slug, s]));
+export const getServiceBySlug = (slug?: string | null) => slug ? SERVICE_BY_SLUG[slug] : undefined;
+export const getServiceOptions = () => services.map(s => ({ value: s.slug, label: s.title }));

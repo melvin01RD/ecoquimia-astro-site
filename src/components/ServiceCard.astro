@@ -1,14 +1,37 @@
 ---
 import type { Service } from "../data/services";
-const { service } = Astro.props as { service: Service };
+
+/** Extiende tu tipo para permitir imagen opcional */
+type ServiceWithImg = Service & { imgSrc?: string; imgAlt?: string };
+
+const { service } = Astro.props as { service: ServiceWithImg };
+const hasImage = Boolean(service.imgSrc);
 ---
-<article class="surface rounded-app p-6 card-hover will-change-transform">
-  <div class="w-14 h-14 rounded-2xl grid place-items-center bg-emerald-50 text-brand text-2xl mb-3 border border-emerald-100">
-    {service.emoji}
+
+<article class="surface rounded-app overflow-hidden card-hover will-change-transform">
+  {hasImage && (
+    <img
+      src={service.imgSrc!}
+      alt={service.imgAlt ?? service.title}
+      loading="lazy"
+      class="w-full h-48 object-cover"
+    />
+  )}
+
+  <div class="p-6">
+    {!hasImage && (
+      <div class="w-14 h-14 rounded-2xl grid place-items-center bg-emerald-50 text-brand text-2xl mb-3 border border-emerald-100">
+        {service.emoji}
+      </div>
+    )}
+
+    <h3 class="font-bold text-lg text-zinc-900">{service.title}</h3>
+    <p class="text-sm text-zinc-600 mt-1">{service.description}</p>
+
+    {service?.bullets?.length ? (
+      <ul class="mt-4 text-sm text-zinc-700 space-y-1 list-disc pl-5 marker:text-brand/80">
+        {service.bullets.map((b) => <li>{b}</li>)}
+      </ul>
+    ) : null}
   </div>
-  <h3 class="font-bold text-lg text-zinc-900">{service.title}</h3>
-  <p class="text-sm text-zinc-600 mt-1">{service.description}</p>
-  <ul class="mt-4 text-sm text-zinc-700 space-y-1 list-disc pl-5 marker:text-brand/80">
-    {service.bullets.map((b) => <li>{b}</li>)}
-  </ul>
 </article>

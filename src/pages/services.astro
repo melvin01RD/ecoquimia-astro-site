@@ -2,25 +2,30 @@
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { services } from "../data/services";
+import { services } from "../data/services"; // Importamos la data con imágenes
 import ServiceCard from "../components/ServiceCard.astro";
+import { config } from "../config";
+
 export const prerender = true;
 
-// Helper: JSON-LD para SEO (lista de servicios)
+// JSON-LD SEO
 const listJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  "name": "Servicios de control de plagas",
-  "itemListElement": services.map((s, i) => ({
+  name: "Servicios de control de plagas",
+  itemListElement: services.map((s, i) => ({
     "@type": "ListItem",
-    "position": i + 1,
-    "item": {
+    position: i + 1,
+    item: {
       "@type": "Service",
-      "name": s?.title ?? "Servicio",
-      "description": s?.description ?? undefined
-    }
-  }))
+      name: s.title,
+      description: s.description,
+      image: s.imgSrc 
+    },
+  })),
 };
+
+const whatsappHref = `https://wa.me/${config.contact.phone}?text=${encodeURIComponent(config.contact.whatsappText)}`;
 ---
 
 <Base title="Servicios — Ecoquimia" description="Planes residenciales y comerciales de control de plagas.">
@@ -38,26 +43,23 @@ const listJsonLd = {
         </p>
       </div>
 
-      <!-- Grid mobile-first -->
       <div class="mt-10 grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {services.map((s) => <ServiceCard service={s} />)}
       </div>
 
-      <!-- CTA general -->
       <div class="mt-10 text-center">
         <a
-          href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, quiero una cotización de control de plagas.")}`}
-          target="_blank" rel="noopener noreferrer"
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
           class="btn btn-primary rounded-full"
+          aria-label="Solicitar cotización por WhatsApp"
         >
-          Solicitar cotización por WhatsApp
+          Solicitar cotización
         </a>
       </div>
     </section>
   </main>
-
-  <!-- JSON-LD SEO -->
-  <script type="application/ld+json">{JSON.stringify(listJsonLd)}</script>
 
   <Footer slot="footer" />
 </Base>

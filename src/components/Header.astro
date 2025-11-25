@@ -1,4 +1,6 @@
 ---
+import { config } from "../config";
+
 const links = [
   { href: "/", label: "Inicio" },
   { href: "/nosotros", label: "Nosotros" },
@@ -13,31 +15,23 @@ const { pathname } = Astro.url;
 
 <header class="site-header sticky top-0 z-50 text-white border-b border-white/10" data-js="header">
 
-  <!-- Control de visibilidad del nav desktop -->
   <style is:global>
     @media (max-width: 767.98px){ .site-header .nav-desktop{ display: none !important; } }
     @media (min-width: 768px){ .site-header .nav-desktop{ display: flex !important; } }
   </style>
 
   <div class="container-max flex items-center justify-between h-20">
-    <!-- Logo -->
     <a href="/" class="inline-flex items-center gap-2 no-underline flex-shrink-0" aria-label="Inicio">
-      <!-- OJO: este archivo EXISTE: /public/logo/logo.png -->
       <img
-  src="/logo/logo-transparent.png"
-  alt="Ecoquimia — Creamos un Ambiente sin Plagas"
-  width="210" height="120"
-  class="logo block h-10 md:h-12 w-auto select-none"
-  loading="eager" decoding="async" fetchpriority="high"
-/>
-
-      <!-- Si tu PNG es oscuro y el fondo es negro, activa el filtro claro:
-           cambia la clase anterior por: class="logo block h-10 md:h-12 w-auto select-none logo-invert"
-           (ya tienes .logo-invert en global.css) -->
+        src="/logo/logo.png"
+        alt="Ecoquimia — Creamos un Ambiente sin Plagas"
+        width="210" height="120"
+        class="logo block h-10 md:h-12 w-auto select-none"
+        loading="eager" decoding="async" fetchpriority="high"
+      />
       <span class="sr-only">Ecoquimia</span>
     </a>
 
-    <!-- Desktop nav -->
     <nav class="nav-desktop hidden md:flex items-center gap-6" aria-label="Principal">
       {links.map((l) => (
         <a
@@ -49,10 +43,9 @@ const { pathname } = Astro.url;
       ))}
     </nav>
 
-    <!-- Acciones mobile: WhatsApp + Burger -->
     <div class="md:hidden flex items-center gap-2">
       <a
-        href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, quiero una cotización de control de plagas.")}`}
+        href={`https://wa.me/${config.contact.phone}?text=${encodeURIComponent(config.contact.whatsappText)}`}
         class="inline-flex items-center justify-center rounded-xl px-3 py-2 bg-emerald-600 text-white text-sm hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
         target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
       >
@@ -74,7 +67,6 @@ const { pathname } = Astro.url;
     </div>
   </div>
 
-  <!-- Panel móvil -->
   <div
     id="mobileMenu"
     class="md:hidden hidden border-t border-white/10 bg-zinc-900/95 backdrop-blur supports-[backdrop-filter]:bg-zinc-900/80 will-change-transform"
@@ -95,7 +87,7 @@ const { pathname } = Astro.url;
         ))}
         <li class="border-t border-white/10">
           <a
-            href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, quiero una cotización de control de plagas.")}`}
+            href={`https://wa.me/${config.contact.phone}?text=${encodeURIComponent(config.contact.whatsappText)}`}
             target="_blank" rel="noopener noreferrer"
             class="block px-3 py-3 text-base text-white/90 hover:bg-white/10 hover:text-white"
             data-close
@@ -126,20 +118,4 @@ const { pathname } = Astro.url;
     function setOpen(open){
       btn.setAttribute('aria-expanded', String(open));
       panel.classList.toggle('hidden', !open);
-      panel.setAttribute('aria-hidden', String(!open));
-      lockBodyScroll(open);
-      if (burgerPath){
-        burgerPath.setAttribute('d', open ? 'M6 6l12 12M18 6l-12 12' : 'M4 6h16M4 12h16M4 18h16');
-      }
-    }
-
-    btn.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'), {passive:true});
-    panel.addEventListener('click', (e) => { if (e.target.closest('[data-close]')) setOpen(false); }, {passive:true});
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
-    document.addEventListener('click', (e) => {
-      if (btn.getAttribute('aria-expanded') !== 'true') return;
-      if (!panel.contains(e.target) && !btn.contains(e.target)) setOpen(false);
-    }, {passive:true});
-    mqDesktop.addEventListener?.('change', () => setOpen(false));
-  });
-</script>
+      panel.setAttribute('aria-hidden',

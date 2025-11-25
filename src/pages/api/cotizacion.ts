@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { sendMail } from "../../lib/mailer";
+import { config } from "../../config";
 import crypto from "node:crypto";
 
 export const prerender = false;
@@ -35,20 +36,10 @@ export const POST: APIRoute = async (ctx) => {
     if (!name || !email || !service || !message) {
       return redirect("/cotizacion?e=f#quoteForm", 303);
     }
-const token = cookies.get("captcha_token")?.value?.toLowerCase() || "";
-if (!captcha || !token || captcha.toLowerCase() !== token) {
-  console.warn("[captcha] incorrecto o expirado");
-  return redirect("/cotizacion?e=c#quoteForm", 303);
-}
-
-
-
-    // ENV correo
-    const CONTACT_FROM = import.meta.env.CONTACT_FROM as string | undefined;
-    const CONTACT_TO = import.meta.env.CONTACT_TO as string | undefined;
-    if (!CONTACT_FROM || !CONTACT_TO) {
-      console.error("[mail] Falta CONTACT_FROM/CONTACT_TO");
-      return redirect("/cotizacion?e=mx&d=EnvMissing#quoteForm", 303);
+    const token = cookies.get("captcha_token")?.value?.toLowerCase() || "";
+    if (!captcha || !token || captcha.toLowerCase() !== token) {
+      console.warn("[captcha] incorrecto o expirado");
+      return redirect("/cotizacion?e=c#quoteForm", 303);
     }
 
     const subject = `Nueva cotización — ${service} (${name})`;
@@ -72,8 +63,8 @@ if (!captcha || !token || captcha.toLowerCase() !== token) {
       `\nMensaje:\n${message}\n`;
 
     const res = await sendMail({
-      from: CONTACT_FROM,
-      to: CONTACT_TO,
+      from: config.contact.from,
+      to: config.contact.to,
       subject,
       html,
       text,
@@ -88,7 +79,7 @@ if (!captcha || !token || captcha.toLowerCase() !== token) {
     cookies.delete("captcha_token", { path: "/" });
     const qp = new URLSearchParams({ name, service });
     return redirect(`/gracias?${qp.toString()}`, 303);
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("[cotizacion] Excepción:", err);
     return ctx.redirect("/cotizacion?e=mx&d=Error#quoteForm", 303);
   }

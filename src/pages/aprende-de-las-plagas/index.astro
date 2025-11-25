@@ -4,29 +4,33 @@ import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 export const prerender = true;
 
-// Tarjetas (linkean a las guías internas)
+// Ruta de imagen temporal (usa tus propias imágenes 600x400 aprox)
+const IMG_PLACEHOLDER = "/img/servicios/tratamiento-de-termitas.jpeg";
+
 const posts = [
   {
     slug: "cucarachas",
     title: "Cucarachas: prevención básica",
     excerpt: "Sellado de grietas, manejo de basura y control de humedad.",
     href: "/aprende-de-las-plagas/cucarachas",
+    image: IMG_PLACEHOLDER, 
   },
   {
     slug: "roedores",
     title: "Roedores: señales y control",
     excerpt: "Excrementos, roídas y ruidos nocturnos. Trampas y exclusión.",
     href: "/aprende-de-las-plagas/roedores",
+    image: IMG_PLACEHOLDER,
   },
   {
     slug: "termitas",
     title: "Termitas: protege tu estructura",
     excerpt: "Inspecciones periódicas y barreras químicas certificadas.",
     href: "/aprende-de-las-plagas/termitas",
+    image: IMG_PLACEHOLDER,
   },
 ];
 
-// JSON-LD simple para SEO
 const listJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -34,7 +38,7 @@ const listJsonLd = {
   "itemListElement": posts.map((p, i) => ({
     "@type": "ListItem",
     "position": i + 1,
-    "item": { "@type": "Article", "name": p.title, "url": p.href, "description": p.excerpt }
+    "item": { "@type": "Article", "name": p.title, "url": p.href, "description": p.excerpt, "image": p.image }
   }))
 };
 ---
@@ -44,26 +48,51 @@ const listJsonLd = {
 
   <main class="bg-zinc-50">
     <section class="container-max py-12 sm:py-16" aria-labelledby="aprende-title">
-      <div class="text-center mb-8 md:mb-10">
-        <h1 id="aprende-title" class="text-3xl md:text-4xl font-bold">Aprende de las plagas</h1>
-        <p class="mt-3 text-zinc-600">Consejos prácticos y guías rápidas para tu hogar o negocio.</p>
+      <div class="text-center mb-10 md:mb-14">
+        <h1 id="aprende-title" class="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900">
+          Aprende de las plagas
+        </h1>
+        <p class="mt-4 text-lg text-zinc-600 max-w-2xl mx-auto">
+          Consejos prácticos, guías de identificación y estrategias de prevención para tu hogar o negocio.
+        </p>
       </div>
 
-      <div class="grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((p) => (
-          <article class="card p-5 rounded-3xl hover:-translate-y-0.5 hover:shadow-md transition">
-            <h2 class="text-lg font-semibold text-zinc-900">{p.title}</h2>
-            <p class="mt-1 text-sm text-zinc-700">{p.excerpt}</p>
-            <a href={p.href} class="btn btn-ghost mt-4" data-astro-prefetch="viewport" aria-label={`Leer más sobre ${p.title}`}>
-              Leer más
+          <article class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-zinc-100 group">
+            
+            <a href={p.href} class="block relative overflow-hidden h-48 sm:h-56">
+              <img 
+                src={p.image} 
+                alt={p.title} 
+                class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
             </a>
+
+            <div class="flex-1 p-6 flex flex-col">
+              <h2 class="text-xl font-bold text-zinc-900 group-hover:text-emerald-700 transition-colors">
+                <a href={p.href}>
+                  {p.title}
+                </a>
+              </h2>
+              <p class="mt-3 text-zinc-600 leading-relaxed flex-1">
+                {p.excerpt}
+              </p>
+              <div class="mt-6">
+                <a href={p.href} class="text-emerald-600 font-medium hover:text-emerald-700 inline-flex items-center gap-1">
+                  Leer artículo
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                </a>
+              </div>
+            </div>
           </article>
         ))}
       </div>
 
-      <div class="mt-10 flex flex-wrap gap-3 justify-center">
-        <a href="/" class="btn btn-outline" data-astro-prefetch>Volver al inicio</a>
-        <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
+      <div class="mt-16 flex flex-wrap gap-4 justify-center">
+        <a href="/" class="btn btn-outline px-8" data-astro-prefetch>Volver al inicio</a>
+        <a href="/cotizacion" class="btn btn-primary px-8" data-astro-prefetch="hover">Solicitar cotización</a>
       </div>
     </section>
   </main>

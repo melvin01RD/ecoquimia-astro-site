@@ -1,4 +1,5 @@
 ---
+import { config } from "../config";
 const year = new Date().getFullYear();
 ---
 
@@ -31,28 +32,28 @@ const year = new Date().getFullYear();
           <li>
             📞
             <a
-              href="tel:+18096172105"
+              href={`tel:+${config.contact.phone}`}
               class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
             >
-              +1&nbsp;(809)&nbsp;617&#8209;2105
+              {config.contact.phoneDisplay}
             </a>
           </li>
           <li>
             ✉️
             <a
-              href="mailto:contacto@ecoquimia.com"
+              href={`mailto:${config.contact.to}`}
               class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
             >
-              contacto@ecoquimia.com
+              {config.contact.to}
             </a>
           </li>
-          <li>📍 Santo Domingo, RD</li>
+          <li>📍 {config.contact.address}</li>
         </ul>
       </address>
 
       <div class="mt-4 flex justify-center sm:justify-start">
         <a
-          href="https://wa.me/18296666004?text=Hola%20quiero%20una%20cotizaci%C3%B3n"
+          href={`https://wa.me/${config.contact.phone}?text=${encodeURIComponent(config.contact.whatsappText)}`}
           target="_blank" rel="noopener noreferrer"
           class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-white hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
           aria-label="Escribir por WhatsApp a Ecoquimia"
@@ -91,3 +92,4 @@ const year = new Date().getFullYear();
       if (el) el.textContent = String(new Date().getFullYear());
     })();
   </script>
+</footer>

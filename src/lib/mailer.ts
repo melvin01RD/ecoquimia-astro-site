@@ -1,34 +1,12 @@
 // src/lib/mailer.ts
 import { Resend } from "resend";
 import nodemailer from "nodemailer";
-
-/** ------------- ENV ------------- **/
-const RESEND_API_KEY =
-  process.env.RESEND_API_KEY ?? import.meta.env.RESEND_API_KEY;
-
-const CONTACT_TO =
-  process.env.CONTACT_TO ?? import.meta.env.CONTACT_TO;
-
-const CONTACT_FROM =
-  process.env.CONTACT_FROM ?? import.meta.env.CONTACT_FROM;
-
-// Si usas un remitente específico para Resend (dominio verificado o onboarding@resend.dev)
-const RESEND_FROM_EMAIL =
-  process.env.RESEND_FROM_EMAIL ?? import.meta.env.RESEND_FROM_EMAIL ?? CONTACT_FROM;
-
-// SMTP config (fallback)
-const SMTP_HOST = process.env.SMTP_HOST ?? import.meta.env.SMTP_HOST ?? "";
-const SMTP_PORT = Number(process.env.SMTP_PORT ?? import.meta.env.SMTP_PORT ?? 465);
-const SMTP_SECURE = String(process.env.SMTP_SECURE ?? import.meta.env.SMTP_SECURE ?? "true") === "true";
-const SMTP_USER = process.env.SMTP_USER ?? import.meta.env.SMTP_USER ?? "";
-const SMTP_PASS = process.env.SMTP_PASS ?? import.meta.env.SMTP_PASS ?? "";
-const SMTP_FROM_EMAIL =
-  process.env.SMTP_FROM_EMAIL ?? import.meta.env.SMTP_FROM_EMAIL ?? CONTACT_FROM;
+import { config } from "../config";
 
 /** ------------- Tipos ------------- **/
 export type SendPayload = {
-  to?: string | string[];       // si no lo pasas, usa CONTACT_TO
-  from?: string;                // si no lo pasas, usa RESEND_FROM_EMAIL / SMTP_FROM_EMAIL
+  to?: string | string[];       // si no lo pasas, usa config.contact.to
+  from?: string;                // si no lo pasas, usa config.email.resend.from / config.email.smtp.from
   subject: string;
   html?: string;
   text?: string;
@@ -36,46 +14,50 @@ export type SendPayload = {
 };
 
 function canUseResend() {
-  return Boolean(RESEND_API_KEY);
+  return Boolean(config.email.resend.apiKey);
 }
 
 function canUseSmtp() {
-  return Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS);
+  return Boolean(config.email.smtp.host && config.email.smtp.user && config.email.smtp.pass);
 }
 
 /** ------------- Proveedor: Resend ------------- **/
 async function sendViaResend(payload: SendPayload) {
-  const resend = new Resend(RESEND_API_KEY as string);
+  const resend = new Resend(config.email.resend.apiKey);
 
-  const to = payload.to ?? CONTACT_TO;
-  const from = payload.from ?? RESEND_FROM_EMAIL;
+  const to = payload.to ?? config.contact.to;
+  const from = payload.from ?? config.email.resend.from ?? config.contact.from;
 
   if (!to || !from) throw new Error("Faltan 'to' o 'from' para Resend.");
 
-  // Nota: el SDK acepta 'reply_to' (snake_case)
-const result = await (resend.emails as any).send({
-  to,
-  from,
-  subject: payload.subject,
-  html: payload.html,
-  text: payload.text,
-  reply_to: payload.replyTo,
-});
+  // Nota: el SDK acepta 'reply_to' (snake_case) pero los tipos pueden pedir camelCase
+  const result = await resend.emails.send({
+    to,
+    from,
+    subject: payload.subject,
+    html: payload.html,
+    text: payload.text ?? "",
+    replyTo: payload.replyTo,
+  });
 
-  return { provider: "resend", id: (result as any)?.id ?? null };
+  if (result.error) {
+    throw new Error(result.error.message);
+  }
+
+  return { provider: "resend", id: result.data?.id ?? null };
 }
 
 /** ------------- Proveedor: SMTP (Nodemailer) ------------- **/
 async function sendViaSmtp(payload: SendPayload) {
   const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: SMTP_SECURE,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
+    host: config.email.smtp.host,
+    port: config.email.smtp.port,
+    secure: config.email.smtp.secure,
+    auth: { user: config.email.smtp.user, pass: config.email.smtp.pass },
   });
 
-  const to = payload.to ?? CONTACT_TO;
-  const from = payload.from ?? SMTP_FROM_EMAIL ?? SMTP_USER;
+  const to = payload.to ?? config.contact.to;
+  const from = payload.from ?? config.email.smtp.from ?? config.contact.from;
 
   if (!to || !from) throw new Error("Faltan 'to' o 'from' para SMTP.");
 
