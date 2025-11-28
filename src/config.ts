@@ -9,7 +9,7 @@ const envSchema = z.object({
   RESEND_FROM_EMAIL: z.string().optional(),
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().default(465),
-  SMTP_SECURE: z.enum(["true", "false"]).default("true"),
+  SMTP_SECURE: z.coerce.boolean().default(true),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   SMTP_FROM_EMAIL: z.string().optional(),
