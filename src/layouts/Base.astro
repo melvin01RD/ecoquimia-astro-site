@@ -1,7 +1,6 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-
 import "../styles/global.css";
 
 interface Props {
@@ -19,6 +18,48 @@ const {
 
 const hasHeader = Astro.slots.has("header");
 const hasFooter = Astro.slots.has("footer");
+
+// --- DEFINICIÓN DEL SCHEMA (SEO LOCAL) ---
+// Esto debe estar aquí arriba, en la zona de scripts
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "PestControl",
+  "name": "Ecoquimia",
+  "image": "https://www.ecoquimia.com.do/og-image.jpg",
+  "@id": "https://www.ecoquimia.com.do",
+  "url": "https://www.ecoquimia.com.do",
+  "telephone": "+18096172105",
+  "email": "contacto@ecoquimia.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Santo Domingo",
+    "addressLocality": "Santo Domingo",
+    "addressRegion": "Distrito Nacional",
+    "postalCode": "10100",
+    "addressCountry": "DO"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 18.4861,
+    "longitude": -69.9312
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "08:30",
+      "closes": "17:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Saturday",
+      "opens": "09:00",
+      "closes": "13:00"
+    }
+  ],
+  "priceRange": "$$",
+  "description": "Servicios profesionales de control de plagas y fumigación en Santo Domingo y República Dominicana. Soluciones efectivas y seguras para hogares y empresas."
+};
 ---
 
 <!doctype html>
@@ -29,16 +70,15 @@ const hasFooter = Astro.slots.has("footer");
     <meta name="description" content={description} />
     {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
-    <!-- Íconos / assets (moverlos aquí, NO fuera del HTML) -->
-
-   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-   <link rel="preconnect" href="/" />
-   <link rel="dns-prefetch" href="//wa.me" />
-
-
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="/" />
+    <link rel="dns-prefetch" href="//wa.me" />
 
     <title>{title}</title>
+
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
+  
   <body class="page-light">
     {hasHeader ? <slot name="header" /> : <Header />}
     <main class="min-h-screen">

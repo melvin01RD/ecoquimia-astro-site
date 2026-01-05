@@ -12,9 +12,7 @@ export type Service = {
   imgAlt?: string;
 };
 
-// Usamos la misma imagen de termitas para TODOS
-const TERMINAS_IMG = "/img/servicios/tratamiento-de-termitas.jpeg";
-
+// Rutas a los archivos que están en public/img/servicios
 export const services: Service[] = [
   {
     title: "Desinsectación",
@@ -22,7 +20,7 @@ export const services: Service[] = [
     bullets: ["Cucarachas y hormigas", "Mosquitos y moscas", "Arañas y chinches"],
     emoji: "🐞",
     slug: "desinsectacion",
-    imgSrc: TERMINAS_IMG, // Prueba
+    imgSrc: "/img/servicios/desinsectacion.png",
     imgAlt: "Desinsectación",
   },
   {
@@ -31,7 +29,7 @@ export const services: Service[] = [
     bullets: ["Monitoreo con placas", "Mapeo de riesgo", "Reporte técnico"],
     emoji: "🪤",
     slug: "desratizacion",
-    imgSrc: TERMINAS_IMG, // Prueba
+    imgSrc: "/img/servicios/Desratización.png",
     imgAlt: "Desratización",
   },
   {
@@ -40,7 +38,7 @@ export const services: Service[] = [
     bullets: ["Protocolos MIP", "Ficha técnica y MSDS", "Certificación de servicio"],
     emoji: "🧴",
     slug: "sanitizacion",
-    imgSrc: TERMINAS_IMG, // Prueba
+    imgSrc: "/img/servicios/Sanitización-Desinfección.png",
     imgAlt: "Sanitización",
   },
   {
@@ -49,7 +47,7 @@ export const services: Service[] = [
     bullets: ["Inspección con sonda", "Garantía por escrito", "Plan de mantenimiento"],
     emoji: "🪵",
     slug: "antitermitas",
-    imgSrc: TERMINAS_IMG, // La original
+    imgSrc: "/img/servicios/tratamiento-de-termitas -3.jpeg",
     imgAlt: "Tratamiento de termitas",
   },
   {
@@ -58,7 +56,7 @@ export const services: Service[] = [
     bullets: ["Análisis microbiológico", "Registro fotográfico", "Informe técnico"],
     emoji: "💧",
     slug: "tanques",
-    imgSrc: TERMINAS_IMG, // Prueba
+    imgSrc: "/img/servicios/Limpieza-de-tanques.png",
     imgAlt: "Limpieza de tanques",
   },
   {
@@ -67,7 +65,7 @@ export const services: Service[] = [
     bullets: ["Evaluación de riesgo", "Soluciones no letales", "Limpieza y desinfección"],
     emoji: "🕊️",
     slug: "palomas",
-    imgSrc: TERMINAS_IMG, // Prueba
+    imgSrc: "/img/servicios/control-palomas.png",
     imgAlt: "Control de palomas",
   },
 ] as const;

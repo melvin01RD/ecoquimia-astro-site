@@ -4,8 +4,10 @@ import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 export const prerender = true;
 
-// Ruta de imagen temporal (usa tus propias imágenes 600x400 aprox)
-const IMG_PLACEHOLDER = "/img/servicios/tratamiento-de-termitas.jpeg";
+// Imágenes por artículo usando los archivos en public/img/servicios
+const IMG_CUCARACHAS = "/img/servicios/desinsectacion.png";
+const IMG_ROEDORES = "/img/servicios/Desratización.png";
+const IMG_TERMIDAS = "/img/servicios/tratamiento-de-termitas -3.jpeg";
 
 const posts = [
   {
@@ -13,21 +15,21 @@ const posts = [
     title: "Cucarachas: prevención básica",
     excerpt: "Sellado de grietas, manejo de basura y control de humedad.",
     href: "/aprende-de-las-plagas/cucarachas",
-    image: IMG_PLACEHOLDER, 
+    image: IMG_CUCARACHAS,
   },
   {
     slug: "roedores",
     title: "Roedores: señales y control",
     excerpt: "Excrementos, roídas y ruidos nocturnos. Trampas y exclusión.",
     href: "/aprende-de-las-plagas/roedores",
-    image: IMG_PLACEHOLDER,
+    image: IMG_ROEDORES,
   },
   {
     slug: "termitas",
     title: "Termitas: protege tu estructura",
     excerpt: "Inspecciones periódicas y barreras químicas certificadas.",
     href: "/aprende-de-las-plagas/termitas",
-    image: IMG_PLACEHOLDER,
+    image: IMG_TERMIDAS,
   },
 ];
 
