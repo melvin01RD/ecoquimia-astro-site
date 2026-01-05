@@ -32,7 +32,6 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@astrojs/sitemap": "^3.6.0",
     "@astrojs/tailwind": "^5.1.5",
     "@astrojs/vercel": "^8.2.8",
     "@lucide/astro": "latest",
