@@ -8,7 +8,7 @@ export async function GET() {
   const routes = [
     '/',
     '/nosotros',
-    '/services',
+  '/servicios',
     '/cotizacion',
     '/aprende-de-las-plagas',
     '/aprende-de-las-plagas/cucarachas',

@@ -5,12 +5,12 @@ import { config } from "../config";
 
 /** ------------- Tipos ------------- **/
 export type SendPayload = {
-  to?: string | string[];       // si no lo pasas, usa config.contact.to
-  from?: string;                // si no lo pasas, usa config.email.resend.from / config.email.smtp.from
+  to?: string | string[];       
+  from?: string;                
   subject: string;
   html?: string;
   text?: string;
-  replyTo?: string | string[];  // “Responder a”
+  replyTo?: string | string[]; 
 };
 
 function canUseResend() {

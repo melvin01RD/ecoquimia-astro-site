@@ -21,19 +21,20 @@ export const POST: APIRoute = async (ctx) => {
     const { request, cookies, redirect } = ctx;
     const data = await request.formData();
 
-    const name = String(data.get("name") || "").trim();
-    const email = String(data.get("email") || "").trim();
-    const service = String(data.get("service") || "").trim();
-    const quantity = String(data.get("quantity") || "").trim();
-    const message = String(data.get("message") || "").trim();
+  const name = String(data.get("name") || "").trim();
+  const email = String(data.get("email") || "").trim();
+  const telefono = String(data.get("telefono") || "").trim();
+  const service = String(data.get("service") || "").trim();
+  const quantity = String(data.get("quantity") || "").trim();
+  const message = String(data.get("message") || "").trim();
     const captcha = String(data.get("captcha") || "").trim();
     const honeypot = String(data.get("website") || "").trim(); // honeypot
 
     // Honeypot
     if (honeypot) return redirect("/cotizacion?e=f#quoteForm", 303);
 
-    // Requeridos
-    if (!name || !email || !service || !message) {
+    // Requeridos (ahora telefono es obligatorio)
+    if (!name || !email || !telefono || !service || !message) {
       return redirect("/cotizacion?e=f#quoteForm", 303);
     }
     const token = cookies.get("captcha_token")?.value?.toLowerCase() || "";
@@ -48,6 +49,7 @@ export const POST: APIRoute = async (ctx) => {
       <ul>
         <li><b>Nombre:</b> ${name}</li>
         <li><b>Correo:</b> ${email}</li>
+        <li><b>Teléfono:</b> ${telefono}</li>
         <li><b>Servicio:</b> ${service}</li>
         ${quantity ? `<li><b>Cantidad:</b> ${quantity}</li>` : ""}
       </ul>
@@ -58,6 +60,7 @@ export const POST: APIRoute = async (ctx) => {
       `Solicitud de cotización\n\n` +
       `Nombre: ${name}\n` +
       `Correo: ${email}\n` +
+      `Teléfono: ${telefono}\n` +
       `Servicio: ${service}\n` +
       (quantity ? `Cantidad: ${quantity}\n` : "") +
       `\nMensaje:\n${message}\n`;
