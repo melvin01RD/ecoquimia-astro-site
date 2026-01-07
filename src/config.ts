@@ -32,15 +32,15 @@ export const config = {
     origin: env.PUBLIC_SITE_ORIGIN,
     url: env.PUBLIC_SITE_URL,
   },
+
   contact: {
-    to: env.CONTACT_TO,
-    from: env.CONTACT_FROM,
-    phone: "18096172105",
-    phoneDisplay: "+1 (809) 617-2105",
-    whatsappText: "Hola, quiero una cotización de control de plagas.",
+    phone: "18097777586",
+    phoneDisplay: "809-777-7586",
+    to: "areacomercial.eco@gmail.com",
     address: "Santo Domingo, RD",
-    hours: "L–V 8:30 am–5:00 pm · Sáb. 9:00 am–1:00 pm",
+    whatsappText: "Hola, me gustaría cotizar un servicio de control de plagas",
   },
+
   email: {
     resend: {
       apiKey: env.RESEND_API_KEY,
@@ -49,7 +49,7 @@ export const config = {
     smtp: {
       host: env.SMTP_HOST,
       port: env.SMTP_PORT,
-      secure: env.SMTP_SECURE === "true",
+      secure: env.SMTP_SECURE,
       user: env.SMTP_USER,
       pass: env.SMTP_PASS,
       from: env.SMTP_FROM_EMAIL,
