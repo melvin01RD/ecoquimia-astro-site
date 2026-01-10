@@ -17,17 +17,16 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const captcha = String(data.get("captcha") || "").trim();
   const honeypot = String(data.get("website") || "").trim();
 
-  // Honeypot
-  if (honeypot) return redirect("/cotizacion?e=f#quoteForm", 303);
+  if (honeypot) {
+    return redirect("/cotizacion?e=f#quoteForm", 303);
+  }
 
-  // Campos requeridos
   if (!name || !email || !telefono || !service || !message) {
     return redirect("/cotizacion?e=f#quoteForm", 303);
   }
 
   const token = cookies.get("captcha_token")?.value?.toLowerCase() || "";
   if (!captcha || !token || captcha.toLowerCase() !== token) {
-    console.warn("[captcha] incorrecto o expirado");
     return redirect("/cotizacion?e=c#quoteForm", 303);
   }
 
@@ -54,30 +53,31 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     (quantity ? `Cantidad: ${quantity}\n` : "") +
     `\nMensaje:\n${message}\n`;
 
-  try {
-    const from =
-      config.email.resend.from ??
-      config.email.smtp.from;
+  const from =
+    config.email.resend.from ??
+    config.email.smtp.from ??
+    process.env.CONTACT_FROM;
 
-    if (!from) {
-      return redirect("/cotizacion?e=mx&d=NoFrom#quoteForm", 303);
-    }
-
-  await sendMail({
-  from: `replayto:${email}>`,
-  to: config.contact.to,
-  subject,
-  html,
-  text,
-});
-
-
-    cookies.delete("captcha_token", { path: "/" });
-    const qp = new URLSearchParams({ name, service });
-    return redirect(`/gracias?${qp.toString()}`, 303);
-
-  } catch (err) {
-    console.error("[mail] Error real:", err);
-    return redirect("/cotizacion?e=mx&d=MailError#quoteForm", 303);
+  if (!from) {
+    console.error("[mail] FROM no configurado");
+    return redirect("/cotizacion?e=mx&d=NoFrom#quoteForm", 303);
   }
+
+  try {
+    await sendMail({
+      from,
+      to: config.contact.to,
+      subject,
+      html,
+      text,
+      replyTo: email,
+    });
+  } catch (err) {
+    // Log, pero NO rompas el flujo
+    console.error("[mail] sendMail lanzó error:", err);
+  }
+
+  cookies.delete("captcha_token", { path: "/" });
+  const qp = new URLSearchParams({ name, service });
+  return redirect(`/gracias?${qp.toString()}`, 303);
 };
