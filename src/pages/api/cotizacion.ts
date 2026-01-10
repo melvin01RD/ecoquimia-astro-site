@@ -66,7 +66,7 @@ export const POST: APIRoute = async (ctx) => {
       `\nMensaje:\n${message}\n`;
 
     const res = await sendMail({
-      from: config.contact.from,
+      from: `${name} <${email}>`,
       to: config.contact.to,
       subject,
       html,
