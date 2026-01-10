@@ -55,8 +55,16 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     `\nMensaje:\n${message}\n`;
 
   try {
+    const from =
+      config.email.resend.from ??
+      config.email.smtp.from;
+
+    if (!from) {
+      return redirect("/cotizacion?e=mx&d=NoFrom#quoteForm", 303);
+    }
+
     await sendMail({
-      from: config.email.resend.from,
+      from,
       to: config.contact.to,
       subject,
       html,
