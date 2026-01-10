@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 
   try {
     await sendMail({
-      from: config.email.from,
+      from: config.email.resend.from,
       to: config.contact.to,
       subject,
       html,
