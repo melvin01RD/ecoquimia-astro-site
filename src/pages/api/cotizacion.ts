@@ -1,25 +1,12 @@
 import type { APIRoute } from "astro";
 import { sendMail } from "../../lib/mailer";
 import { config } from "../../config";
-import crypto from "node:crypto";
 
 export const prerender = false;
-export const runtime = "node"; // MUY IMPORTANTE para Resend/SMTP
+export const runtime = "node";
 
-function safeEqual(a: string, b: string) {
-  if (a.length !== b.length) return false;
-  let x = 0;
-  for (let i = 0; i < a.length; i++) x |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return x === 0;
-}
-function signCaptchaText(text: string, secret: string) {
-  return crypto.createHmac("sha256", secret).update(text).digest("hex");
-}
-
-export const POST: APIRoute = async (ctx) => {
-  try {
-    const { request, cookies, redirect } = ctx;
-    const data = await request.formData();
+export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+  const data = await request.formData();
 
   const name = String(data.get("name") || "").trim();
   const email = String(data.get("email") || "").trim();
@@ -27,46 +14,49 @@ export const POST: APIRoute = async (ctx) => {
   const service = String(data.get("service") || "").trim();
   const quantity = String(data.get("quantity") || "").trim();
   const message = String(data.get("message") || "").trim();
-    const captcha = String(data.get("captcha") || "").trim();
-    const honeypot = String(data.get("website") || "").trim(); // honeypot
+  const captcha = String(data.get("captcha") || "").trim();
+  const honeypot = String(data.get("website") || "").trim();
 
-    // Honeypot
-    if (honeypot) return redirect("/cotizacion?e=f#quoteForm", 303);
+  // Honeypot
+  if (honeypot) return redirect("/cotizacion?e=f#quoteForm", 303);
 
-    // Requeridos (ahora telefono es obligatorio)
-    if (!name || !email || !telefono || !service || !message) {
-      return redirect("/cotizacion?e=f#quoteForm", 303);
-    }
-    const token = cookies.get("captcha_token")?.value?.toLowerCase() || "";
-    if (!captcha || !token || captcha.toLowerCase() !== token) {
-      console.warn("[captcha] incorrecto o expirado");
-      return redirect("/cotizacion?e=c#quoteForm", 303);
-    }
+  // Campos requeridos
+  if (!name || !email || !telefono || !service || !message) {
+    return redirect("/cotizacion?e=f#quoteForm", 303);
+  }
 
-    const subject = `Nueva cotización — ${service} (${name})`;
-    const html = `
-      <h2>Solicitud de cotización</h2>
-      <ul>
-        <li><b>Nombre:</b> ${name}</li>
-        <li><b>Correo:</b> ${email}</li>
-        <li><b>Teléfono:</b> ${telefono}</li>
-        <li><b>Servicio:</b> ${service}</li>
-        ${quantity ? `<li><b>Cantidad:</b> ${quantity}</li>` : ""}
-      </ul>
-      <p><b>Mensaje:</b></p>
-      <p>${message.replace(/\n/g, "<br/>")}</p>
-    `;
-    const text =
-      `Solicitud de cotización\n\n` +
-      `Nombre: ${name}\n` +
-      `Correo: ${email}\n` +
-      `Teléfono: ${telefono}\n` +
-      `Servicio: ${service}\n` +
-      (quantity ? `Cantidad: ${quantity}\n` : "") +
-      `\nMensaje:\n${message}\n`;
+  const token = cookies.get("captcha_token")?.value?.toLowerCase() || "";
+  if (!captcha || !token || captcha.toLowerCase() !== token) {
+    console.warn("[captcha] incorrecto o expirado");
+    return redirect("/cotizacion?e=c#quoteForm", 303);
+  }
 
-    const res = await sendMail({
-      from: `${name} <${email}>`,
+  const subject = `Nueva cotización — ${service} (${name})`;
+  const html = `
+    <h2>Solicitud de cotización</h2>
+    <ul>
+      <li><b>Nombre:</b> ${name}</li>
+      <li><b>Correo:</b> ${email}</li>
+      <li><b>Teléfono:</b> ${telefono}</li>
+      <li><b>Servicio:</b> ${service}</li>
+      ${quantity ? `<li><b>Cantidad:</b> ${quantity}</li>` : ""}
+    </ul>
+    <p><b>Mensaje:</b></p>
+    <p>${message.replace(/\n/g, "<br/>")}</p>
+  `;
+
+  const text =
+    `Solicitud de cotización\n\n` +
+    `Nombre: ${name}\n` +
+    `Correo: ${email}\n` +
+    `Teléfono: ${telefono}\n` +
+    `Servicio: ${service}\n` +
+    (quantity ? `Cantidad: ${quantity}\n` : "") +
+    `\nMensaje:\n${message}\n`;
+
+  try {
+    await sendMail({
+      from: config.email.from,
       to: config.contact.to,
       subject,
       html,
@@ -74,21 +64,12 @@ export const POST: APIRoute = async (ctx) => {
       replyTo: email,
     });
 
-    if ((res as any)?.error) {
-      console.error("[mail] Error:", (res as any).error);
-      return redirect("/cotizacion?e=mx&d=SendFail#quoteForm", 303);
-    }
-
-    // Limpia token de captcha y redirige a página de gracias
     cookies.delete("captcha_token", { path: "/" });
     const qp = new URLSearchParams({ name, service });
     return redirect(`/gracias?${qp.toString()}`, 303);
-  } catch (err: unknown) {
-    console.error("[cotizacion] Excepción:", err);
-    return ctx.redirect("/cotizacion?e=mx&d=Error#quoteForm", 303);
+
+  } catch (err) {
+    console.error("[mail] Error real:", err);
+    return redirect("/cotizacion?e=mx&d=MailError#quoteForm", 303);
   }
 };
-
-
-
-
