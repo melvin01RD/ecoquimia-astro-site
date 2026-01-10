@@ -74,11 +74,12 @@ export const POST: APIRoute = async (ctx) => {
       replyTo: email,
     });
 
-    if ((res as any).error) {
+    if ((res as any)?.error) {
       console.error("[mail] Error:", (res as any).error);
       return redirect("/cotizacion?e=mx&d=SendFail#quoteForm", 303);
     }
 
+    // Limpia token de captcha y redirige a página de gracias
     cookies.delete("captcha_token", { path: "/" });
     const qp = new URLSearchParams({ name, service });
     return redirect(`/gracias?${qp.toString()}`, 303);
@@ -88,4 +89,6 @@ export const POST: APIRoute = async (ctx) => {
   }
 };
 
-// ------------- src/lib/mailer.ts -------------
+
+
+
