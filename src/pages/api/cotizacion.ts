@@ -63,14 +63,14 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
       return redirect("/cotizacion?e=mx&d=NoFrom#quoteForm", 303);
     }
 
-    await sendMail({
-      from,
-      to: config.contact.to,
-      subject,
-      html,
-      text,
-      replyTo: email,
-    });
+  await sendMail({
+  from: `replayto:${email}>`,
+  to: config.contact.to,
+  subject,
+  html,
+  text,
+});
+
 
     cookies.delete("captcha_token", { path: "/" });
     const qp = new URLSearchParams({ name, service });
