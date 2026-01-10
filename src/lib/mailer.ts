@@ -1,16 +1,14 @@
-// src/lib/mailer.ts
 import { Resend } from "resend";
 import nodemailer from "nodemailer";
 import { config } from "../config";
 
-/** ------------- Tipos ------------- **/
 export type SendPayload = {
-  to?: string | string[];       
-  from?: string;                
+  to?: string | string[];
+  from?: string;
   subject: string;
   html?: string;
   text?: string;
-  replyTo?: string | string[]; 
+  replyTo?: string | string[];
 };
 
 function canUseResend() {
@@ -21,16 +19,14 @@ function canUseSmtp() {
   return Boolean(config.email.smtp.host && config.email.smtp.user && config.email.smtp.pass);
 }
 
-/** ------------- Proveedor: Resend ------------- **/
 async function sendViaResend(payload: SendPayload) {
   const resend = new Resend(config.email.resend.apiKey);
 
   const to = payload.to ?? config.contact.to;
-  const from = payload.from ?? config.email.resend.from ?? config.contact.from;
+  const from = payload.from ?? config.email.resend.from ?? config.contact.to;
 
-  if (!to || !from) throw new Error("Faltan 'to' o 'from' para Resend.");
+  if (!to || !from) throw new Error("Missing 'to' or 'from' for Resend.");
 
-  // Nota: el SDK acepta 'reply_to' (snake_case) pero los tipos pueden pedir camelCase
   const result = await resend.emails.send({
     to,
     from,
@@ -38,16 +34,15 @@ async function sendViaResend(payload: SendPayload) {
     html: payload.html,
     text: payload.text ?? "",
     replyTo: payload.replyTo,
-  });
+  } as any);
 
-  if (result.error) {
-    throw new Error(result.error.message);
+  if ((result as any).error) {
+    throw new Error((result as any).error.message);
   }
 
-  return { provider: "resend", id: result.data?.id ?? null };
+  return { provider: "resend", id: (result as any).data?.id ?? null };
 }
 
-/** ------------- Proveedor: SMTP (Nodemailer) ------------- **/
 async function sendViaSmtp(payload: SendPayload) {
   const transporter = nodemailer.createTransport({
     host: config.email.smtp.host,
@@ -57,9 +52,9 @@ async function sendViaSmtp(payload: SendPayload) {
   });
 
   const to = payload.to ?? config.contact.to;
-  const from = payload.from ?? config.email.smtp.from ?? config.contact.from;
+  const from = payload.from ?? config.email.smtp.from ?? config.contact.to;
 
-  if (!to || !from) throw new Error("Faltan 'to' o 'from' para SMTP.");
+  if (!to || !from) throw new Error("Missing 'to' or 'from' for SMTP.");
 
   const info = await transporter.sendMail({
     to,
@@ -67,32 +62,32 @@ async function sendViaSmtp(payload: SendPayload) {
     subject: payload.subject,
     html: payload.html,
     text: payload.text,
-    replyTo: payload.replyTo, // nodemailer usa camelCase
+    replyTo: payload.replyTo,
   });
 
-  return { provider: "smtp", id: info.messageId ?? null };
+  return { provider: "smtp", id: (info as any).messageId ?? null };
 }
 
-/** ------------- Facade principal ------------- **/
 export async function sendMail(payload: SendPayload) {
-  // 1) Intenta Resend si hay API key
   if (canUseResend()) {
     try {
       const r = await sendViaResend(payload);
-      console.log("Provider used:", r.provider, r.id);
+      console.info("[mailer] Sent via Resend", r);
       return r;
-    } catch (e) {
-      console.error("Resend error, falling back to SMTP:", e);
+    } catch (err: unknown) {
+      console.error("[mailer] Resend error:", err instanceof Error ? err.stack ?? err.message : err);
     }
   }
 
-  // 2) Fallback a SMTP si está configurado
   if (canUseSmtp()) {
-    const r = await sendViaSmtp(payload);
-    console.log("Provider used:", r.provider, r.id);
-    return r;
+    try {
+      const r = await sendViaSmtp(payload);
+      console.info("[mailer] Sent via SMTP", r);
+      return r;
+    } catch (err: unknown) {
+      console.error("[mailer] SMTP error:", err instanceof Error ? err.stack ?? err.message : err);
+    }
   }
 
-  // 3) Si no hay ninguno, error controlado
-  throw new Error("No hay proveedor de correo disponible (Resend o SMTP).");
+  throw new Error("All mail providers failed or are not configured.");
 }
