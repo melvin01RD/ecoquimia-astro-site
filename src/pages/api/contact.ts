@@ -47,7 +47,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     await sendMail({
       to: config.contact.to,
-      from: config.contact.from,
+      from: "noreply@ecoquimia.com",
       subject,
       text,
       html: toHtml(text)

@@ -3,8 +3,8 @@ import { z } from "zod";
 const envSchema = z.object({
   PUBLIC_SITE_ORIGIN: z.string().default("*"),
   PUBLIC_SITE_URL: z.string().default("http://localhost"),
-  CONTACT_TO: z.string().email().default("contacto@ecoquimia.com"),
-  CONTACT_FROM: z.string().default("no-reply@ecoquimia.com"),
+  CONTACT_TO: z.string().email().default("melvin01rd@gmail.com"),
+  CONTACT_FROM: z.string().default("melvin01rd@gmail.com"),
   RESEND_API_KEY: z.string().optional(),
   RESEND_FROM_EMAIL: z.string().optional(),
   SMTP_HOST: z.string().optional(),
@@ -36,7 +36,8 @@ export const config = {
   contact: {
     phone: "18097777586",
     phoneDisplay: "809-777-7586",
-    to: "areacomercial.eco@gmail.com",
+    to: env.CONTACT_TO,
+    from: env.CONTACT_FROM,
     address: "Santo Domingo, RD",
     whatsappText: "Hola, me gustaría cotizar un servicio de control de plagas",
   },
