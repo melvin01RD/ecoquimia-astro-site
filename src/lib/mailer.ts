@@ -68,26 +68,33 @@ async function sendViaSmtp(payload: SendPayload) {
   return { provider: "smtp", id: (info as any).messageId ?? null };
 }
 
+
 export async function sendMail(payload: SendPayload) {
+  const errors: unknown[] = [];
+
+  // 1️⃣ INTENTAR RESEND PRIMERO
   if (canUseResend()) {
     try {
-      const r = await sendViaResend(payload);
-      console.info("[mailer] Sent via Resend", r);
-      return r;
-    } catch (err: unknown) {
-      console.error("[mailer] Resend error:", err instanceof Error ? err.stack ?? err.message : err);
+      return await sendViaResend(payload);
+    } catch (err) {
+      console.error("[mailer] Resend failed:", err);
+      errors.push(err);
     }
   }
 
+  // 2️⃣ SMTP SOLO COMO FALLBACK
   if (canUseSmtp()) {
     try {
-      const r = await sendViaSmtp(payload);
-      console.info("[mailer] Sent via SMTP", r);
-      return r;
-    } catch (err: unknown) {
-      console.error("[mailer] SMTP error:", err instanceof Error ? err.stack ?? err.message : err);
+      return await sendViaSmtp(payload);
+    } catch (err) {
+      console.error("[mailer] SMTP failed:", err);
+      errors.push(err);
     }
   }
 
-  throw new Error("All mail providers failed or are not configured.");
+  // 3️⃣ SI TODO FALLA
+  throw new Error(
+    "All mail providers failed: " +
+      errors.map((e) => String(e)).join(" | ")
+  );
 }
