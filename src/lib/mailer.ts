@@ -23,9 +23,21 @@ async function sendViaResend(payload: SendPayload) {
   const resend = new Resend(config.email.resend.apiKey);
 
   const to = payload.to ?? config.contact.to;
-  const from = payload.from ?? config.email.resend.from ?? config.contact.to;
+  let from = payload.from ?? config.email.resend.from ?? config.contact.to;
+
+  // If someone mistakenly configured the env as `<email@domain>` (angle
+  // brackets only) Resend rejects that format. Normalize by stripping
+  // surrounding angle brackets when the entire value is wrapped, but
+  // otherwise keep the value exactly as provided (e.g. "Name <email@x>").
+  const matchOnlyWrapped = typeof from === "string" && from.match(/^<([^>]+)>$/);
+  if (matchOnlyWrapped) {
+    console.warn("[mailer] RESEND_FROM_EMAIL contained surrounding <> — stripping them to produce a valid address.");
+    from = matchOnlyWrapped[1];
+  }
 
   if (!to || !from) throw new Error("Missing 'to' or 'from' for Resend.");
+  // Log the final 'from' we are about to send (helps verify correct format)
+  console.debug("[mailer] resend.emails.send from:", from);
 
   const result = await resend.emails.send({
     to,
@@ -52,9 +64,19 @@ async function sendViaSmtp(payload: SendPayload) {
   });
 
   const to = payload.to ?? config.contact.to;
-  const from = payload.from ?? config.email.smtp.from ?? config.contact.to;
+  let from = payload.from ?? config.email.smtp.from ?? config.contact.to;
+
+  // Same normalization for SMTP fallback
+  const matchOnlyWrapped = typeof from === "string" && from.match(/^<([^>]+)>$/);
+  if (matchOnlyWrapped) {
+    console.warn("[mailer] SMTP_FROM_EMAIL contained surrounding <> — stripping them to produce a valid address.");
+    from = matchOnlyWrapped[1];
+  }
 
   if (!to || !from) throw new Error("Missing 'to' or 'from' for SMTP.");
+
+  // Log the final 'from' we are about to send (helps verify correct format)
+  console.debug("[mailer] smtp sendMail from:", from);
 
   const info = await transporter.sendMail({
     to,
