@@ -79,7 +79,7 @@ const schema = {
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   
-  <body class="page-light">
+  <body>
     {hasHeader ? <slot name="header" /> : <Header />}
     <main class="min-h-screen">
       <slot />

@@ -9,44 +9,39 @@ export const prerender = true;
 ---
 
 <Base title="Ecoquimia - Control de Plagas y Fumigación en Santo Domingo" description="Servicios profesionales de fumigación y control de plagas en República Dominicana.">
-  <!-- Header -->
   <Header slot="header" />
 
-  <!-- HERO con imagen de fondo (manteniendo el estilo del primer día) -->
-  <section class="relative overflow-hidden">
-    <!-- Fondo -->
-    <picture class="absolute inset-0 -z-10">
-      
-    </picture>
+  <section
+  class="relative min-h-[70vh] md:min-h-[85vh] flex items-end overflow-hidden bg-[url('/banner-principal.jpg')] bg-cover bg-center bg-no-repeat"
+>
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-black/50"></div>
 
-    <!-- Overlay para legibilidad (similar al día 1, no tapa el resto) -->
-    <div class="absolute inset-0 -z-10 bg-black/35"></div>
+  <!-- Contenido -->
+  <div class="container-max relative z-10 pb-20 md:pb-28 text-white">
+    <h1 class="text-3xl md:text-5xl font-extrabold max-w-2xl leading-tight">
+      Control profesional de plagas en Santo Domingo
+    </h1>
 
-    <!-- Contenido del hero -->
-    <div class="container-max py-24 md:py-32 text-white">
-      <span class="inline-flex items-center rounded-full border border-white/25 bg-black/30 px-3 py-1 text-xs">
-        Control Integral de Plagas
-      </span>
+    <p class="mt-4 max-w-xl text-base md:text-lg text-white/90">
+      ¡Creamos un ambiente sin plagas! Soluciones efectivas, seguras y certificadas para hogares y negocios.
+    </p>
 
-      <h1 class="mt-4 text-4xl md:text-6xl font-extrabold leading-tight drop-shadow">
-        Fumigación profesional <span class="text-emerald-300">a otro nivel</span>
-      </h1>
-
-      <p class="mt-4 max-w-2xl text-white/90">
-        Protegemos hogares y negocios contra cucarachas, roedores, termitas y más.
-      </p>
-
-      <div class="mt-6 flex flex-wrap gap-3">
-        <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="load">Solicitar cotización</a>
-        <a href="/servicios" class="btn btn-outline" data-astro-prefetch>Ver servicios</a>
-      </div>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="load">
+        Solicitar cotización
+      </a>
+      <a href="/servicios" class="btn btn-outline text-white border-white/70 hover:bg-white hover:text-black" data-astro-prefetch>
+        Ver servicios
+      </a>
     </div>
+  </div>
 
-    <!-- Fade al blanco para que el bloque siguiente no quede solapado -->
-    <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-24 -z-10 bg-gradient-to-b from-transparent to-white"></div>
-  </section>
+  <!-- Fade inferior -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-white"></div>
+</section>
 
-  <!-- NUESTROS SERVICIOS (grilla con cards) -->
+
   <section class="container-max py-16" aria-labelledby="srv-title">
     <div class="text-center">
       <h2 id="srv-title" class="text-2xl md:text-3xl font-bold text-zinc-900">Nuestros servicios</h2>
@@ -59,7 +54,6 @@ export const prerender = true;
     </div>
   </section>
 
-  <!-- CTA INTERMEDIA / APRENDE -->
   <section class="container-max pb-16">
     <div class="rounded-3xl border border-black/5 bg-white p-6 md:p-8">
       <h3 class="text-xl md:text-2xl font-semibold text-zinc-900">Aprende de las plagas</h3>
@@ -72,6 +66,5 @@ export const prerender = true;
     </div>
   </section>
 
-  <!-- Footer -->
   <Footer slot="footer" />
 </Base>

@@ -54,8 +54,8 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     `\nMensaje:\n${message}\n`;
 
   const from =
-    config.email.resend.from ??
     config.email.smtp.from ??
+    config.email.resend.from ??
     process.env.CONTACT_FROM;
 
   if (!from) {
