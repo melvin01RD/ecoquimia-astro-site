@@ -1,41 +1,41 @@
----
-import Base from "../../layouts/Base.astro";
-import Header from "../../components/Header.astro";
-import Footer from "../../components/Footer.astro";
-export const prerender = true;
----
-<Base title="Políticas — Ecoquimia" description="Políticas de privacidad y términos de servicio.">
-  <Header slot="header" />
+<section class="relative h-[85vh] w-full overflow-hidden">
+  <!-- Imagen de fondo (forzada) -->
+  <img
+    src="/banner-principal.jpg"
+    alt="Ecoquimia control de plagas"
+    class="absolute inset-0 h-full w-full object-cover"
+    loading="eager"
+    fetchpriority="high"
+  />
 
-  <section class="container-max py-16" aria-labelledby="politicas-title">
-    <div class="text-center mb-8 md:mb-10">
-      <h1 id="politicas-title" class="text-3xl md:text-4xl font-bold">Políticas</h1>
-      <p class="mt-3 text-zinc-600">Transparencia en el manejo de datos y condiciones del servicio.</p>
-    </div>
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-black/50"></div>
 
-    <article class="prose max-w-none">
-      <h2>Privacidad</h2>
-      <p>Tu información es tratada con confidencialidad y solo se utiliza para responder a tus solicitudes y brindar el servicio.</p>
+  <!-- Contenido -->
+  <div class="relative z-10 h-full flex items-end">
+    <div class="container-max pb-24 text-white">
+      <h1 class="text-3xl md:text-5xl font-extrabold max-w-2xl">
+        Control profesional de plagas en Santo Domingo
+      </h1>
 
-      <h2>Términos</h2>
-      <p>Los servicios se prestan conforme a la propuesta enviada. Algunas tareas requieren preparación del área y acceso autorizado.</p>
-
-      <h2>Contacto</h2>
-      <p>
-        Si tienes dudas sobre estas políticas, escríbenos a
-        <a href="mailto:contacto@ecoquimia.com">contacto@ecoquimia.com</a>
-        o llámanos al
-        <a href="tel:+18097777586">+1&nbsp;(809)&nbsp;777&#8209;7586</a>.
+      <p class="mt-4 max-w-xl text-white/90">
+        ¡Creamos un ambiente sin plagas! Soluciones efectivas, seguras y certificadas.
       </p>
-    </article>
 
-    <!-- Navegación interna con prefetch -->
-    <div class="mt-10 flex flex-wrap gap-3">
-      <a href="/" class="btn btn-outline" data-astro-prefetch>Volver al inicio</a>
-      <a href="/contact" class="btn btn-outline" data-astro-prefetch>Contacto</a>
-      <a href="/cotizacion" class="btn btn-primary" data-astro-prefetch="hover">Solicitar cotización</a>
+      <div class="mt-6 flex gap-3 flex-wrap">
+        <a href="/cotizacion" class="btn btn-primary">
+          Solicitar cotización
+        </a>
+        <a
+          href="/servicios"
+          class="btn btn-outline text-white border-white/70 hover:bg-white hover:text-black"
+        >
+          Ver servicios
+        </a>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <Footer slot="footer" />
-</Base>
+  <!-- Fade inferior -->
+  <div class="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-b from-transparent to-white"></div>
+</section>
