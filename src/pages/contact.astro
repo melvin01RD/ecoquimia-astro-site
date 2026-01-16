@@ -2,7 +2,6 @@
 import Base from "../layouts/Base.astro";
 import { config } from "../config";
 
-const waLink = `https://wa.me/${config.contact.phone}?text=${encodeURIComponent(config.contact.whatsappText)}`;
 ---
 
 <Base>
@@ -27,7 +26,6 @@ const waLink = `https://wa.me/${config.contact.phone}?text=${encodeURIComponent(
           </ul>
 
           <div class="mt-5 flex flex-wrap gap-3">
-            <a href={waLink} target="_blank" rel="noopener" class="btn btn-primary">Abrir WhatsApp</a>
             <a href="/servicios" class="btn btn-outline">Ver servicios</a>
           </div>
 
@@ -67,8 +65,6 @@ const waLink = `https://wa.me/${config.contact.phone}?text=${encodeURIComponent(
 
             <div class="flex flex-wrap gap-3 pt-2">
               <button class="btn btn-primary" type="submit">Enviar mensaje</button>
-              <a class="btn btn-outline" href={waLink} target="_blank" rel="noopener">WhatsApp</a>
-            </div>
 
             <p id="contact-toast" class="hidden mt-4 text-sm"></p>
           </form>
