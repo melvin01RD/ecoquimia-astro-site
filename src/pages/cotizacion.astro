@@ -5,13 +5,11 @@ import Footer from "../components/Footer.astro";
 
 // SSR (mejor para /api y control de caché)
 
-<meta name="description" content="Control profesional de plagas en Santo Domingo. Fumigación, desratización y sanitización certificada.">
-export const prerender = false;
-
 import { Grid2x2, Mail, User, AtSign, Phone, ListFilter, Hash } from "@lucide/astro";
 import { services, getServiceOptions } from "../data/services";
 
 const options = getServiceOptions();
+const optionsJson = JSON.stringify(options);
 const honeypotName = "website";
 
 // Lee el query param para error ligero (e=c => captcha_required, e=mx => mail error)
@@ -23,6 +21,8 @@ const errorMsg =
 : e === "f"  ? "Completa los campos requeridos."
 : null;
 ---
+
+
 
 <Base title="Cotización — Ecoquimia" description="Solicita tu cotización de control de plagas.">
   <Header slot="header" />
@@ -75,22 +75,15 @@ const errorMsg =
             </p>
           )}
 
-          <form id="quoteForm" name="quoteForm" class="stack-sm max-w-xl"
-                method="post" action="/api/cotizacion" aria-labelledby="form-legend">
+          <form id="quoteForm" name="quoteForm" class="stack-sm max-w-xl" aria-labelledby="form-legend">
             <fieldset class="grid gap-4">
               <legend id="form-legend" class="sr-only">Formulario de cotización</legend>
 
-              <!-- Honeypot -->
-              <div class="hidden" aria-hidden="true">
-                <label for="hp-field">No llenar</label>
-                <input id="hp-field" name={honeypotName} type="text" tabindex="-1" autocomplete="organization" />
-              </div>
-
               <div class="field">
-                <label class="label" for="name">Nombre</label>
+                <label class="label" for="nombre">Nombre</label>
                 <div class="relative">
                   <User class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                  <input id="name" name="name" type="text" autocomplete="name" required placeholder="Tu nombre" class="input pl-9" />
+                  <input id="nombre" name="nombre" type="text" autocomplete="name" required placeholder="Tu nombre" class="input pl-9" />
                 </div>
               </div>
 
@@ -111,10 +104,10 @@ const errorMsg =
               </div>
 
               <div class="field">
-                <label class="label" for="serviceSelect">Tipo de servicio</label>
+                <label class="label" for="servicio">Tipo de servicio</label>
                 <div class="relative">
                   <ListFilter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                  <select id="serviceSelect" name="service" required class="select pl-9">
+                  <select id="servicio" name="servicio" required class="select pl-9">
                     <option value="">Seleccione tipo de servicio</option>
                     {options.map(o => <option value={o.value}>{o.label}</option>)}
                   </select>
@@ -123,44 +116,16 @@ const errorMsg =
               </div>
 
               <div class="field">
-                <label class="label" for="quantity">Cantidad (opcional)</label>
-                <div class="relative">
-                  <Hash class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                  <input id="quantity" name="quantity" type="number" inputmode="numeric" min="1" step="1" placeholder="Ej: 2" class="input pl-9" />
-                </div>
-              </div>
-
-              <div class="field">
-                <label class="label" for="message">Describe tu necesidad</label>
+                <label class="label" for="mensaje">Describe tu necesidad</label>
                 <textarea
-                  id="message"
-                  name="message"
+                  id="mensaje"
+                  name="mensaje"
                   rows={5}
                   required
                   placeholder="Cuéntanos detalles del servicio que necesitas"
                   class="textarea"
                 ></textarea>
                 <p class="help">Mientras más detalles, mejor te cotizamos.</p>
-              </div>
-
-              <div class="field" id="captcha">
-                <label class="label" for="captchaInput">Código de verificación</label>
-                <div class="flex items-center gap-3">
-                  <img id="captchaImage" src="/api/captcha" alt="Captcha" class="h-10 w-[120px] rounded border" loading="lazy" decoding="async" />
-                  <button type="button" id="refreshCaptcha" class="btn btn-secondary">Actualizar</button>
-                </div>
-                <input
-                  id="captchaInput"
-                  name="captcha"
-                  type="text"
-                  inputmode="numeric"
-                  pattern="[0-9]{6}"
-                  maxlength="6"
-                  required
-                  placeholder="Escribe los 6 números"
-                  class="input"
-                />
-                <p class="help">Escribe los 6 dígitos tal como aparecen.</p>
               </div>
 
               <div class="flex items-center gap-3">
@@ -176,13 +141,16 @@ const errorMsg =
 
   <Footer slot="footer" />
 
-  <!-- Lógica UI mínima -->
   <script is:inline>
     (() => {
       const qs = (s, r=document) => r.querySelector(s);
       const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-      const select = qs("#serviceSelect");
+      const options = JSON.parse(`{optionsJson}`);
+      const select = qs("#servicio");
+      const form = qs("#quoteForm");
+      const submitBtn = qs("#submitBtn");
+      const status = qs("#status");
 
       function preselectFromURL() {
         const params = new URLSearchParams(window.location.search);
@@ -192,7 +160,7 @@ const errorMsg =
           if (match) {
             select.value = s;
             document.getElementById("quoteForm")?.scrollIntoView({ behavior:"smooth", block:"start" });
-            qs("#name")?.focus({ preventScroll: true });
+            qs("#nombre")?.focus({ preventScroll: true });
           }
         }
       }
@@ -207,19 +175,64 @@ const errorMsg =
               select.value = s;
               history.replaceState(null, '', `/cotizacion?service=${encodeURIComponent(s)}#quoteForm`);
               document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              qs("#name")?.focus({ preventScroll: true });
+              qs("#nombre")?.focus({ preventScroll: true });
             }
           }
         });
       });
 
-      const img = qs("#captchaImage");
-      const btnRefresh = qs("#refreshCaptcha");
-      btnRefresh?.addEventListener("click", () => {
-        if (!img) return;
-        const u = new URL('/api/captcha', window.location.origin);
-        u.searchParams.set('t', String(Date.now()));
-        img.src = u.toString();
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = {
+          nombre: formData.get('nombre'),
+          email: formData.get('email'),
+          telefono: formData.get('telefono'),
+          servicio: formData.get('servicio'),
+          mensaje: formData.get('mensaje')
+        };
+
+        // Convertir slug a label
+        const servicioLabel = options.find(o => o.value === data.servicio)?.label || data.servicio;
+        data.servicio = servicioLabel;
+
+        // Mostrar estado de enviando
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+        status.textContent = '';
+        status.className = 'text-sm';
+
+        try {
+          const response = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            // Éxito
+            status.textContent = '¡Cotización enviada exitosamente! Te contactaremos pronto.';
+            status.className = 'text-sm text-green-600';
+            form.reset();
+          } else {
+            // Error
+            status.textContent = result.error || 'Error al enviar la cotización. Inténtalo de nuevo.';
+            status.className = 'text-sm text-red-600';
+          }
+        } catch (error) {
+          // Error de red
+          status.textContent = 'Error de conexión. Verifica tu internet e inténtalo de nuevo.';
+          status.className = 'text-sm text-red-600';
+        } finally {
+          // Re-habilitar botón
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Enviar';
+        }
       });
     })();
   </script>
