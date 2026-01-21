@@ -3,11 +3,11 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 export const prerender = true;
+---
 
-
+<Base>
   <Header slot="header" />
-
-  <!-- Sección principal -->
+  
   <main class="bg-zinc-50 text-zinc-900">
     <section class="container-max py-16 grid md:grid-cols-2 gap-10 items-start">
       
@@ -57,7 +57,7 @@ export const prerender = true;
             </ul>
           </div>
 
-           <!-- Visión -->
+          <!-- Visión -->
           <div class="bg-[#b7bc6a] text-black p-6 rounded-xl shadow-md transform hover:-translate-y-1 transition duration-200">
             <h3 class="text-xl font-semibold mb-2">Visión</h3>
             <p>
@@ -67,3 +67,10 @@ export const prerender = true;
             </p>
           </div>
         </div>
+      </div>
+
+    </section>
+  </main>
+
+  <Footer slot="footer" />
+</Base>
