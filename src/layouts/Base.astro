@@ -1,6 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import WhatsAppButton from "../components/WhatsAppButton.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -15,6 +16,13 @@ const {
   description = "Control de plagas en RD",
   noIndex = false,
 } = Astro.props as Props;
+
+// Rutas donde NO mostrar el botón de WhatsApp
+const hiddenWhatsAppRoutes = ["/gracias", "/politicas", "/404", "/api/"];
+const currentPath = Astro.url.pathname;
+const showWhatsApp = !hiddenWhatsAppRoutes.some(
+  (route) => currentPath === route || currentPath.startsWith(route)
+);
 
 const hasHeader = Astro.slots.has("header");
 const hasFooter = Astro.slots.has("footer");
@@ -85,5 +93,6 @@ const schema = {
       <slot />
     </main>
     {hasFooter ? <slot name="footer" /> : <Footer />}
+    {showWhatsApp && <WhatsAppButton />}
   </body>
 </html>
