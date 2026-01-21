@@ -1,0 +1,232 @@
+---
+// src/pages/cotizacion.astro
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = true; // Esta página puede ser estática
+---
+
+<Base>
+  <Header slot="header" />
+  
+  <main class="bg-zinc-50 text-zinc-900 min-h-screen py-16">
+    <div class="container-max">
+      <div class="max-w-2xl mx-auto">
+        
+        <!-- Título -->
+        <div class="text-center mb-10">
+          <h1 class="text-4xl md:text-5xl font-extrabold text-zinc-800 mb-4">
+            Solicita tu Cotización
+          </h1>
+          <p class="text-lg text-zinc-600">
+            Completa el formulario y te contactaremos lo antes posible
+          </p>
+        </div>
+
+        <!-- Formulario -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 md:p-10">
+          <form id="cotizacion-form" class="space-y-6">
+            
+            <!-- Nombre -->
+            <div>
+              <label for="nombre" class="block text-sm font-semibold text-zinc-700 mb-2">
+                Nombre completo *
+              </label>
+              <input 
+                type="text" 
+                id="nombre"
+                name="nombre" 
+                required
+                placeholder="Ej: Juan Pérez"
+                class="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              />
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label for="email" class="block text-sm font-semibold text-zinc-700 mb-2">
+                Email *
+              </label>
+              <input 
+                type="email" 
+                id="email"
+                name="email" 
+                required
+                placeholder="tu@email.com"
+                class="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              />
+            </div>
+
+            <!-- Teléfono -->
+            <div>
+              <label for="telefono" class="block text-sm font-semibold text-zinc-700 mb-2">
+                Teléfono *
+              </label>
+              <input 
+                type="tel" 
+                id="telefono"
+                name="telefono" 
+                required
+                placeholder="(809) 123-4567"
+                class="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              />
+            </div>
+
+            <!-- Servicio -->
+            <div>
+              <label for="servicio" class="block text-sm font-semibold text-zinc-700 mb-2">
+                Servicio requerido *
+              </label>
+              <select 
+                id="servicio"
+                name="servicio" 
+                required
+                class="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              >
+                <option value="">Selecciona un servicio</option>
+                <option value="Desinsectación">Desinsectación (Cucarachas, hormigas, mosquitos)</option>
+                <option value="Desratización">Desratización (Control de roedores)</option>
+                <option value="Sanitización / Desinfección">Sanitización / Desinfección</option>
+                <option value="Tratamiento antitermitas">Tratamiento antitermitas</option>
+                <option value="Limpieza de tanques">Limpieza de tanques</option>
+                <option value="Control de palomas">Control de palomas</option>
+              </select>
+            </div>
+
+            <!-- Mensaje -->
+            <div>
+              <label for="mensaje" class="block text-sm font-semibold text-zinc-700 mb-2">
+                Cuéntanos sobre tu problema (opcional)
+              </label>
+              <textarea 
+                id="mensaje"
+                name="mensaje" 
+                rows="4"
+                placeholder="Describe tu situación con las plagas..."
+                class="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+              ></textarea>
+            </div>
+
+            <!-- Botón y Mensaje de Respuesta -->
+            <div class="space-y-4">
+              <button 
+                type="submit" 
+                id="submit-btn"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              >
+                <span id="btn-text">Enviar Cotización</span>
+              </button>
+
+              <div id="mensaje-respuesta" class="hidden"></div>
+            </div>
+
+          </form>
+
+          <!-- Información de contacto alternativa -->
+          <div class="mt-8 pt-8 border-t border-zinc-200">
+            <p class="text-center text-sm text-zinc-600 mb-4">
+              ¿Prefieres contactarnos directamente?
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+              <a 
+                href="tel:+18097777586"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition"
+              >
+                📞 809-777-7586
+              </a>
+              <a 
+                href="https://wa.me/18097777586"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-green-100 hover:bg-green-200 rounded-lg transition"
+              >
+                💬 WhatsApp
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer slot="footer" />
+</Base>
+
+<script>
+  // Obtener elementos del DOM
+  const form = document.getElementById('cotizacion-form') as HTMLFormElement;
+  const btn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const btnText = document.getElementById('btn-text') as HTMLSpanElement;
+  const mensajeDiv = document.getElementById('mensaje-respuesta') as HTMLDivElement;
+
+  // Manejar el envío del formulario
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Cambiar estado del botón
+    btn.disabled = true;
+    btnText.textContent = 'Enviando...';
+    mensajeDiv.classList.add('hidden');
+    
+    // Recopilar datos del formulario
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    try {
+      // Hacer la petición al endpoint
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      
+      // Mostrar mensaje según resultado
+      if (response.ok && result.success) {
+        // Éxito
+        mensajeDiv.innerHTML = `
+          <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p class="text-green-800 font-semibold">✅ ¡Cotización enviada con éxito!</p>
+            <p class="text-green-700 text-sm mt-1">Te contactaremos pronto. Revisa tu email.</p>
+          </div>
+        `;
+        mensajeDiv.classList.remove('hidden');
+        form.reset(); // Limpiar formulario
+        
+        // Scroll al mensaje
+        mensajeDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+      } else {
+        // Error del servidor
+        mensajeDiv.innerHTML = `
+          <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-red-800 font-semibold">❌ Error al enviar</p>
+            <p class="text-red-700 text-sm mt-1">${result.error || 'Intenta de nuevo o contáctanos por WhatsApp'}</p>
+          </div>
+        `;
+        mensajeDiv.classList.remove('hidden');
+      }
+      
+    } catch (error) {
+      // Error de red
+      console.error('Error:', error);
+      mensajeDiv.innerHTML = `
+        <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-red-800 font-semibold">❌ Error de conexión</p>
+          <p class="text-red-700 text-sm mt-1">Verifica tu internet e intenta de nuevo</p>
+        </div>
+      `;
+      mensajeDiv.classList.remove('hidden');
+      
+    } finally {
+      // Restaurar botón
+      btn.disabled = false;
+      btnText.textContent = 'Enviar Cotización';
+    }
+  });
+</script>

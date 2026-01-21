@@ -1,0 +1,530 @@
+---
+// src/pages/politicas.astro
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = true;
+
+const lastUpdated = "21 de enero, 2026";
+---
+
+<Base>
+  <Header slot="header" />
+  
+  <main class="bg-gradient-to-b from-zinc-50 to-white text-zinc-900">
+    
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
+      <div class="container-max">
+        <div class="max-w-4xl mx-auto text-center">
+          <div class="inline-block bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+            <span class="text-sm font-semibold">📋 Información Legal</span>
+          </div>
+          <h1 class="text-4xl md:text-5xl font-extrabold mb-4">
+            Políticas y Términos de Servicio
+          </h1>
+          <p class="text-xl text-blue-100 max-w-2xl mx-auto">
+            Transparencia y compromiso en cada servicio. Conoce nuestras políticas de privacidad, 
+            términos de servicio y garantías.
+          </p>
+          <p class="text-sm text-blue-200 mt-4">
+            Última actualización: {lastUpdated}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-16">
+      <div class="container-max">
+        <div class="grid lg:grid-cols-4 gap-10">
+          
+          <!-- Tabla de Contenidos (Sidebar) -->
+          <aside class="lg:col-span-1">
+            <div class="sticky top-24 space-y-2">
+              <h2 class="text-lg font-bold text-zinc-800 mb-4">Contenido</h2>
+              <nav class="space-y-1">
+                <a href="#privacidad" class="block px-4 py-2 rounded-lg text-sm text-zinc-600 hover:bg-blue-50 hover:text-blue-700 transition">
+                  🔒 Privacidad
+                </a>
+                <a href="#terminos" class="block px-4 py-2 rounded-lg text-sm text-zinc-600 hover:bg-blue-50 hover:text-blue-700 transition">
+                  📜 Términos de Servicio
+                </a>
+                <a href="#cotizaciones" class="block px-4 py-2 rounded-lg text-sm text-zinc-600 hover:bg-blue-50 hover:text-blue-700 transition">
+                  💳 Cotizaciones y Pagos
+                </a>
+                <a href="#seguridad" class="block px-4 py-2 rounded-lg text-sm text-zinc-600 hover:bg-blue-50 hover:text-blue-700 transition">
+                  🛡️ Seguridad y Productos
+                </a>
+                <a href="#garantia" class="block px-4 py-2 rounded-lg text-sm text-zinc-600 hover:bg-blue-50 hover:text-blue-700 transition">
+                  ✅ Garantía
+                </a>
+                <a href="#contacto-politicas" class="block px-4 py-2 rounded-lg text-sm text-zinc-600 hover:bg-blue-50 hover:text-blue-700 transition">
+                  📧 Contacto
+                </a>
+              </nav>
+            </div>
+          </aside>
+
+          <!-- Content Sections -->
+          <div class="lg:col-span-3 space-y-12">
+
+            <!-- 1. Política de Privacidad -->
+            <section id="privacidad" class="scroll-mt-24">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border-l-4 border-blue-500">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">
+                    🔒
+                  </div>
+                  <h2 class="text-3xl font-bold text-zinc-800">Política de Privacidad</h2>
+                </div>
+
+                <div class="space-y-6 text-zinc-700">
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">1.1 Información que Recopilamos</h3>
+                    <p class="leading-relaxed">
+                      En Ecoquimia recopilamos únicamente la información necesaria para brindar nuestros servicios:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li><strong>Datos de contacto:</strong> nombre, teléfono, email, dirección</li>
+                      <li><strong>Información del servicio:</strong> tipo de plaga, ubicación del problema, fecha preferida</li>
+                      <li><strong>Datos de pago:</strong> método de pago seleccionado (no almacenamos datos de tarjetas)</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">1.2 Uso de la Información</h3>
+                    <p class="leading-relaxed">
+                      Utilizamos tu información para:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>Coordinar y ejecutar los servicios contratados</li>
+                      <li>Enviar confirmaciones, recordatorios y actualizaciones</li>
+                      <li>Mejorar nuestros servicios y atención al cliente</li>
+                      <li>Cumplir con obligaciones legales y fiscales</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">1.3 Protección de Datos</h3>
+                    <p class="leading-relaxed">
+                      Implementamos medidas de seguridad para proteger tu información personal. 
+                      Nunca vendemos ni compartimos tus datos con terceros sin tu consentimiento, 
+                      excepto cuando sea requerido por ley.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">1.4 Tus Derechos</h3>
+                    <p class="leading-relaxed">
+                      Tienes derecho a:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>Acceder a tu información personal</li>
+                      <li>Solicitar correcciones o actualizaciones</li>
+                      <li>Solicitar la eliminación de tus datos</li>
+                      <li>Retirar tu consentimiento en cualquier momento</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">1.5 Cookies</h3>
+                    <p class="leading-relaxed">
+                      Utilizamos cookies esenciales para el funcionamiento del sitio web y análisis básicos. 
+                      No utilizamos cookies de terceros para publicidad.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 2. Términos y Condiciones -->
+            <section id="terminos" class="scroll-mt-24">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border-l-4 border-green-500">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-2xl">
+                    📜
+                  </div>
+                  <h2 class="text-3xl font-bold text-zinc-800">Términos y Condiciones de Servicio</h2>
+                </div>
+
+                <div class="space-y-6 text-zinc-700">
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">2.1 Servicios Ofrecidos</h3>
+                    <p class="leading-relaxed">
+                      Ecoquimia ofrece servicios profesionales de control integral de plagas que incluyen:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>Desinsectación (cucarachas, hormigas, mosquitos, arañas, chinches)</li>
+                      <li>Desratización (control de roedores)</li>
+                      <li>Sanitización y desinfección de espacios</li>
+                      <li>Tratamiento antitermitas</li>
+                      <li>Limpieza y desinfección de tanques de agua</li>
+                      <li>Control de palomas y aves</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">2.2 Obligaciones del Cliente</h3>
+                    <p class="leading-relaxed">El cliente se compromete a:</p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>Proporcionar acceso completo a las áreas a tratar</li>
+                      <li>Seguir las recomendaciones pre y post-servicio</li>
+                      <li>Informar sobre mascotas, alergias o condiciones especiales</li>
+                      <li>Realizar el pago según lo acordado</li>
+                      <li>Notificar cambios o cancelaciones con mínimo 24 horas de anticipación</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">2.3 Nuestras Obligaciones</h3>
+                    <p class="leading-relaxed">Ecoquimia se compromete a:</p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>Utilizar productos certificados y seguros</li>
+                      <li>Enviar técnicos capacitados y uniformados</li>
+                      <li>Cumplir con los horarios acordados (tolerancia de 30 min)</li>
+                      <li>Proporcionar certificados de servicio</li>
+                      <li>Ofrecer garantía según el servicio contratado</li>
+                      <li>Mantener comunicación clara y profesional</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">2.4 Política de Cancelación</h3>
+                    <p class="leading-relaxed">
+                      Las cancelaciones deben notificarse con al menos <strong>24 horas de anticipación</strong>. 
+                      Cancelaciones tardías pueden estar sujetas a un cargo del 20% del valor del servicio. 
+                      En caso de emergencias o clima extremo, no se aplicarán cargos.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">2.5 Limitaciones de Responsabilidad</h3>
+                    <p class="leading-relaxed">
+                      Ecoquimia no se hace responsable por:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>Daños pre-existentes en la propiedad</li>
+                      <li>Reinfestaciones causadas por falta de mantenimiento del cliente</li>
+                      <li>Acceso restringido a áreas críticas</li>
+                      <li>Condiciones estructurales que faciliten reinfestaciones</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 3. Cotizaciones y Pagos -->
+            <section id="cotizaciones" class="scroll-mt-24">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border-l-4 border-yellow-500">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center text-2xl">
+                    💳
+                  </div>
+                  <h2 class="text-3xl font-bold text-zinc-800">Política de Cotizaciones y Pagos</h2>
+                </div>
+
+                <div class="space-y-6 text-zinc-700">
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">3.1 Proceso de Cotización</h3>
+                    <p class="leading-relaxed">
+                      Las cotizaciones son <strong>gratuitas</strong> y sin compromiso. Nuestro proceso incluye:
+                    </p>
+                    <ol class="list-decimal pl-6 mt-2 space-y-2">
+                      <li>Evaluación inicial vía telefónica o formulario web</li>
+                      <li>Visita de inspección (cuando sea necesario)</li>
+                      <li>Cotización detallada por escrito</li>
+                      <li>Explicación del tratamiento propuesto</li>
+                    </ol>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">3.2 Validez de Cotizaciones</h3>
+                    <p class="leading-relaxed">
+                      Las cotizaciones tienen una validez de <strong>30 días</strong> desde su emisión. 
+                      Los precios pueden variar según cambios en el alcance del servicio o fluctuaciones en los costos de productos.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">3.3 Métodos de Pago</h3>
+                    <p class="leading-relaxed">Aceptamos los siguientes métodos de pago:</p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>💵 Efectivo</li>
+                      <li>💳 Tarjetas de crédito/débito (Visa, Mastercard)</li>
+                      <li>📱 Transferencias bancarias</li>
+                      <li>📲 Pago móvil</li>
+                    </ul>
+                    <p class="leading-relaxed mt-3">
+                      El pago se realiza <strong>al finalizar el servicio</strong> para servicios puntuales, 
+                      o según el plan acordado para contratos mensuales.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">3.4 Política de Reembolsos</h3>
+                    <p class="leading-relaxed">
+                      Si no quedas satisfecho con el servicio, contáctanos dentro de las <strong>48 horas siguientes</strong>. 
+                      Evaluaremos el caso y ofreceremos:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>Repetición del servicio sin costo adicional</li>
+                      <li>Reembolso parcial o total según el caso</li>
+                      <li>Ajuste del tratamiento según necesidades</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">3.5 Facturación</h3>
+                    <p class="leading-relaxed">
+                      Emitimos facturas fiscales válidas conforme a la normativa de la DGII de República Dominicana. 
+                      Solicita tu factura al momento del pago.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 4. Seguridad y Productos -->
+            <section id="seguridad" class="scroll-mt-24">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border-l-4 border-purple-500">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">
+                    🛡️
+                  </div>
+                  <h2 class="text-3xl font-bold text-zinc-800">Política de Seguridad y Productos</h2>
+                </div>
+
+                <div class="space-y-6 text-zinc-700">
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">4.1 Productos Certificados</h3>
+                    <p class="leading-relaxed">
+                      Utilizamos exclusivamente productos registrados y aprobados por las autoridades sanitarias. 
+                      Todos nuestros productos cuentan con:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>✅ Registro sanitario vigente</li>
+                      <li>✅ Hojas de seguridad (MSDS)</li>
+                      <li>✅ Fichas técnicas detalladas</li>
+                      <li>✅ Baja toxicidad para humanos y mascotas</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">4.2 Protocolos de Seguridad</h3>
+                    <p class="leading-relaxed">Nuestros técnicos siguen estrictos protocolos:</p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>Uso de equipo de protección personal (EPP)</li>
+                      <li>Señalización de áreas tratadas</li>
+                      <li>Dosificación precisa según fabricante</li>
+                      <li>Ventilación adecuada post-aplicación</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">4.3 Recomendaciones Post-Servicio</h3>
+                    <p class="leading-relaxed">Después del servicio, recomendamos:</p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>Ventilar el área durante 2-4 horas</li>
+                      <li>No limpiar las áreas tratadas durante 24-48 horas</li>
+                      <li>Mantener mascotas alejadas según indicaciones</li>
+                      <li>Almacenar alimentos en recipientes cerrados</li>
+                      <li>Reportar cualquier reacción o inquietud inmediatamente</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">4.4 Certificaciones</h3>
+                    <p class="leading-relaxed">
+                      Ecoquimia cuenta con personal certificado en Manejo Integrado de Plagas (MIP) 
+                      y cumple con todas las normativas sanitarias locales.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 5. Garantía -->
+            <section id="garantia" class="scroll-mt-24">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border-l-4 border-red-500">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-2xl">
+                    ✅
+                  </div>
+                  <h2 class="text-3xl font-bold text-zinc-800">Política de Garantía</h2>
+                </div>
+
+                <div class="space-y-6 text-zinc-700">
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">5.1 Cobertura de Garantía</h3>
+                    <p class="leading-relaxed">
+                      Garantizamos la efectividad de nuestros servicios según el siguiente esquema:
+                    </p>
+                    <div class="mt-4 space-y-3">
+                      <div class="bg-zinc-50 p-4 rounded-lg">
+                        <p class="font-semibold text-zinc-800">Desinsectación:</p>
+                        <p>Garantía de 30 días. Si la plaga reaparece, regresamos sin costo.</p>
+                      </div>
+                      <div class="bg-zinc-50 p-4 rounded-lg">
+                        <p class="font-semibold text-zinc-800">Desratización:</p>
+                        <p>Garantía de 45 días con monitoreo incluido.</p>
+                      </div>
+                      <div class="bg-zinc-50 p-4 rounded-lg">
+                        <p class="font-semibold text-zinc-800">Tratamiento Antitermitas:</p>
+                        <p>Garantía de 1 año con inspecciones trimestrales.</p>
+                      </div>
+                      <div class="bg-zinc-50 p-4 rounded-lg">
+                        <p class="font-semibold text-zinc-800">Sanitización:</p>
+                        <p>Garantía de calidad inmediata del servicio.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">5.2 Exclusiones de Garantía</h3>
+                    <p class="leading-relaxed">La garantía NO aplica en los siguientes casos:</p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                      <li>Nueva infestación proveniente del exterior</li>
+                      <li>Falta de mantenimiento o limpieza por parte del cliente</li>
+                      <li>Modificaciones estructurales post-servicio</li>
+                      <li>No seguimiento de recomendaciones técnicas</li>
+                      <li>Condiciones que faciliten reinfestaciones (grietas, humedad excesiva)</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">5.3 Proceso de Reclamo</h3>
+                    <p class="leading-relaxed">Para hacer válida la garantía:</p>
+                    <ol class="list-decimal pl-6 mt-2 space-y-2">
+                      <li>Contacta con nosotros dentro del período de garantía</li>
+                      <li>Proporciona evidencia fotográfica de la situación</li>
+                      <li>Permitir inspección de nuestro técnico</li>
+                      <li>Coordinar nueva visita sin costo adicional</li>
+                    </ol>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-semibold text-zinc-800 mb-3">5.4 Garantía de Satisfacción</h3>
+                    <p class="leading-relaxed">
+                      Nos comprometemos con tu satisfacción. Si por alguna razón no cumplimos tus expectativas, 
+                      trabajaremos contigo hasta resolver el problema o te reembolsaremos tu inversión.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 6. Contacto para Consultas -->
+            <section id="contacto-politicas" class="scroll-mt-24">
+              <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-2xl shadow-lg p-8">
+                <div class="text-center">
+                  <h2 class="text-3xl font-bold mb-4">¿Tienes Preguntas sobre Nuestras Políticas?</h2>
+                  <p class="text-blue-100 mb-6 max-w-2xl mx-auto">
+                    Estamos aquí para aclarar cualquier duda. Contáctanos y con gusto te ayudaremos.
+                  </p>
+                  
+                  <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a 
+                      href="mailto:melvin01rd@gmail.com"
+                      class="inline-flex items-center gap-2 bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition"
+                    >
+                      📧 melvin01rd@gmail.com
+                    </a>
+                    <a 
+                      href="tel:+18097777586"
+                      class="inline-flex items-center gap-2 bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition"
+                    >
+                      📞 809-777-7586
+                    </a>
+                    <a 
+                      href="https://wa.me/18097777586"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition"
+                    >
+                      💬 WhatsApp
+                    </a>
+                  </div>
+
+                  <p class="text-sm text-blue-200 mt-6">
+                    Tiempo de respuesta: Menos de 24 horas hábiles
+                  </p>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Botón Volver Arriba -->
+    <button 
+      id="back-to-top"
+      class="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition transform hover:scale-110 opacity-0 pointer-events-none"
+      aria-label="Volver arriba"
+    >
+      ⬆️
+    </button>
+
+  </main>
+
+  <Footer slot="footer" />
+</Base>
+
+<style>
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Mostrar botón back-to-top cuando se hace scroll */
+  #back-to-top.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+</style>
+
+<script>
+  // Back to top button
+  const backToTopBtn = document.getElementById('back-to-top');
+  
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 500) {
+      backToTopBtn?.classList.add('show');
+    } else {
+      backToTopBtn?.classList.remove('show');
+    }
+  });
+
+  backToTopBtn?.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+
+  // Highlight active section in TOC (opcional)
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('aside nav a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      if (window.scrollY >= sectionTop - 200) {
+        current = section.getAttribute('id') || '';
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('bg-blue-50', 'text-blue-700', 'font-semibold');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('bg-blue-50', 'text-blue-700', 'font-semibold');
+      }
+    });
+  });
+</script>
