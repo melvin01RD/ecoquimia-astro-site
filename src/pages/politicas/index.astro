@@ -1,179 +1,127 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Políticas | Ecoquimia</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { FileText, Shield, Database, Briefcase, Mail } from "@lucide/astro";
 
-  <style>
-    :root {
-      --brand: #1f7a4f;
-      --text: #1f2933;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --bg-soft: #f9fafb;
-    }
+export const prerender = true;
+---
 
-    * {
-      box-sizing: border-box;
-    }
+<Base title="Politicas | Ecoquimia" description="Politicas de privacidad y terminos de uso de Ecoquimia.">
+  <Header slot="header" />
 
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background: #ffffff;
-      line-height: 1.7;
-    }
-
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
-    }
-
-    header a {
-      text-decoration: none;
-      font-weight: 600;
-      color: var(--brand);
-    }
-
-    main {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 48px 24px 80px;
-    }
-
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 8px;
-    }
-
-    .updated {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 32px;
-    }
-
-    .toc {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px 24px;
-      margin-bottom: 48px;
-    }
-
-    .toc strong {
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .toc ul {
-      padding-left: 18px;
-      margin: 0;
-    }
-
-    .toc li {
-      margin: 6px 0;
-    }
-
-    .toc a {
-      color: var(--brand);
-      text-decoration: none;
-    }
-
-    section {
-      margin-bottom: 56px;
-    }
-
-    h2 {
-      font-size: 1.4rem;
-      margin-bottom: 12px;
-    }
-
-    p {
-      margin-bottom: 16px;
-    }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 24px;
-      text-align: center;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-  </style>
-</head>
-
-<body>
-
-<header>
-  <a href="/">Ecoquimia</a>
-</header>
-
-<main>
-  <h1>Políticas de Ecoquimia</h1>
-  <p class="updated">Última actualización: Enero 2026</p>
-
-  <div class="toc">
-    <strong>Contenido</strong>
-    <ul>
-      <li><a href="#privacidad">Política de Privacidad</a></li>
-      <li><a href="#uso">Uso del Sitio Web</a></li>
-      <li><a href="#datos">Tratamiento de Datos</a></li>
-      <li><a href="#servicios">Alcance de los Servicios</a></li>
-      <li><a href="#contacto">Contacto Legal</a></li>
-    </ul>
-  </div>
-
-  <section id="privacidad">
-    <h2>Política de Privacidad</h2>
-    <p>
-      Ecoquimia se compromete a proteger la información personal de sus clientes,
-      proveedores y visitantes del sitio web. Toda la información recopilada
-      es tratada de forma confidencial y conforme a la legislación vigente.
-    </p>
+  <!-- Hero -->
+  <section class="relative overflow-hidden pt-16 md:pt-20">
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(29,122,83,.12),rgba(255,255,255,0))]"></div>
+    <div class="container-max py-8 md:py-12 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-zinc-900">Politicas de Ecoquimia</h1>
+      <p class="mt-2 text-zinc-600">Ultima actualizacion: Enero 2026</p>
+    </div>
   </section>
 
-  <section id="uso">
-    <h2>Uso del Sitio Web</h2>
-    <p>
-      El uso de este sitio web implica la aceptación de estas políticas.
-      El contenido es informativo y no constituye una oferta contractual
-      vinculante.
-    </p>
+  <section class="section-pad">
+    <div class="container-max max-w-4xl">
+      <!-- Tabla de contenido -->
+      <nav class="surface rounded-app p-5 md:p-6 mb-8">
+        <h2 class="text-lg font-semibold mb-3 flex items-center gap-2">
+          <FileText class="w-5 h-5 text-brand" /> Contenido
+        </h2>
+        <ul class="grid gap-2 sm:grid-cols-2">
+          <li><a href="#privacidad" class="text-brand hover:underline flex items-center gap-1"><span class="text-zinc-400">01.</span> Politica de Privacidad</a></li>
+          <li><a href="#uso" class="text-brand hover:underline flex items-center gap-1"><span class="text-zinc-400">02.</span> Uso del Sitio Web</a></li>
+          <li><a href="#datos" class="text-brand hover:underline flex items-center gap-1"><span class="text-zinc-400">03.</span> Tratamiento de Datos</a></li>
+          <li><a href="#servicios" class="text-brand hover:underline flex items-center gap-1"><span class="text-zinc-400">04.</span> Alcance de Servicios</a></li>
+          <li><a href="#contacto" class="text-brand hover:underline flex items-center gap-1"><span class="text-zinc-400">05.</span> Contacto Legal</a></li>
+        </ul>
+      </nav>
+
+      <!-- Secciones -->
+      <div class="space-y-6">
+        <article id="privacidad" class="surface rounded-app p-5 md:p-6 transition hover:shadow-md">
+          <h2 class="text-xl font-semibold mb-3 flex items-center gap-2 text-zinc-900">
+            <div class="rounded-full bg-emerald-100 p-2">
+              <Shield class="w-5 h-5 text-emerald-600" />
+            </div>
+            Politica de Privacidad
+          </h2>
+          <p class="text-zinc-700 leading-relaxed">
+            Ecoquimia se compromete a proteger la informacion personal de sus clientes,
+            proveedores y visitantes del sitio web. Toda la informacion recopilada
+            es tratada de forma confidencial y conforme a la legislacion vigente en
+            la Republica Dominicana.
+          </p>
+        </article>
+
+        <article id="uso" class="surface rounded-app p-5 md:p-6 transition hover:shadow-md">
+          <h2 class="text-xl font-semibold mb-3 flex items-center gap-2 text-zinc-900">
+            <div class="rounded-full bg-blue-100 p-2">
+              <FileText class="w-5 h-5 text-blue-600" />
+            </div>
+            Uso del Sitio Web
+          </h2>
+          <p class="text-zinc-700 leading-relaxed">
+            El uso de este sitio web implica la aceptacion de estas politicas.
+            El contenido es informativo y no constituye una oferta contractual vinculante.
+            Nos reservamos el derecho de modificar el contenido sin previo aviso.
+          </p>
+        </article>
+
+        <article id="datos" class="surface rounded-app p-5 md:p-6 transition hover:shadow-md">
+          <h2 class="text-xl font-semibold mb-3 flex items-center gap-2 text-zinc-900">
+            <div class="rounded-full bg-purple-100 p-2">
+              <Database class="w-5 h-5 text-purple-600" />
+            </div>
+            Tratamiento de Datos Personales
+          </h2>
+          <p class="text-zinc-700 leading-relaxed mb-3">
+            Los datos personales recopilados a traves de formularios de contacto
+            o cotizacion se utilizan exclusivamente para:
+          </p>
+          <ul class="list-disc list-inside text-zinc-700 space-y-1 ml-2">
+            <li>Responder a solicitudes de cotizacion</li>
+            <li>Coordinar la prestacion de servicios</li>
+            <li>Enviar informacion relevante sobre nuestros servicios</li>
+          </ul>
+        </article>
+
+        <article id="servicios" class="surface rounded-app p-5 md:p-6 transition hover:shadow-md">
+          <h2 class="text-xl font-semibold mb-3 flex items-center gap-2 text-zinc-900">
+            <div class="rounded-full bg-amber-100 p-2">
+              <Briefcase class="w-5 h-5 text-amber-600" />
+            </div>
+            Alcance de los Servicios
+          </h2>
+          <p class="text-zinc-700 leading-relaxed">
+            Los servicios de control de plagas ofrecidos por Ecoquimia se realizan
+            bajo estrictos protocolos tecnicos, sanitarios y ambientales,
+            garantizando discrecion y profesionalismo en entornos residenciales y empresariales.
+            Todos nuestros productos cuentan con registro sanitario vigente.
+          </p>
+        </article>
+
+        <article id="contacto" class="surface rounded-app p-5 md:p-6 border-l-4 border-brand bg-gradient-to-r from-emerald-50/50 to-white">
+          <h2 class="text-xl font-semibold mb-3 flex items-center gap-2 text-zinc-900">
+            <div class="rounded-full bg-emerald-100 p-2">
+              <Mail class="w-5 h-5 text-emerald-600" />
+            </div>
+            Contacto Legal
+          </h2>
+          <p class="text-zinc-700 leading-relaxed mb-4">
+            Para consultas legales o relacionadas con estas politicas, puede escribirnos a:
+          </p>
+          <a href="mailto:legal@ecoquimia.com" class="inline-flex items-center gap-2 bg-brand text-white px-4 py-2 rounded-xl font-medium hover:bg-brand-dark transition">
+            <Mail class="w-4 h-4" /> legal@ecoquimia.com
+          </a>
+        </article>
+      </div>
+
+      <!-- CTA -->
+      <div class="mt-10 flex flex-wrap gap-3 justify-center">
+        <a href="/" class="btn btn-outline">Volver al inicio</a>
+        <a href="/cotizacion" class="btn btn-primary">Solicitar cotizacion</a>
+      </div>
+    </div>
   </section>
 
-  <section id="datos">
-    <h2>Tratamiento de Datos Personales</h2>
-    <p>
-      Los datos personales recopilados a través de formularios de contacto
-      o cotización se utilizan exclusivamente para fines operativos y
-      de comunicación con el cliente.
-    </p>
-  </section>
-
-  <section id="servicios">
-    <h2>Alcance de los Servicios</h2>
-    <p>
-      Los servicios de control de plagas ofrecidos por Ecoquimia se realizan
-      bajo estrictos protocolos técnicos, sanitarios y ambientales,
-      garantizando discreción y profesionalismo en entornos empresariales.
-    </p>
-  </section>
-
-  <section id="contacto">
-    <h2>Contacto Legal</h2>
-    <p>
-      Para consultas legales o relacionadas con estas políticas,
-      puede escribirnos a:
-    </p>
-    <p><strong>legal@ecoquimia.com</strong></p>
-  </section>
-</main>
-
-<footer>
-  © 2026 Ecoquimia. Todos los derechos reservados.
-</footer>
-
-</body>
-</html>
+  <Footer slot="footer" />
+</Base>

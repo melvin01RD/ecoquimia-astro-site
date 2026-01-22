@@ -44,14 +44,6 @@ const { pathname } = Astro.url;
     </nav>
 
     <div class="md:hidden flex items-center gap-2">
-      <a
-        href={`https://wa.me/${config.contact.phone}?text=${encodeURIComponent(config.contact.whatsappText)}`}
-        class="inline-flex items-center justify-center rounded-xl px-3 py-2 bg-emerald-600 text-white text-sm hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-        target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
-      >
-        WhatsApp
-      </a>
-
       <button
         id="navToggle"
         type="button"
@@ -109,13 +101,41 @@ const { pathname } = Astro.url;
     if (!btn || !panel) return;
 
     const mqDesktop = matchMedia('(min-width: 768px)');
+    const BURGER = 'M4 6h16M4 12h16M4 18h16';
+    const CLOSE  = 'M6 6l12 12M6 18L18 6';
 
-    function lockBodyScroll(lock){
+    function lockBodyScroll(lock) {
       if (mqDesktop.matches) return;
       document.documentElement.classList.toggle('overflow-hidden', lock);
       document.body.classList.toggle('overflow-hidden', lock);
     }
-    function setOpen(open){
+
+    function setOpen(open) {
       btn.setAttribute('aria-expanded', String(open));
       panel.classList.toggle('hidden', !open);
-      panel.setAttribute('aria-hidden',
+      panel.setAttribute('aria-hidden', String(!open));
+      if (burgerPath) burgerPath.setAttribute('d', open ? CLOSE : BURGER);
+      lockBodyScroll(open);
+    }
+
+    btn.addEventListener('click', () => {
+      const isOpen = btn.getAttribute('aria-expanded') === 'true';
+      setOpen(!isOpen);
+    });
+
+    panel.querySelectorAll('[data-close]').forEach(link => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    mqDesktop.addEventListener('change', (e) => {
+      if (e.matches) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        btn.focus();
+      }
+    });
+  });
+</script>

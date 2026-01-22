@@ -183,21 +183,19 @@ const errorMsg =
 
       form?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const formData = new FormData(form);
+        const servicioSlug = formData.get('servicio');
+        const servicioLabel = options.find(o => o.value === servicioSlug)?.label || servicioSlug;
+
         const data = {
           nombre: formData.get('nombre'),
           email: formData.get('email'),
           telefono: formData.get('telefono'),
-          servicio: formData.get('servicio'),
+          servicio: servicioLabel,
           mensaje: formData.get('mensaje')
         };
 
-        // Convertir slug a label
-        const servicioLabel = options.find(o => o.value === data.servicio)?.label || data.servicio;
-        data.servicio = servicioLabel;
-
-        // Mostrar estado de enviando
         submitBtn.disabled = true;
         submitBtn.textContent = 'Enviando...';
         status.textContent = '';
@@ -206,30 +204,28 @@ const errorMsg =
         try {
           const response = await fetch('/api/send-email', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
           });
 
           const result = await response.json();
 
           if (response.ok) {
-            // Éxito
-            status.textContent = '¡Cotización enviada exitosamente! Te contactaremos pronto.';
-            status.className = 'text-sm text-green-600';
-            form.reset();
+            // Redirigir a página de gracias
+            const params = new URLSearchParams({
+              name: data.nombre,
+              service: servicioLabel
+            });
+            window.location.href = `/gracias?${params.toString()}`;
           } else {
-            // Error
-            status.textContent = result.error || 'Error al enviar la cotización. Inténtalo de nuevo.';
+            status.textContent = result.error || 'Error al enviar. Inténtalo de nuevo.';
             status.className = 'text-sm text-red-600';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enviar';
           }
         } catch (error) {
-          // Error de red
-          status.textContent = 'Error de conexión. Verifica tu internet e inténtalo de nuevo.';
+          status.textContent = 'Error de conexión. Verifica tu internet.';
           status.className = 'text-sm text-red-600';
-        } finally {
-          // Re-habilitar botón
           submitBtn.disabled = false;
           submitBtn.textContent = 'Enviar';
         }
