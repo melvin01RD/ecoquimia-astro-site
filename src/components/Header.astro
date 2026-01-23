@@ -18,10 +18,40 @@ const { pathname } = Astro.url;
   <style is:global>
     @media (max-width: 767.98px){ .site-header .nav-desktop{ display: none !important; } }
     @media (min-width: 768px){ .site-header .nav-desktop{ display: flex !important; } }
+
+    /* Large screens: navbar optimization */
+    @media (min-width: 1440px) {
+      .site-header .navbar-container {
+        max-width: 1920px;
+        margin: 0 auto;
+        padding: 0 3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+
+      .site-header .logo-link {
+        margin-right: auto;
+        flex-shrink: 0;
+      }
+
+      .site-header .nav-desktop {
+        margin-left: auto;
+        gap: 2rem;
+      }
+    }
+
+    /* Extra wide screens */
+    @media (min-width: 1920px) {
+      .site-header .navbar-container {
+        padding: 0 5rem;
+      }
+    }
   </style>
 
-  <div class="container-max flex items-center justify-between h-20">
-    <a href="/" class="inline-flex items-center gap-2 no-underline flex-shrink-0" aria-label="Inicio">
+  <div class="navbar-container container-max flex items-center justify-between h-20">
+    <a href="/" class="logo-link inline-flex items-center gap-2 no-underline flex-shrink-0" aria-label="Inicio">
       <img
         src="/logo/logo.png"
         alt="Ecoquimia — Creamos un Ambiente sin Plagas"

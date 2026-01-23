@@ -253,6 +253,52 @@
 }
 
 /* =========================
+   Hero Banner - Large screens
+   ========================= */
+.hero-banner {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Medium screens and up */
+@media (min-width: 768px) {
+  .hero-banner {
+    height: 70vh;
+    max-height: 700px;
+  }
+
+  .hero-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1440px) {
+  .hero-banner {
+    height: 80vh;
+    max-height: 800px;
+  }
+}
+
+/* Extra wide screens - limit banner width */
+@media (min-width: 1920px) {
+  .hero-banner {
+    max-width: 2560px;
+    margin: 0 auto;
+  }
+}
+
+/* =========================
    Ajustes MOBILE (<= 740px)
    ========================= */
 @media (max-width: 740px) {
