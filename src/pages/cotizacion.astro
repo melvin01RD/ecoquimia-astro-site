@@ -46,18 +46,17 @@ const errorMsg =
 
         <div class="grid gap-3 sm:grid-cols-2">
           {services.map((s) => (
-            <a
-              href={`/cotizacion?service=${s.slug}#quoteForm`}
-              data-astro-prefetch
+            <button
+              type="button"
               data-service={s.slug}
-              class="tile-light no-underline hover:no-underline flex items-start gap-3"
+              class="service-card tile-light no-underline hover:no-underline flex items-start gap-3 text-left transition-all duration-200"
             >
               <span class="text-xl">{s.emoji}</span>
               <div class="flex-1">
                 <div class="font-medium">{s.title}</div>
                 <div class="text-xs text-zinc-500 line-clamp-2">{s.description}</div>
               </div>
-            </a>
+            </button>
           ))}
         </div>
       </div>
@@ -151,6 +150,21 @@ const errorMsg =
       const form = qs("#quoteForm");
       const submitBtn = qs("#submitBtn");
       const status = qs("#status");
+      const serviceCards = qsa('.service-card');
+
+      // Estilos para tarjeta seleccionada
+      const selectedStyles = ['ring-2', 'ring-emerald-500', 'bg-emerald-50', 'border-emerald-500'];
+
+      function updateCardSelection(selectedSlug) {
+        serviceCards.forEach(card => {
+          const slug = card.getAttribute('data-service');
+          if (slug === selectedSlug) {
+            card.classList.add(...selectedStyles);
+          } else {
+            card.classList.remove(...selectedStyles);
+          }
+        });
+      }
 
       function preselectFromURL() {
         const params = new URLSearchParams(window.location.search);
@@ -159,6 +173,7 @@ const errorMsg =
           const match = Array.from(select.options).find(o => o.value === s);
           if (match) {
             select.value = s;
+            updateCardSelection(s);
             document.getElementById("quoteForm")?.scrollIntoView({ behavior:"smooth", block:"start" });
             qs("#nombre")?.focus({ preventScroll: true });
           }
@@ -166,19 +181,23 @@ const errorMsg =
       }
       requestAnimationFrame(preselectFromURL);
 
-      qsa('a[data-service]').forEach(a => {
-        a.addEventListener('click', (e) => {
-          if (location.pathname.endsWith('/cotizacion')) {
-            e.preventDefault();
-            const s = a.getAttribute('data-service');
-            if (select && s) {
-              select.value = s;
-              history.replaceState(null, '', `/cotizacion?service=${encodeURIComponent(s)}#quoteForm`);
-              document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              qs("#nombre")?.focus({ preventScroll: true });
-            }
+      // Click en tarjetas -> actualiza select y visual
+      serviceCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const s = card.getAttribute('data-service');
+          if (select && s) {
+            select.value = s;
+            updateCardSelection(s);
+            history.replaceState(null, '', `/cotizacion?service=${encodeURIComponent(s)}#quoteForm`);
+            document.getElementById('quoteForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            qs("#nombre")?.focus({ preventScroll: true });
           }
         });
+      });
+
+      // Cambio en select -> actualiza tarjetas
+      select?.addEventListener('change', () => {
+        updateCardSelection(select.value);
       });
 
       form?.addEventListener('submit', async (e) => {
