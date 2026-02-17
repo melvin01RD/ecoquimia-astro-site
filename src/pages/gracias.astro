@@ -3,18 +3,17 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { CheckCircle2, Mail, PhoneCall, ArrowLeft } from "@lucide/astro";
+import { config } from "../config";
 
-
-
-export const prerender = true;
+export const prerender = false;
 
 const url = new URL(Astro.request.url);
 const name = url.searchParams.get("name") ?? "";
 const service = url.searchParams.get("service") ?? "";
 
 // Ajusta el número y el correo del negocio
-const WHATSAPP_NUMBER = "18095551234"; // sin símbolos
-const MAIL_TO = "contacto@ecoquimia.com";
+const WHATSAPP_NUMBER = config.contact.phone;
+const MAIL_TO = "areacomercial.eco@gmail.com";
 
 // Copys
 const headline = `Hemos recibido tu solicitud${name ? `, ${name}` : ""}.`;

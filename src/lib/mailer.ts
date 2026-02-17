@@ -1,6 +1,17 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
+
+function getResend(): Resend {
+  if (!_resend) {
+    const apiKey = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error("RESEND_API_KEY no está configurada");
+    }
+    _resend = new Resend(apiKey);
+  }
+  return _resend;
+}
 
 export type SendPayload = {
   to: string;
@@ -12,25 +23,28 @@ export type SendPayload = {
 };
 
 export async function sendMail(payload: SendPayload) {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error("RESEND_API_KEY missing");
-  }
-
   if (!payload.from) {
     throw new Error("FROM missing");
   }
 
-  // 🔒 LIMPIEZA DEFINITIVA
-  const from = payload.from
-    .replace(/^<|>$/g, "")
-    .trim();
+  const from = payload.from.replace(/^<|>$/g, "").trim();
 
-  return await resend.emails.send({
-    from, // ← AQUÍ YA NO HAY FORMA DE QUE LLEGUEN <>
+  const resend = getResend();
+
+  const { data, error } = await resend.emails.send({
+    from,
     to: payload.to,
     subject: payload.subject,
     html: payload.html,
     text: payload.text,
     replyTo: payload.replyTo,
   });
+
+  if (error) {
+    console.error("[mailer] Resend error:", JSON.stringify(error));
+    throw new Error(`Resend error: ${error.message || JSON.stringify(error)}`);
+  }
+
+  console.log("[mailer] Email enviado:", data?.id);
+  return data;
 }

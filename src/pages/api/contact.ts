@@ -45,17 +45,14 @@ export const POST: APIRoute = async ({ request }) => {
       (data.subject ? `Asunto: ${data.subject}\n` : "") +
       `\nMensaje:\n${data.message}\n`;
 
-    // Dummy service until Resend API key propagates
-    console.log("Dummy email send:", { to: config.contact.to, from: config.contact.from, subject, text });
-
-    // Simulate sendMail success
-    // await sendMail({
-    //   to: config.contact.to,
-    //   from: config.contact.from,
-    //   subject,
-    //   text,
-    //   html: toHtml(text)
-    // });
+    await sendMail({
+      to: config.contact.to,
+      from: config.contact.from,
+      subject,
+      text,
+      html: toHtml(text),
+      replyTo: data.email,
+    });
 
     return json({ ok: true, message: "¡Mensaje enviado! Te responderemos pronto." }, 200);
   } catch (err: unknown) {

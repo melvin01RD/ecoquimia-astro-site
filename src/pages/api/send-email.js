@@ -3,6 +3,15 @@ export const runtime = "node";
 
 import { Resend } from 'resend';
 
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export async function POST({ request }) {
   try {
     const apiKey = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
@@ -26,8 +35,18 @@ export async function POST({ request }) {
       });
     }
 
-    const fromEmail = import.meta.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'Ecoquimia <onboarding@resend.dev>';
+    const configuredFrom = import.meta.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM_EMAIL;
+    const fromEmail = configuredFrom || 'Ecoquimia <onboarding@resend.dev>';
+    if (!configuredFrom) {
+      console.warn('[send-email] RESEND_FROM_EMAIL no configurado, usando fallback: onboarding@resend.dev');
+    }
     const toEmail = import.meta.env.CONTACT_TO || process.env.CONTACT_TO || 'melvin01rd@gmail.com';
+
+    const sNombre = escapeHtml(nombre);
+    const sEmail = escapeHtml(email);
+    const sTelefono = escapeHtml(telefono);
+    const sServicio = escapeHtml(servicio);
+    const sMensaje = escapeHtml(mensaje);
 
     const { data: emailData, error } = await resend.emails.send({
       from: fromEmail,
@@ -43,24 +62,24 @@ export async function POST({ request }) {
 
           <div style="background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb;">
             <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #1d7a53;">
-              <p style="margin: 0;"><strong>Nombre:</strong> ${nombre}</p>
+              <p style="margin: 0;"><strong>Nombre:</strong> ${sNombre}</p>
             </div>
 
             <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #1d7a53;">
-              <p style="margin: 0;"><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+              <p style="margin: 0;"><strong>Email:</strong> <a href="mailto:${sEmail}">${sEmail}</a></p>
             </div>
 
             <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #1d7a53;">
-              <p style="margin: 0;"><strong>Telefono:</strong> <a href="tel:${telefono}">${telefono}</a></p>
+              <p style="margin: 0;"><strong>Telefono:</strong> <a href="tel:${sTelefono}">${sTelefono}</a></p>
             </div>
 
             <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #1d7a53;">
-              <p style="margin: 0;"><strong>Servicio Solicitado:</strong> ${servicio}</p>
+              <p style="margin: 0;"><strong>Servicio Solicitado:</strong> ${sServicio}</p>
             </div>
 
             <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #1d7a53;">
               <p style="margin: 0 0 10px 0;"><strong>Mensaje:</strong></p>
-              <p style="margin: 0; padding: 10px; background: #f9fafb; border-radius: 4px; white-space: pre-wrap;">${mensaje}</p>
+              <p style="margin: 0; padding: 10px; background: #f9fafb; border-radius: 4px; white-space: pre-wrap;">${sMensaje}</p>
             </div>
           </div>
 
@@ -77,8 +96,10 @@ export async function POST({ request }) {
     });
 
     if (error) {
-      console.error('Error Resend:', error);
-      return new Response(JSON.stringify({ error: 'Error al enviar el email' }), {
+      console.error('[send-email] Error Resend:', JSON.stringify(error));
+      return new Response(JSON.stringify({
+        error: 'Error al enviar el email. Intenta nuevamente.'
+      }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       });

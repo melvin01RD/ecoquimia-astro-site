@@ -140,12 +140,12 @@ const errorMsg =
 
   <Footer slot="footer" />
 
-  <script is:inline>
+  <script define:vars={{ optionsJson }}>
     (() => {
       const qs = (s, r=document) => r.querySelector(s);
       const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-      const options = JSON.parse(`{optionsJson}`);
+      const options = JSON.parse(optionsJson);
       const select = qs("#servicio");
       const form = qs("#quoteForm");
       const submitBtn = qs("#submitBtn");
