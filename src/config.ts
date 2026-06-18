@@ -3,7 +3,7 @@ import { z } from "zod";
 const envSchema = z.object({
   PUBLIC_SITE_ORIGIN: z.string().default("*"),
   PUBLIC_SITE_URL: z.string().default("http://localhost"),
-  CONTACT_TO: z.string().email().default("melvin01rd@gmail.com"),
+  CONTACT_TO: z.string().email().default("Areacomercial.eco@gmail.com"),
   CONTACT_FROM: z.string().default("melvin01rd@gmail.com"),
   RESEND_API_KEY: z.string().optional(),
   RESEND_FROM_EMAIL: z.string().optional(),

@@ -40,7 +40,7 @@ export async function POST({ request }) {
     if (!configuredFrom) {
       console.warn('[send-email] RESEND_FROM_EMAIL no configurado, usando fallback: onboarding@resend.dev');
     }
-    const toEmail = import.meta.env.CONTACT_TO || process.env.CONTACT_TO || 'melvin01rd@gmail.com';
+    const toEmail = import.meta.env.CONTACT_TO || process.env.CONTACT_TO || 'Areacomercial.eco@gmail.com';
 
     const sNombre = escapeHtml(nombre);
     const sEmail = escapeHtml(email);
