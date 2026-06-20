@@ -1,7 +1,7 @@
 export const prerender = false;
 export const runtime = "node";
 
-import { Resend } from 'resend';
+import { sendMail } from '../../lib/mailer';
 
 function escapeHtml(str) {
   return String(str)
@@ -14,17 +14,6 @@ function escapeHtml(str) {
 
 export async function POST({ request }) {
   try {
-    const apiKey = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
-
-    if (!apiKey) {
-      console.error('RESEND_API_KEY no configurada');
-      return new Response(JSON.stringify({ error: 'Configuracion de email incompleta' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    const resend = new Resend(apiKey);
     const data = await request.json();
 
     const { nombre, email, telefono, servicio, mensaje } = data;
@@ -48,9 +37,9 @@ export async function POST({ request }) {
     const sServicio = escapeHtml(servicio);
     const sMensaje = escapeHtml(mensaje);
 
-    const { data: emailData, error } = await resend.emails.send({
+    await sendMail({
       from: fromEmail,
-      to: [toEmail],
+      to: toEmail,
       replyTo: email,
       subject: `Nueva Cotizacion: ${servicio} - Ecoquimia`,
       html: `
@@ -95,24 +84,13 @@ export async function POST({ request }) {
       `,
     });
 
-    if (error) {
-      console.error('[send-email] Error Resend:', JSON.stringify(error));
-      return new Response(JSON.stringify({
-        error: 'Error al enviar el email. Intenta nuevamente.'
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    console.log('Email enviado correctamente:', emailData?.id);
     return new Response(JSON.stringify({ success: true, message: 'Cotizacion enviada correctamente' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
 
   } catch (err) {
-    console.error('Error del servidor:', err);
+    console.error('[send-email] Error del servidor:', err);
     return new Response(JSON.stringify({ error: 'Error interno del servidor' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

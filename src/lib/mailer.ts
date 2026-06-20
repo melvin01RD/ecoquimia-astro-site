@@ -22,12 +22,25 @@ export type SendPayload = {
   replyTo?: string;
 };
 
+function normalizeFrom(raw: string): string {
+  // Strip surrounding whitespace, newlines, and wrapping quotes from env vars
+  const s = raw.trim().replace(/^["']|["']$/g, "").trim();
+  // "Name <email>" — preserve both parts
+  const named = s.match(/^(.+?)\s*<([^>]+)>$/);
+  if (named) return `${named[1].trim()} <${named[2].trim()}>`;
+  // "<email>" — bare angle brackets, strip them
+  const bracketed = s.match(/^<([^>]+)>$/);
+  if (bracketed) return bracketed[1].trim();
+  // plain email
+  return s;
+}
+
 export async function sendMail(payload: SendPayload) {
   if (!payload.from) {
     throw new Error("FROM missing");
   }
 
-  const from = payload.from.replace(/^<|>$/g, "").trim();
+  const from = normalizeFrom(payload.from);
 
   const resend = getResend();
 
@@ -41,7 +54,7 @@ export async function sendMail(payload: SendPayload) {
   });
 
   if (error) {
-    console.error("[mailer] Resend error:", JSON.stringify(error));
+    console.error("[mailer] Resend error:", JSON.stringify(error), "| from:", from);
     throw new Error(`Resend error: ${error.message || JSON.stringify(error)}`);
   }
 
