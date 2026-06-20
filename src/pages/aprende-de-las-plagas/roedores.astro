@@ -10,7 +10,7 @@ export const prerender = true;
   <main class="bg-zinc-50">
     <section class="container-max py-12 sm:py-16">
       <nav class="mb-6 text-sm">
-        <a href="/aprende-de-las-plagas" class="text-emerald-700 hover:underline">← Volver a “Aprende de las plagas”</a>
+        <a href="/aprende-de-las-plagas" class="text-emerald-700 hover:underline">← Volver a "Aprende de las plagas"</a>
       </nav>
 
       <header class="max-w-3xl">
@@ -39,3 +39,13 @@ export const prerender = true;
         </ul>
       </article>
 
+      <div class="mt-10 flex gap-3 flex-wrap">
+        <a href="/aprende-de-las-plagas" class="btn btn-outline">Volver</a>
+        <a href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, tengo una infestación de roedores y necesito ayuda profesional.")}`} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          Solicitar cotización
+        </a>
+      </div>
+    </section>
+  </main>
+  <Footer slot="footer" />
+</Base>
