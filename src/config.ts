@@ -39,6 +39,7 @@ export const config = {
     to: env.CONTACT_TO,
     from: env.CONTACT_FROM,
     address: "Santo Domingo, RD",
+    hours: "Lun–Vie 8:30–17:00 | Sáb 9:00–13:00",
     whatsappText: "Hola, me gustaría cotizar un servicio de control de plagas",
   },
 

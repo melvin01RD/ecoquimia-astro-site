@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.ecoquimia.com.do" }],
+      "destination": "https://ecoquimia.com.do/$1",
+      "permanent": true
+    }
+  ]
+}

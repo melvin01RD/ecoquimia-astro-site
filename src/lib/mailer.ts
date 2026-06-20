@@ -51,7 +51,7 @@ export async function sendMail(payload: SendPayload) {
     html: payload.html,
     text: payload.text,
     replyTo: payload.replyTo,
-  });
+  } as Parameters<typeof resend.emails.send>[0]);
 
   if (error) {
     console.error("[mailer] Resend error:", JSON.stringify(error), "| from:", from);

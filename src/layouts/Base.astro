@@ -9,13 +9,20 @@ interface Props {
   description?: string;
   /** Útil para entornos de preview */
   noIndex?: boolean;
+  ogImage?: string;
 }
+
+const SITE = "https://ecoquimia.com.do";
 
 const {
   title = "Ecoquimia",
   description = "Control de plagas en RD",
   noIndex = false,
+  ogImage = "/banner-principal.jpg",
 } = Astro.props as Props;
+
+const canonicalURL = new URL(Astro.url.pathname, SITE).href;
+const ogImageURL = new URL(ogImage, SITE).href;
 
 // Rutas donde NO mostrar el botón de WhatsApp
 const hiddenWhatsAppRoutes = ["/gracias", "/politicas", "/404", "/api/"];
@@ -33,11 +40,11 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "PestControl",
   "name": "Ecoquimia",
-  "image": "https://www.ecoquimia.com.do/og-image.jpg",
-  "@id": "https://www.ecoquimia.com.do",
-  "url": "https://www.ecoquimia.com.do",
+  "image": `${SITE}/banner-principal.jpg`,
+  "@id": SITE,
+  "url": SITE,
   "telephone": "+18097777586",
-  "email": "contacto@ecoquimia.com",
+  "email": "Areacomercial.eco@gmail.com",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Santo Domingo",
@@ -79,8 +86,26 @@ const schema = {
     {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/logo/logo.png" />
     <link rel="preconnect" href="/" />
     <link rel="dns-prefetch" href="//wa.me" />
+
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Ecoquimia" />
+    <meta property="og:locale" content="es_DO" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
 
     <title>{title}</title>
 

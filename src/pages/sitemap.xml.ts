@@ -1,8 +1,8 @@
 // Manual sitemap endpoint compatible with SSR
-// Serves a single sitemap.xml for the production domain https://www.ecoquimia.com.do
+// Serves a single sitemap.xml for the production domain https://ecoquimia.com.do
 
 export async function GET() {
-  const base = 'https://www.ecoquimia.com.do';
+  const base = 'https://ecoquimia.com.do';
 
   // Rutas públicas reales (no incluir páginas técnicas o de agradecimiento)
   const routes = [

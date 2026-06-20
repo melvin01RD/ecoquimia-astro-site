@@ -49,6 +49,7 @@ const errorMsg =
             <button
               type="button"
               data-service={s.slug}
+              aria-label={`Seleccionar servicio: ${s.title}`}
               class="service-card tile-light no-underline hover:no-underline flex items-start gap-3 text-left transition-all duration-200"
             >
               <span class="text-xl">{s.emoji}</span>
@@ -205,6 +206,14 @@ const errorMsg =
 
         const formData = new FormData(form);
         const servicioSlug = formData.get('servicio');
+
+        if (!servicioSlug) {
+          status.textContent = 'Selecciona un tipo de servicio antes de continuar.';
+          status.className = 'text-sm text-red-600';
+          select?.focus();
+          return;
+        }
+
         const servicioLabel = options.find(o => o.value === servicioSlug)?.label || servicioSlug;
 
         const data = {

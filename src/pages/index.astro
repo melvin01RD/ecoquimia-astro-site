@@ -9,28 +9,33 @@ import { Shield, Clock, Award, CheckCircle2 } from "@lucide/astro";
 export const prerender = true;
 ---
 
-<Base title="Ecoquimia - Control de Plagas y Fumigacion en Santo Domingo" description="Servicios profesionales de fumigacion y control de plagas en Republica Dominicana.">
+<Base title="Ecoquimia - Control de Plagas y Fumigación en Santo Domingo" description="Servicios profesionales de fumigación y control de plagas en República Dominicana.">
   <Header slot="header" />
 
-  <!-- HERO Banner -->
-  <section class="hero-banner">
+  <!-- HERO Banner con CTA -->
+  <section class="hero-banner min-h-[300px] sm:min-h-[420px] md:min-h-[540px]">
     <img
       src="/banner-principal.jpg"
       alt="Control de plagas profesional - Ecoquimia"
       loading="eager"
       decoding="async"
       fetchpriority="high"
+      style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover"
     />
-  </section>
-
-  <!-- TITULO Y SUBTITULO -->
-  <section class="container-max py-10 text-center">
-    <h1 class="text-3xl md:text-5xl font-extrabold text-zinc-900 leading-tight">
-      Control profesional de plagas en Santo Domingo
-    </h1>
-    <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-zinc-600">
-      Soluciones efectivas, seguras y certificadas para hogares y negocios en toda la Republica Dominicana.
-    </p>
+    <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/10 flex items-center">
+      <div class="container-max py-8">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight max-w-2xl">
+          Control profesional de plagas en Santo Domingo
+        </h1>
+        <p class="mt-3 max-w-xl text-base md:text-lg text-white/90">
+          Soluciones efectivas, seguras y certificadas para hogares y negocios en toda la República Dominicana.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="/cotizacion" class="btn btn-primary text-base px-7 py-3 shadow-lg">Cotizar ahora</a>
+          <a href="/servicios" class="btn bg-white/15 border border-white/50 text-white hover:bg-white/25 text-base px-7 py-3">Ver servicios</a>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- SECCION DE CONFIANZA -->
@@ -42,7 +47,7 @@ export const prerender = true;
         </div>
         <div>
           <p class="font-semibold text-zinc-900">Productos certificados</p>
-          <p class="text-sm text-zinc-600">EPA y salud publica</p>
+          <p class="text-sm text-zinc-600">EPA y salud pública</p>
         </div>
       </div>
 
@@ -51,7 +56,7 @@ export const prerender = true;
           <Clock class="w-5 h-5 text-blue-600" />
         </div>
         <div>
-          <p class="font-semibold text-zinc-900">Respuesta rapida</p>
+          <p class="font-semibold text-zinc-900">Respuesta rápida</p>
           <p class="text-sm text-zinc-600">En menos de 24 horas</p>
         </div>
       </div>
@@ -71,7 +76,7 @@ export const prerender = true;
           <CheckCircle2 class="w-5 h-5 text-purple-600" />
         </div>
         <div>
-          <p class="font-semibold text-zinc-900">Garantia por escrito</p>
+          <p class="font-semibold text-zinc-900">Garantía por escrito</p>
           <p class="text-sm text-zinc-600">En todos los servicios</p>
         </div>
       </div>
@@ -83,7 +88,7 @@ export const prerender = true;
     <div class="text-center">
       <h2 id="srv-title" class="text-2xl md:text-3xl font-bold text-zinc-900">Nuestros servicios</h2>
       <div class="mx-auto mt-3 h-1.5 w-20 rounded-full bg-brand"></div>
-      <p class="mt-3 text-zinc-600">Planes residenciales y comerciales con certificacion.</p>
+      <p class="mt-3 text-zinc-600">Planes residenciales y comerciales con certificación.</p>
     </div>
 
     <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -100,7 +105,7 @@ export const prerender = true;
   <section class="container-max pb-16">
     <div class="rounded-3xl border border-black/5 bg-gradient-to-br from-emerald-50 to-white p-6 md:p-8">
       <h3 class="text-xl md:text-2xl font-semibold text-zinc-900">Aprende de las plagas</h3>
-      <p class="mt-2 text-zinc-700">Consejos practicos y guias rapidas para tu hogar o negocio.</p>
+      <p class="mt-2 text-zinc-700">Consejos prácticos y guías rápidas para tu hogar o negocio.</p>
       <div class="mt-4 flex flex-wrap gap-3">
         <a href="/aprende-de-las-plagas" class="btn btn-primary" data-astro-prefetch>Guias y consejos</a>
         <a href="/contact" class="btn btn-outline" data-astro-prefetch>Contacto</a>
