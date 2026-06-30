@@ -2,8 +2,20 @@
   "redirects": [
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.fumigadoraecoquimia.com.do" }],
+      "destination": "https://fumigadoraecoquimia.com.do/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "ecoquimia.com.do" }],
+      "destination": "https://fumigadoraecoquimia.com.do/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.ecoquimia.com.do" }],
-      "destination": "https://ecoquimia.com.do/$1",
+      "destination": "https://fumigadoraecoquimia.com.do/$1",
       "permanent": true
     }
   ]

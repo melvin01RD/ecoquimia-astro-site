@@ -4,7 +4,7 @@ import tailwind from '@astrojs/tailwind'
 import vercel from '@astrojs/vercel'
 
 export default defineConfig({
-  site: 'https://ecoquimia.com.do',
+  site: 'https://fumigadoraecoquimia.com.do',
 
   output: 'server',
 
