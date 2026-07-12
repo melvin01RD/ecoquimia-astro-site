@@ -1,10 +1,16 @@
 import { z } from "zod";
+import {
+  PHONE_E164,
+  PHONE_DISPLAY,
+  BUSINESS_HOURS,
+  EMAIL_COMMERCIAL,
+} from "./config/business";
 
 const envSchema = z.object({
   PUBLIC_SITE_ORIGIN: z.string().default("*"),
   PUBLIC_SITE_URL: z.string().default("http://localhost"),
-  CONTACT_TO: z.string().email().default("Areacomercial.eco@gmail.com"),
-  CONTACT_FROM: z.string().default("melvin01rd@gmail.com"),
+  CONTACT_TO: z.string().email().default(EMAIL_COMMERCIAL),
+  CONTACT_FROM: z.string().default(EMAIL_COMMERCIAL),
   RESEND_API_KEY: z.string().optional(),
   RESEND_FROM_EMAIL: z.string().optional(),
   SMTP_HOST: z.string().optional(),
@@ -34,12 +40,13 @@ export const config = {
   },
 
   contact: {
-    phone: "18097777586",
-    phoneDisplay: "809-777-7586",
+    // Digits only (no leading +), used to build wa.me/tel links.
+    phone: PHONE_E164.replace(/^\+/, ""),
+    phoneDisplay: PHONE_DISPLAY,
     to: env.CONTACT_TO,
     from: env.CONTACT_FROM,
     address: "Santo Domingo, RD",
-    hours: "Lun–Vie 8:30–17:00 | Sáb 9:00–13:00",
+    hours: BUSINESS_HOURS,
     whatsappText: "Hola, me gustaría cotizar un servicio de control de plagas",
   },
 

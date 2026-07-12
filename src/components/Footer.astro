@@ -1,6 +1,13 @@
 ---
 import { config } from "../config";
+import { PHONE_E164, EMAIL_COMMERCIAL, BUSINESS_HOURS } from "../config/business";
+import { Phone, Mail, MapPin, Clock, Instagram, Facebook } from "@lucide/astro";
 const year = new Date().getFullYear();
+
+const SOCIAL_LINKS = [
+  { label: "Instagram", href: "https://www.instagram.com/fumigadora_eco_quimia/", Icon: Instagram },
+  { label: "Facebook", href: "https://www.facebook.com/FumigadoraEcoQuimia", Icon: Facebook },
+];
 ---
 
 <footer role="contentinfo" class="mt-16 bg-zinc-950 relative isolate overflow-hidden text-white">
@@ -15,13 +22,26 @@ const year = new Date().getFullYear();
     <!-- Marca -->
     <div class="text-center sm:text-left">
       <a href="/" class="flex items-center justify-center sm:justify-start gap-2 text-lg font-bold no-underline" aria-label="Ir al inicio">
-        <!-- Si deseas el logo en el footer, descomenta y coloca el archivo en /public/logo/ -->
-        <!-- <img src="/logo/ecoquimia-logo.png" alt="Ecoquimia" class="h-8 w-auto" /> -->
         <span>Ecoquimia</span>
       </a>
       <p class="mt-3 text-base tracking-wide text-white/85">
         Control integral de plagas para hogares y empresas. Santo Domingo, RD.
       </p>
+
+      <!-- Redes sociales -->
+      <div class="mt-5 flex items-center justify-center sm:justify-start gap-3">
+        {SOCIAL_LINKS.map(({ label, href, Icon }) => (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={label}
+            class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+          >
+            <Icon class="w-5 h-5" aria-hidden="true" />
+          </a>
+        ))}
+      </div>
     </div>
 
     <!-- Contacto -->
@@ -29,25 +49,32 @@ const year = new Date().getFullYear();
       <h4 class="font-semibold mb-3">Contacto</h4>
       <address class="not-italic">
         <ul class="space-y-2 text-base tracking-wide">
-          <li>
-            📞          
+          <li class="flex items-center justify-center sm:justify-start gap-2">
+            <Phone class="w-4 h-4 shrink-0 text-white/70" aria-hidden="true" />
             <a
-              href={`tel:+${config.contact.phone}`}
+              href={`tel:${PHONE_E164}`}
               class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
             >
               {config.contact.phoneDisplay}
             </a>
           </li>
-          <li>
-            ✉️
+          <li class="flex items-center justify-center sm:justify-start gap-2">
+            <Mail class="w-4 h-4 shrink-0 text-white/70" aria-hidden="true" />
             <a
-              href={`mailto:${config.contact.to}`}
+              href={`mailto:${EMAIL_COMMERCIAL}`}
               class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
             >
-              {config.contact.to}
+              {EMAIL_COMMERCIAL}
             </a>
           </li>
-          <li>📍 {config.contact.address}</li>
+          <li class="flex items-center justify-center sm:justify-start gap-2">
+            <MapPin class="w-4 h-4 shrink-0 text-white/70" aria-hidden="true" />
+            <span>{config.contact.address}</span>
+          </li>
+          <li class="flex items-center justify-center sm:justify-start gap-2">
+            <Clock class="w-4 h-4 shrink-0 text-white/70" aria-hidden="true" />
+            <span>{BUSINESS_HOURS}</span>
+          </li>
         </ul>
       </address>
     </div>
@@ -61,7 +88,7 @@ const year = new Date().getFullYear();
   <li><a href="/servicios"           class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">Servicios</a></li>
         <li><a href="/cotizacion"         class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">Cotización</a></li>
         <li><a href="/aprende-de-las-plagas" class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">Aprende de las plagas</a></li>
-        <li><a href="/contact"            class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">Contacto</a></li>
+        <li><a href="/contacto"           class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">Contacto</a></li>
         <li><a href="/politicas"          class="text-white/80 hover:text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">Políticas</a></li>
       </ul>
     </nav>

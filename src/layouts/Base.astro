@@ -2,6 +2,7 @@
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import WhatsAppButton from "../components/WhatsAppButton.astro";
+import { SITE_URL, PHONE_E164, EMAIL_COMMERCIAL } from "../config/business";
 import "../styles/global.css";
 
 interface Props {
@@ -12,7 +13,8 @@ interface Props {
   ogImage?: string;
 }
 
-const SITE = "https://ecoquimia.com.do";
+// Canonical origin: prefer Astro.site (astro.config.mjs), fall back to SITE_URL.
+const SITE = Astro.site ?? new URL(SITE_URL);
 
 const {
   title = "Ecoquimia",
@@ -40,11 +42,16 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "PestControl",
   "name": "Ecoquimia",
-  "image": `${SITE}/banner-principal.jpg`,
-  "@id": SITE,
-  "url": SITE,
-  "telephone": "+18097777586",
-  "email": "Areacomercial.eco@gmail.com",
+  "image": `${SITE.origin}/banner-principal.jpg`,
+  "logo": `${SITE.origin}/logo/logo.png`,
+  "@id": SITE.origin,
+  "url": SITE.origin,
+  "telephone": PHONE_E164,
+  "email": EMAIL_COMMERCIAL,
+  "areaServed": [
+    { "@type": "City", "name": "Santo Domingo" },
+    { "@type": "Country", "name": "República Dominicana" }
+  ],
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Santo Domingo",
@@ -55,8 +62,8 @@ const schema = {
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": 18.4861,
-    "longitude": -69.9312
+    "latitude": 18.5028443,
+    "longitude": -70.0168709
   },
   "openingHoursSpecification": [
     {

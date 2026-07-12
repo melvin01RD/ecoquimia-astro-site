@@ -2,10 +2,11 @@
 import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
+import { buildWhatsAppUrl } from "../../config/business";
 export const prerender = true;
 ---
 
-<Base title="Termitas: protege tu estructura — Ecoquimia" description="Inspección, tratamiento y prevención de termitas.">
+<Base title="Termitas: protege tu estructura — Ecoquimia" description="Inspección, tratamiento y prevención de termitas para proteger tu estructura. Expertos en control de plagas en Santo Domingo, República Dominicana.">
   <Header slot="header" />
   <main class="bg-zinc-50">
     <section class="container-max py-12 sm:py-16">
@@ -40,7 +41,10 @@ export const prerender = true;
 
       <div class="mt-10 flex gap-3 flex-wrap">
         <a href="/aprende-de-las-plagas" class="btn btn-outline">Volver</a>
-        <a href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, necesito inspección y tratamiento contra termitas.")}`} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+        <a href={buildWhatsAppUrl("Hola, necesito inspección y tratamiento contra termitas.")} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          Cotizar por WhatsApp
+        </a>
+        <a href="/cotizacion" class="btn btn-outline">
           Solicitar cotización
         </a>
       </div>

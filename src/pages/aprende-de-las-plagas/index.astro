@@ -2,12 +2,17 @@
 import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
+import { Image } from "astro:assets";
+import { config } from "../../config";
+import { buildWhatsAppUrl } from "../../config/business";
 export const prerender = true;
 
-// Imágenes por artículo usando los archivos en public/img/servicios
-const IMG_CUCARACHAS = "/img/servicios/desinsectacion.png";
-const IMG_ROEDORES = "/img/servicios/Desratización.png";
-const IMG_TERMIDAS = "/img/servicios/tratamiento-de-termitas -3.jpeg";
+// Article images (optimized at build time via astro:assets)
+import IMG_CUCARACHAS from "../../assets/servicios/desinsectacion.png";
+import IMG_ROEDORES from "../../assets/servicios/desratizacion.png";
+import IMG_TERMIDAS from "../../assets/servicios/tratamiento-de-termitas-3.jpeg";
+
+const whatsappUrl = buildWhatsAppUrl(config.contact.whatsappText);
 
 const posts = [
   {
@@ -40,12 +45,12 @@ const listJsonLd = {
   "itemListElement": posts.map((p, i) => ({
     "@type": "ListItem",
     "position": i + 1,
-    "item": { "@type": "Article", "name": p.title, "url": p.href, "description": p.excerpt, "image": p.image }
+    "item": { "@type": "Article", "name": p.title, "url": p.href, "description": p.excerpt, "image": p.image.src }
   }))
 };
 ---
 
-<Base title="Aprende de las plagas — Ecoquimia" description="Guías y consejos para prevenir y tratar plagas.">
+<Base title="Aprende de las plagas — Ecoquimia" description="Guías y consejos de control de plagas en República Dominicana: cómo prevenir y tratar cucarachas, roedores y termitas en tu hogar o negocio en Santo Domingo.">
   <Header slot="header" />
 
   <main class="bg-zinc-50">
@@ -64,9 +69,11 @@ const listJsonLd = {
           <article class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-zinc-100 group">
             
             <a href={p.href} class="block relative overflow-hidden h-48 sm:h-56">
-              <img 
-                src={p.image} 
-                alt={p.title} 
+              <Image
+                src={p.image}
+                alt={p.title}
+                width={640}
+                height={448}
                 class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                 loading="lazy"
               />
@@ -94,7 +101,8 @@ const listJsonLd = {
 
       <div class="mt-16 flex flex-wrap gap-4 justify-center">
         <a href="/" class="btn btn-outline px-8" data-astro-prefetch>Volver al inicio</a>
-        <a href="/cotizacion" class="btn btn-primary px-8" data-astro-prefetch="hover">Solicitar cotización</a>
+        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary px-8">Cotizar por WhatsApp</a>
+        <a href="/cotizacion" class="btn btn-outline px-8" data-astro-prefetch="hover">Solicitar cotización</a>
       </div>
     </section>
   </main>

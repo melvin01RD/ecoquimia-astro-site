@@ -2,10 +2,11 @@
 import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
+import { buildWhatsAppUrl } from "../../config/business";
 export const prerender = true;
 ---
 
-<Base title="Roedores: señales y control — Ecoquimia" description="Cómo detectar roedores y estrategias de control seguras.">
+<Base title="Roedores: señales y control — Ecoquimia" description="Señales de roedores y estrategias de control seguras. Guía de expertos en desratización y control de plagas en Santo Domingo, República Dominicana.">
   <Header slot="header" />
   <main class="bg-zinc-50">
     <section class="container-max py-12 sm:py-16">
@@ -41,7 +42,10 @@ export const prerender = true;
 
       <div class="mt-10 flex gap-3 flex-wrap">
         <a href="/aprende-de-las-plagas" class="btn btn-outline">Volver</a>
-        <a href={`https://wa.me/18096172105?text=${encodeURIComponent("Hola, tengo una infestación de roedores y necesito ayuda profesional.")}`} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+        <a href={buildWhatsAppUrl("Hola, tengo una infestación de roedores y necesito ayuda profesional.")} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          Cotizar por WhatsApp
+        </a>
+        <a href="/cotizacion" class="btn btn-outline">
           Solicitar cotización
         </a>
       </div>
