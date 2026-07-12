@@ -5,7 +5,9 @@ import { services } from "../../data/services";
 export const prerender = false;
 
 export const GET: APIRoute = async () => {
-  return new Response(JSON.stringify({ services }), {
+  // Serialize imgSrc as a plain URL string (imgSrc is ImageMetadata internally).
+  const payload = services.map((s) => ({ ...s, imgSrc: s.imgSrc?.src }));
+  return new Response(JSON.stringify({ services: payload }), {
     status: 200,
     headers: {
       "Content-Type": "application/json; charset=utf-8",

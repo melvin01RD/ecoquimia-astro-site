@@ -6,6 +6,7 @@ import Footer from "../components/Footer.astro";
 // SSR (mejor para /api y control de caché)
 
 import { Grid2x2, Mail, User, AtSign, Phone, ListFilter, Hash } from "@lucide/astro";
+import ServiceIcon from "../components/ServiceIcon.astro";
 import { services, getServiceOptions } from "../data/services";
 
 const options = getServiceOptions();
@@ -24,7 +25,7 @@ const errorMsg =
 
 
 
-<Base title="Cotización — Ecoquimia" description="Solicita tu cotización de control de plagas.">
+<Base title="Cotización — Ecoquimia" description="Solicita tu cotización de fumigación y control de plagas en Santo Domingo. Respuesta en horas laborables para hogares y empresas en República Dominicana.">
   <Header slot="header" />
 
   <!-- Hero -->
@@ -52,7 +53,7 @@ const errorMsg =
               aria-label={`Seleccionar servicio: ${s.title}`}
               class="service-card tile-light no-underline hover:no-underline flex items-start gap-3 text-left transition-all duration-200"
             >
-              <span class="text-xl">{s.emoji}</span>
+              <ServiceIcon slug={s.slug} class="w-6 h-6 text-brand shrink-0 mt-0.5" />
               <div class="flex-1">
                 <div class="font-medium">{s.title}</div>
                 <div class="text-xs text-zinc-500 line-clamp-2">{s.description}</div>
@@ -79,6 +80,12 @@ const errorMsg =
             <fieldset class="grid gap-4">
               <legend id="form-legend" class="sr-only">Formulario de cotización</legend>
 
+              <!-- Honeypot anti-spam: oculto para usuarios, tentador para bots -->
+              <div class="hidden" aria-hidden="true">
+                <label for={honeypotName}>No completar este campo</label>
+                <input id={honeypotName} name={honeypotName} type="text" tabindex="-1" autocomplete="off" />
+              </div>
+
               <div class="field">
                 <label class="label" for="nombre">Nombre</label>
                 <div class="relative">
@@ -99,8 +106,19 @@ const errorMsg =
                 <label class="label" for="telefono">Teléfono</label>
                 <div class="relative">
                   <Phone class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                  <input id="telefono" name="telefono" type="tel" inputmode="tel" required placeholder="+1 809 000 0000" class="input pl-9" />
+                  <input
+                    id="telefono"
+                    name="telefono"
+                    type="tel"
+                    inputmode="tel"
+                    required
+                    placeholder="809 000 0000"
+                    pattern="(\+?1[\s\-]?)?\(?(809|829|849)\)?[\s\-]?\d{3}[\s\-]?\d{4}"
+                    title="Formato válido: 809, 829 u 849 seguido de 7 dígitos. Ej.: 809 000 0000"
+                    class="input pl-9"
+                  />
                 </div>
+                <p class="help">Teléfono RD: debe iniciar con 809, 829 u 849 seguido de 7 dígitos.</p>
               </div>
 
               <div class="field">
@@ -128,7 +146,7 @@ const errorMsg =
                 <p class="help">Mientras más detalles, mejor te cotizamos.</p>
               </div>
 
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-3 mb-20 sm:mb-0">
                 <button id="submitBtn" type="submit" class="btn btn-primary btn-block">Enviar</button>
                 <p id="status" class="text-sm" aria-live="polite"></p>
               </div>
@@ -204,7 +222,20 @@ const errorMsg =
       form?.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        // Native HTML5 validation (required, type=email, phone pattern)
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
         const formData = new FormData(form);
+
+        // Honeypot: if filled, it's a bot — pretend success, do nothing
+        if (formData.get('website')) {
+          window.location.href = '/gracias';
+          return;
+        }
+
         const servicioSlug = formData.get('servicio');
 
         if (!servicioSlug) {
@@ -221,7 +252,8 @@ const errorMsg =
           email: formData.get('email'),
           telefono: formData.get('telefono'),
           servicio: servicioLabel,
-          mensaje: formData.get('mensaje')
+          mensaje: formData.get('mensaje'),
+          website: formData.get('website') // honeypot (server re-checks)
         };
 
         submitBtn.disabled = true;

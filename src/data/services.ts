@@ -1,74 +1,75 @@
 // src/data/services.ts
 import { z } from "zod";
+import type { ImageMetadata } from "astro";
 
-// Agregamos imgSrc y imgAlt al tipo
+// Local service images (optimized at build time via astro:assets)
+import desinsectacionImg from "../assets/servicios/desinsectacion.png";
+import desratizacionImg from "../assets/servicios/desratizacion.png";
+import sanitizacionImg from "../assets/servicios/sanitizacion-desinfeccion.png";
+import antitermitasImg from "../assets/servicios/tratamiento-de-termitas-3.jpeg";
+import tanquesImg from "../assets/servicios/limpieza-de-tanques.png";
+import palomasImg from "../assets/servicios/control-palomas.png";
+
+// imgSrc holds an imported ImageMetadata so it can be optimized with <Image />.
 export type Service = {
   title: string;
   description: string;
   bullets: string[];
-  emoji: string;
   slug: string;
-  imgSrc?: string;
+  imgSrc?: ImageMetadata;
   imgAlt?: string;
 };
 
-// Rutas a los archivos que están en public/img/servicios
 export const services: Service[] = [
   {
     title: "Desinsectación",
     description: "Eliminación de insectos rastreros y voladores con geles, cebos y aspersión.",
     bullets: ["Cucarachas y hormigas", "Mosquitos y moscas", "Arañas y chinches"],
-    emoji: "🐞",
     slug: "desinsectacion",
-    imgSrc: "/img/servicios/desinsectacion.png",
+    imgSrc: desinsectacionImg,
     imgAlt: "Desinsectación",
   },
   {
     title: "Desratización",
     description: "Control de roedores con estaciones seguras, trampeo y sellado de puntos críticos.",
     bullets: ["Monitoreo con placas", "Mapeo de riesgo", "Reporte técnico"],
-    emoji: "🪤",
     slug: "desratizacion",
-    imgSrc: "/img/servicios/Desratización.png",
+    imgSrc: desratizacionImg,
     imgAlt: "Desratización",
   },
   {
     title: "Sanitización / Desinfección",
     description: "Nebulización ULV y desinfección con productos certificados.",
     bullets: ["Protocolos MIP", "Ficha técnica y MSDS", "Certificación de servicio"],
-    emoji: "🧴",
     slug: "sanitizacion",
-    imgSrc: "/img/servicios/Sanitización-Desinfección.png",
+    imgSrc: sanitizacionImg,
     imgAlt: "Sanitización",
   },
   {
     title: "Tratamiento antitermitas",
     description: "Barreras químicas y protección preventiva de madera en obra.",
     bullets: ["Inspección con sonda", "Garantía por escrito", "Plan de mantenimiento"],
-    emoji: "🪵",
     slug: "antitermitas",
-    imgSrc: "/img/servicios/tratamiento-de-termitas -3.jpeg",
+    imgSrc: antitermitasImg,
     imgAlt: "Tratamiento de termitas",
   },
   {
     title: "Limpieza de tanques",
     description: "Lavado y desinfección de tinacos y cisternas.",
     bullets: ["Análisis microbiológico", "Registro fotográfico", "Informe técnico"],
-    emoji: "💧",
     slug: "tanques",
-    imgSrc: "/img/servicios/Limpieza-de-tanques.png",
+    imgSrc: tanquesImg,
     imgAlt: "Limpieza de tanques",
   },
   {
     title: "Control de palomas",
     description: "Picos, redes y geles repelentes para techos y cornisas.",
     bullets: ["Evaluación de riesgo", "Soluciones no letales", "Limpieza y desinfección"],
-    emoji: "🕊️",
     slug: "palomas",
-    imgSrc: "/img/servicios/control-palomas.png",
+    imgSrc: palomasImg,
     imgAlt: "Control de palomas",
   },
-] as const;
+];
 
 /* ===== Helpers (sin cambios) ===== */
 export const SERVICE_SLUGS = services.map(s => s.slug) as readonly string[];

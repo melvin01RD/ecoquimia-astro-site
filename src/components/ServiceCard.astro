@@ -1,27 +1,28 @@
 ---
+import { Image } from "astro:assets";
 import type { Service } from "../data/services";
+import ServiceIcon from "./ServiceIcon.astro";
 
-/** Extiende tu tipo para permitir imagen opcional */
-type ServiceWithImg = Service & { imgSrc?: string; imgAlt?: string };
-
-const { service } = Astro.props as { service: ServiceWithImg };
+const { service } = Astro.props as { service: Service };
 const hasImage = Boolean(service.imgSrc);
 ---
 
 <article class="surface rounded-app overflow-hidden card-hover will-change-transform">
   {hasImage && (
-    <img
+    <Image
       src={service.imgSrc!}
       alt={service.imgAlt ?? service.title}
       loading="lazy"
+      width={640}
+      height={384}
       class="w-full h-48 object-cover"
     />
   )}
 
   <div class="p-6">
     {!hasImage && (
-      <div class="w-14 h-14 rounded-2xl grid place-items-center bg-emerald-50 text-brand text-2xl mb-3 border border-emerald-100">
-        {service.emoji}
+      <div class="w-14 h-14 rounded-2xl grid place-items-center bg-emerald-50 text-brand mb-3 border border-emerald-100">
+        <ServiceIcon slug={service.slug} class="w-7 h-7 text-brand" />
       </div>
     )}
 

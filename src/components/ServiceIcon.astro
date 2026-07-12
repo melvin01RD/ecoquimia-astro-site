@@ -1,0 +1,25 @@
+---
+// Maps a service slug to an inline Lucide SVG icon.
+// Decorative by default (aria-hidden); the adjacent title provides the label.
+import { Bug, Rat, SprayCan, Trees, Droplets, Bird } from "@lucide/astro";
+
+interface Props {
+  slug: string;
+  class?: string;
+}
+
+const { slug, class: className = "w-6 h-6" } = Astro.props;
+
+const ICONS: Record<string, typeof Bug> = {
+  desinsectacion: Bug,
+  desratizacion: Rat,
+  sanitizacion: SprayCan,
+  antitermitas: Trees,
+  tanques: Droplets,
+  palomas: Bird,
+};
+
+const Icon = ICONS[slug] ?? Bug;
+---
+
+<Icon class={className} aria-hidden="true" />

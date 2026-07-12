@@ -5,6 +5,7 @@ import Footer from "../components/Footer.astro";
 import { services } from "../data/services"; // Importamos la data con imágenes
 import ServiceCard from "../components/ServiceCard.astro";
 import { config } from "../config";
+import { buildWhatsAppUrl } from "../config/business";
 
 export const prerender = true;
 
@@ -20,15 +21,15 @@ const listJsonLd = {
       "@type": "Service",
       name: s.title,
       description: s.description,
-      image: s.imgSrc 
+      image: s.imgSrc?.src
     },
   })),
 };
 
-const whatsappHref = `https://wa.me/${config.contact.phone}?text=${encodeURIComponent(config.contact.whatsappText)}`;
+const whatsappHref = buildWhatsAppUrl(config.contact.whatsappText);
 ---
 
-<Base title="Servicios — Ecoquimia" description="Planes residenciales y comerciales de control de plagas.">
+<Base title="Servicios — Ecoquimia" description="Servicios de fumigación y control de plagas en Santo Domingo: desinsectación, desratización, termitas y sanitización. Cobertura en toda República Dominicana.">
   <Header slot="header" />
 
   <main>
@@ -47,14 +48,17 @@ const whatsappHref = `https://wa.me/${config.contact.phone}?text=${encodeURIComp
         {services.map((s) => <ServiceCard service={s} />)}
       </div>
 
-      <div class="mt-10 text-center">
+      <div class="mt-10 flex flex-wrap gap-3 justify-center">
         <a
           href={whatsappHref}
           target="_blank"
           rel="noopener noreferrer"
           class="btn btn-primary rounded-full"
-          aria-label="Solicitar cotización por WhatsApp"
+          aria-label="Cotizar por WhatsApp"
         >
+          Cotizar por WhatsApp
+        </a>
+        <a href="/cotizacion" class="btn btn-outline rounded-full">
           Solicitar cotización
         </a>
       </div>

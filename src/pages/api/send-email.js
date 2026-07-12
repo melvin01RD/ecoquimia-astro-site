@@ -2,6 +2,7 @@ export const prerender = false;
 export const runtime = "node";
 
 import { sendMail } from '../../lib/mailer';
+import { EMAIL_COMMERCIAL } from '../../config/business';
 
 function escapeHtml(str) {
   return String(str)
@@ -16,7 +17,16 @@ export async function POST({ request }) {
   try {
     const data = await request.json();
 
-    const { nombre, email, telefono, servicio, mensaje } = data;
+    const { nombre, email, telefono, servicio, mensaje, website } = data;
+
+    // Honeypot: if the hidden field is filled, treat as spam and no-op.
+    if (website && String(website).trim() !== '') {
+      return new Response(JSON.stringify({ success: true, message: 'Cotizacion enviada correctamente' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     if (!nombre || !email || !telefono || !servicio || !mensaje) {
       return new Response(JSON.stringify({ error: 'Todos los campos son requeridos' }), {
         status: 400,
@@ -29,7 +39,7 @@ export async function POST({ request }) {
     if (!configuredFrom) {
       console.warn('[send-email] RESEND_FROM_EMAIL no configurado, usando fallback: onboarding@resend.dev');
     }
-    const toEmail = import.meta.env.CONTACT_TO || process.env.CONTACT_TO || 'Areacomercial.eco@gmail.com';
+    const toEmail = import.meta.env.CONTACT_TO || process.env.CONTACT_TO || EMAIL_COMMERCIAL;
 
     const sNombre = escapeHtml(nombre);
     const sEmail = escapeHtml(email);
@@ -78,7 +88,7 @@ export async function POST({ request }) {
               timeStyle: 'short',
               timeZone: 'America/Santo_Domingo'
             })}</p>
-            <p style="margin: 5px 0 0 0;">Enviado desde <strong>www.ecoquimia.com.do</strong></p>
+            <p style="margin: 5px 0 0 0;">Enviado desde <strong>fumigadoraecoquimia.com.do</strong></p>
           </div>
         </div>
       `,

@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { CheckCircle2, Mail, PhoneCall, ArrowLeft } from "@lucide/astro";
-import { config } from "../config";
+import { buildWhatsAppUrl, EMAIL_COMMERCIAL } from "../config/business";
 
 export const prerender = false;
 
@@ -11,9 +11,11 @@ const url = new URL(Astro.request.url);
 const name = url.searchParams.get("name") ?? "";
 const service = url.searchParams.get("service") ?? "";
 
-// Ajusta el número y el correo del negocio
-const WHATSAPP_NUMBER = config.contact.phone;
-const MAIL_TO = "areacomercial.eco@gmail.com";
+// Pre-filled WhatsApp message personalized with the submitted name/service.
+const whatsappUrl = buildWhatsAppUrl(
+  `Hola Ecoquimia, hice una solicitud${service ? ` para “${service}”` : ""}${name ? ` a nombre de ${name}` : ""}.`
+);
+const MAIL_TO = EMAIL_COMMERCIAL;
 
 // Copys
 const headline = `Hemos recibido tu solicitud${name ? `, ${name}` : ""}.`;
@@ -58,9 +60,7 @@ const sub = `Gracias por elegirnos${service ? ` para “${service}”` : ""}. Un
           <!-- CTAs -->
           <div class="mt-6 flex flex-col sm:flex-row gap-3">
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                `Hola Ecoquimia, hice una solicitud${service ? ` para “${service}”` : ""}${name ? ` a nombre de ${name}` : ""}.`
-              )}`}
+              href={whatsappUrl}
               class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               <PhoneCall class="h-5 w-5" />
