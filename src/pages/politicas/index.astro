@@ -3,6 +3,7 @@ import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import { FileText, Shield, Database, Briefcase, Mail } from "@lucide/astro";
+import { EMAIL_COMMERCIAL } from "../../config/business";
 
 export const prerender = true;
 ---
@@ -109,8 +110,9 @@ export const prerender = true;
           <p class="text-zinc-700 leading-relaxed mb-4">
             Para consultas legales o relacionadas con estas políticas, puede escribirnos a:
           </p>
-          <a href="mailto:legal@ecoquimia.com" class="inline-flex items-center gap-2 bg-brand text-white px-4 py-2 rounded-xl font-medium hover:bg-brand-dark transition">
-            <Mail class="w-4 h-4" /> legal@ecoquimia.com
+          <!-- TODO: confirmar buzón legal definitivo -->
+          <a href={`mailto:${EMAIL_COMMERCIAL}`} class="inline-flex items-center gap-2 bg-brand text-white px-4 py-2 rounded-xl font-medium hover:bg-brand-dark transition">
+            <Mail class="w-4 h-4" aria-hidden="true" /> {EMAIL_COMMERCIAL}
           </a>
         </article>
       </div>

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://fumigadoraecoquimia.com.do/sitemap.xml
+Sitemap: https://fumigadoraecoquimia.com.do/sitemap-index.xml

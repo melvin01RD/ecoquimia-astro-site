@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import { config } from "../config";
+import { EMAIL_COMMERCIAL } from "../config/business";
 
 ---
 
@@ -8,7 +9,7 @@ import { config } from "../config";
 
 <Base
   title="Contacto — Ecoquimia | Control de Plagas Santo Domingo"
-  description="Contáctanos para solicitar información o cotización de control de plagas. Respondemos en horas laborales. Santo Domingo, República Dominicana."
+  description="Contáctanos para fumigación y control de plagas en Santo Domingo. Atendemos hogares y empresas en toda República Dominicana en horario laborable."
 >
   <section class="bg-gradient-to-b from-white to-emerald-50/40">
     <div class="container-max py-10 md:py-14">
@@ -25,7 +26,7 @@ import { config } from "../config";
           <p class="text-zinc-600 mt-1">Escríbenos directo o usa el formulario.</p>
 
           <ul class="mt-4 space-y-3 text-zinc-700">
-            <li><span class="font-medium">Email:</span> {config.contact.to}</li>
+            <li><span class="font-medium">Email:</span> {EMAIL_COMMERCIAL}</li>
             <li><span class="font-medium">Teléfono:</span> {config.contact.phoneDisplay}</li>
             <li><span class="font-medium">Ubicación:</span> {config.contact.address}</li>
           </ul>
@@ -45,6 +46,12 @@ import { config } from "../config";
           <p class="text-zinc-600 mt-1">Te responderemos lo antes posible.</p>
 
           <form id="contact-form" class="mt-6 space-y-5" method="post" action="/api/contact">
+            <!-- Honeypot anti-spam: oculto para usuarios, tentador para bots -->
+            <div class="hidden" aria-hidden="true">
+              <label for="company">No completar este campo</label>
+              <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
             <div class="grid gap-4 md:grid-cols-2">
               <div>
                 <label class="label" for="name">Nombre y apellido</label>
@@ -56,7 +63,17 @@ import { config } from "../config";
               </div>
               <div>
                 <label class="label" for="phone">Teléfono</label>
-                <input class="input" id="phone" name="phone" type="tel" inputmode="tel" placeholder="+1 809 000 0000" />
+                <input
+                  class="input"
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  inputmode="tel"
+                  placeholder="809 000 0000"
+                  pattern="(\+?1[\s\-]?)?\(?(809|829|849)\)?[\s\-]?\d{3}[\s\-]?\d{4}"
+                  title="Formato válido: 809, 829 u 849 seguido de 7 dígitos. Ej.: 809 000 0000"
+                />
+                <p class="help">Opcional. Si lo indicas, usa 809, 829 u 849 + 7 dígitos.</p>
               </div>
               <div>
                 <label class="label" for="subject">Asunto</label>
@@ -68,12 +85,32 @@ import { config } from "../config";
               </div>
             </div>
 
-            <div class="flex flex-wrap gap-3 pt-2">
-              <button class="btn btn-primary" type="submit">Enviar mensaje</button>
-
-            <p id="contact-toast" class="hidden mt-4 text-sm"></p>
+            <div class="flex flex-wrap items-center gap-3 pt-2 mb-20 sm:mb-0">
+              <button id="contact-submit" class="btn btn-primary" type="submit">Enviar mensaje</button>
+              <p id="contact-toast" class="hidden text-sm" aria-live="polite"></p>
+            </div>
           </form>
         </div>
+      </div>
+
+      <!-- Mapa del área de servicio -->
+      <div class="mt-10">
+        <h2 class="text-lg font-semibold text-zinc-900 mb-3">Área de servicio</h2>
+        <div class="overflow-hidden rounded-2xl border border-zinc-200 shadow-sm">
+          <iframe
+            title="Ubicación de Eco-Quimia SRL en Google Maps"
+            src="https://www.google.com/maps?q=18.5028443,-70.0168709&z=16&output=embed"
+            width="100%"
+            height="360"
+            style="border:0; display:block;"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <p class="text-xs text-zinc-500 mt-2">
+          Cobertura en Santo Domingo y todo el territorio nacional.
+        </p>
       </div>
     </div>
   </section>
@@ -81,23 +118,37 @@ import { config } from "../config";
   <script>
     const form = document.getElementById('contact-form') as HTMLFormElement;
     const toast = document.getElementById('contact-toast');
+    const submitBtn = document.getElementById('contact-submit') as HTMLButtonElement | null;
 
     form?.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!toast) return;
 
+      // Native HTML5 validation (required, type=email, phone pattern)
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
       const data = new FormData(form);
-      
+
       // Reset toast state
       toast.classList.add('hidden');
       toast.classList.remove('text-emerald-700', 'text-red-600');
 
+      // Disable button while submitting
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.dataset.label = submitBtn.textContent || 'Enviar mensaje';
+        submitBtn.textContent = 'Enviando...';
+      }
+
       try {
         const res = await fetch(form.action, { method: 'POST', body: data });
         const result = await res.json();
-        
+
         toast.classList.remove('hidden');
-        
+
         if (res.ok) {
           toast.classList.add('text-emerald-700');
           toast.textContent = result.message || '¡Gracias! Recibimos tu mensaje.';
@@ -110,6 +161,11 @@ import { config } from "../config";
         toast.classList.remove('hidden');
         toast.classList.add('text-red-600');
         toast.textContent = 'Error de red. Intenta nuevamente.';
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = submitBtn.dataset.label || 'Enviar mensaje';
+        }
       }
     });
   </script>
