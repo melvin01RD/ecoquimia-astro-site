@@ -47,3 +47,6 @@ cypress/screenshots/
 cypress/videos/
 playwright-report/
 test-results/
+
+src/guia_solucion_problemas.md
+src/instrucciones/
