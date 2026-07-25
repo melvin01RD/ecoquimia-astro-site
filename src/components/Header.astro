@@ -1,6 +1,6 @@
 ---
 import { config } from "../config";
-import { buildWhatsAppUrl } from "../config/business";
+import { buildWhatsAppUrl, PHONE_E164, BUSINESS_HOURS } from "../config/business";
 
 const whatsappUrl = buildWhatsAppUrl(config.contact.whatsappText);
 
@@ -8,137 +8,195 @@ const links = [
   { href: "/", label: "Inicio" },
   { href: "/nosotros", label: "Nosotros" },
   { href: "/servicios", label: "Servicios" },
-  { href: "/cotizacion", label: "Cotización" },
   { href: "/aprende-de-las-plagas", label: "Aprende de las plagas" },
   { href: "/contacto", label: "Contacto" },
-  { href: "/politicas", label: "Políticas" },
 ];
+
 const { pathname } = Astro.url;
+const isActive = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+const mobileHours = {
+  weekdays: "Lun-Vie: 8:30 a. m.-5:00 p. m.",
+  saturday: "Sab: 9:00 a. m.-1:00 p. m.",
+};
 ---
 
-<header class="site-header sticky top-0 z-50 text-white border-b border-white/10" data-js="header">
+<header class="site-header sticky top-0 z-50" data-js="header">
+  <div class="hidden lg:block border-b border-[color:var(--color-border)] bg-white/55">
+    <div class="container-max flex min-h-10 items-center justify-between gap-4 text-sm text-[color:var(--color-muted)]">
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
+        <a href={`tel:${PHONE_E164}`} class="inline-flex items-center gap-2 no-underline hover:text-[color:var(--color-forest)]">
+          <span class="h-2 w-2 rounded-full bg-[color:var(--color-lime)]"></span>
+          {config.contact.phoneDisplay}
+        </a>
+        <span class="inline-flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-[color:var(--color-lime)]"></span>
+          {config.contact.address}
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-[color:var(--color-lime)]"></span>
+          {BUSINESS_HOURS}
+        </span>
+      </div>
+      <a href="/politicas" class="no-underline hover:text-[color:var(--color-forest)]">
+        Politicas
+      </a>
+    </div>
+  </div>
 
-  <style is:global>
-    @media (max-width: 767.98px){ .site-header .nav-desktop{ display: none !important; } }
-    @media (min-width: 768px){ .site-header .nav-desktop{ display: flex !important; } }
-  </style>
-
-  <div class="w-full max-w-[1920px] mx-auto px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-20 flex items-center justify-between h-20">
-    <a href="/" class="inline-flex items-center gap-2 no-underline flex-shrink-0" aria-label="Inicio">
+  <div class="container-max flex min-h-20 w-full items-center justify-between gap-3 py-3 md:gap-4">
+    <a href="/" class="inline-flex max-w-[9.5rem] shrink items-center no-underline sm:max-w-[10.5rem] md:max-w-none" aria-label="Inicio">
       <img
         src="/logo/logo.png"
-        alt="Ecoquimia — Creamos un Ambiente sin Plagas"
-        width="210" height="120"
-        class="logo block h-10 md:h-12 w-auto select-none"
-        loading="eager" decoding="async" fetchpriority="high"
+        alt="Ecoquimia"
+        width="210"
+        height="120"
+        class="block h-10 max-w-full w-auto select-none sm:h-11 md:h-12"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
       />
       <span class="sr-only">Ecoquimia</span>
     </a>
 
-    <nav class="nav-desktop hidden md:flex items-center gap-4 lg:gap-6 xl:gap-8 ml-auto" aria-label="Principal">
-      {links.map((l) => (
+    <nav class="nav-desktop ml-auto hidden items-center gap-4 lg:gap-5 xl:gap-6 md:flex" aria-label="Principal">
+      {links.map((link) => (
         <a
-          href={l.href}
-          class={`nav-link ${pathname === l.href ? "is-active" : ""} text-white/80 hover:text-white`}
+          href={link.href}
+          class={`nav-link px-1 ${isActive(link.href) ? "is-active" : ""}`}
+          aria-current={isActive(link.href) ? "page" : undefined}
         >
-          {l.label}
+          {link.label}
         </a>
       ))}
     </nav>
 
-    <div class="md:hidden flex items-center gap-2">
-      <button
-        id="navToggle"
-        type="button"
-        class="inline-flex items-center justify-center rounded-xl p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-        aria-label="Abrir menú"
-        aria-controls="mobileMenu"
-        aria-expanded="false"
-      >
-        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-          <path id="burgerPath" stroke-linecap="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
+    <div class="ml-auto hidden items-center gap-3 md:flex">
+      <a href="/cotizacion" class="btn btn-primary px-5" aria-label="Solicitar inspeccion">
+        Solicitar inspeccion
+      </a>
     </div>
+
+    <button
+      id="navToggle"
+      type="button"
+      class="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-2xl border border-[color:var(--color-border-strong)] bg-white/80 text-[color:var(--color-forest)] shadow-sm md:hidden"
+      aria-label="Abrir menu"
+      aria-controls="mobileMenu"
+      aria-expanded="false"
+    >
+      <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+        <path id="burgerPath" stroke-linecap="round" stroke-width="1.8" d="M4 7h16M4 12h16M4 17h16" />
+      </svg>
+    </button>
   </div>
 
   <div
     id="mobileMenu"
-    class="md:hidden hidden border-t border-white/10 bg-zinc-900/95 backdrop-blur supports-[backdrop-filter]:bg-zinc-900/80 will-change-transform"
+    class="hidden w-full max-w-full overflow-x-hidden border-t border-[color:var(--color-border)] bg-[color:var(--color-cream)] md:hidden"
     aria-hidden="true"
   >
-    <nav class="container-max py-3" aria-label="Móvil">
-      <ul class="flex flex-col">
-        {links.map((l, idx) => (
-          <li class={idx ? "border-t border-white/10" : ""}>
+    <nav class="nav-mobile container-max box-border w-full max-w-full py-4" aria-label="Movil">
+      <ul class="flex flex-col gap-1">
+        {links.map((link) => (
+          <li>
             <a
-              href={l.href}
-              class={`block px-3 py-3 text-base ${pathname === l.href ? "bg-white/10 text-white" : "text-white/80 hover:bg-white/10 hover:text-white"}`}
+              href={link.href}
+              class={`flex min-h-11 items-center justify-between rounded-2xl px-4 py-3 no-underline ${isActive(link.href) ? "bg-[color:var(--color-forest)] text-white" : "text-[color:var(--color-forest)] hover:bg-white"}`}
+              aria-current={isActive(link.href) ? "page" : undefined}
               data-close
             >
-              {l.label}
+              <span>{link.label}</span>
+              <span class="text-sm opacity-70">/</span>
             </a>
           </li>
         ))}
-        <li class="border-t border-white/10">
-          <a
-            href={whatsappUrl}
-            target="_blank" rel="noopener noreferrer"
-            class="block px-3 py-3 text-base text-white/90 hover:bg-white/10 hover:text-white"
-            data-close
-          >
-            WhatsApp
-          </a>
-        </li>
       </ul>
+
+      <div class="mt-4 grid gap-3">
+        <a href="/cotizacion" class="btn btn-primary btn-block justify-center" data-close>
+          Solicitar inspeccion
+        </a>
+        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-block justify-center" data-close>
+          WhatsApp
+        </a>
+      </div>
+
+      <div class="mobile-contact-panel mt-5 w-full max-w-full rounded-3xl border border-[color:var(--color-border)] bg-white/70 p-4 text-sm text-[color:var(--color-muted)]">
+        <p class="font-semibold text-[color:var(--color-forest)]">Contacto rapido</p>
+        <ul class="mobile-contact-list mt-3 grid gap-3">
+          <li class="mobile-contact-row rounded-2xl bg-[color:var(--color-cream)]/70 px-3 py-3">
+            <span class="block text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--color-forest)]">Telefono</span>
+            <a href={`tel:${PHONE_E164}`} class="mt-1 block text-base font-semibold text-[color:var(--color-charcoal)] no-underline hover:text-[color:var(--color-forest)]">
+              809-777-7586
+            </a>
+          </li>
+          <li class="mobile-contact-row rounded-2xl bg-[color:var(--color-cream)]/70 px-3 py-3">
+            <span class="block text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--color-forest)]">Ubicacion</span>
+            <span class="mt-1 block text-base text-[color:var(--color-charcoal)]">Santo Domingo, RD</span>
+          </li>
+          <li class="mobile-contact-row rounded-2xl bg-[color:var(--color-cream)]/70 px-3 py-3">
+            <span class="block text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--color-forest)]">Horario</span>
+            <span class="mt-1 block text-base text-[color:var(--color-charcoal)]">{mobileHours.weekdays}</span>
+            <span class="block text-base text-[color:var(--color-charcoal)]">{mobileHours.saturday}</span>
+          </li>
+        </ul>
+        <a href="/politicas" class="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-[color:var(--color-forest)] no-underline hover:text-[color:var(--color-brand)]" data-close>
+          Ver politicas
+        </a>
+      </div>
       <div class="pb-[max(env(safe-area-inset-bottom),0.5rem)]"></div>
     </nav>
   </div>
 </header>
 
 <script is:inline>
-  document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('navToggle');
-    const panel = document.getElementById('mobileMenu');
-    const burgerPath = document.getElementById('burgerPath');
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("navToggle");
+    const panel = document.getElementById("mobileMenu");
+    const burgerPath = document.getElementById("burgerPath");
     if (!btn || !panel) return;
 
-    const mqDesktop = matchMedia('(min-width: 768px)');
-    const BURGER = 'M4 6h16M4 12h16M4 18h16';
-    const CLOSE  = 'M6 6l12 12M6 18L18 6';
+    const mqDesktop = matchMedia("(min-width: 768px)");
+    const BURGER = "M4 7h16M4 12h16M4 17h16";
+    const CLOSE = "M6 6l12 12M6 18L18 6";
 
     function lockBodyScroll(lock) {
       if (mqDesktop.matches) return;
-      document.documentElement.classList.toggle('overflow-hidden', lock);
-      document.body.classList.toggle('overflow-hidden', lock);
+      document.documentElement.classList.toggle("overflow-hidden", lock);
+      document.body.classList.toggle("overflow-hidden", lock);
     }
 
     function setOpen(open) {
-      btn.setAttribute('aria-expanded', String(open));
-      panel.classList.toggle('hidden', !open);
-      panel.setAttribute('aria-hidden', String(!open));
-      if (burgerPath) burgerPath.setAttribute('d', open ? CLOSE : BURGER);
+      btn.setAttribute("aria-expanded", String(open));
+      btn.setAttribute("aria-label", open ? "Cerrar menu" : "Abrir menu");
+      panel.classList.toggle("hidden", !open);
+      panel.setAttribute("aria-hidden", String(!open));
+      if (burgerPath) burgerPath.setAttribute("d", open ? CLOSE : BURGER);
       lockBodyScroll(open);
     }
 
-    btn.addEventListener('click', () => {
-      const isOpen = btn.getAttribute('aria-expanded') === 'true';
+    btn.addEventListener("click", () => {
+      const isOpen = btn.getAttribute("aria-expanded") === "true";
       setOpen(!isOpen);
     });
 
-    panel.querySelectorAll('[data-close]').forEach(link => {
-      link.addEventListener('click', () => setOpen(false));
+    panel.querySelectorAll("[data-close]").forEach((link) => {
+      link.addEventListener("click", () => setOpen(false));
     });
 
-    mqDesktop.addEventListener('change', (e) => {
-      if (e.matches) setOpen(false);
+    mqDesktop.addEventListener("change", (event) => {
+      if (event.matches) setOpen(false);
     });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && btn.getAttribute("aria-expanded") === "true") {
         setOpen(false);
         btn.focus();
       }
     });
+
+    if (!mqDesktop.matches && window.location.hash === "#mobileMenu") {
+      setOpen(true);
+    }
   });
 </script>
