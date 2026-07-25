@@ -2,7 +2,6 @@ export const prerender = false;
 export const runtime = "node";
 
 import { sendMail } from '../../lib/mailer';
-import { EMAIL_COMMERCIAL } from '../../config/business';
 
 function escapeHtml(str) {
   return String(str)
@@ -39,7 +38,11 @@ export async function POST({ request }) {
     if (!configuredFrom) {
       console.warn('[send-email] RESEND_FROM_EMAIL no configurado, usando fallback: onboarding@resend.dev');
     }
-    const toEmail = import.meta.env.CONTACT_TO || process.env.CONTACT_TO || EMAIL_COMMERCIAL;
+    const configuredTo = import.meta.env.RESEND_TO_EMAIL || process.env.RESEND_TO_EMAIL;
+    if (!configuredTo) {
+      throw new Error('RESEND_TO_EMAIL no está configurada');
+    }
+    const toEmail = configuredTo;
 
     const sNombre = escapeHtml(nombre);
     const sEmail = escapeHtml(email);
