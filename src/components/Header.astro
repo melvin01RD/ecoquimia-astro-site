@@ -1,6 +1,6 @@
 ---
 import { config } from "../config";
-import { buildWhatsAppUrl, PHONE_E164, BUSINESS_HOURS } from "../config/business";
+import { buildWhatsAppUrl, PHONE_E164 } from "../config/business";
 
 const whatsappUrl = buildWhatsAppUrl(config.contact.whatsappText);
 
@@ -21,28 +21,6 @@ const mobileHours = {
 ---
 
 <header class="site-header sticky top-0 z-50" data-js="header">
-  <div class="hidden lg:block border-b border-[color:var(--color-border)] bg-white/55">
-    <div class="container-max flex min-h-10 items-center justify-between gap-4 text-sm text-[color:var(--color-muted)]">
-      <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
-        <a href={`tel:${PHONE_E164}`} class="inline-flex items-center gap-2 no-underline hover:text-[color:var(--color-forest)]">
-          <span class="h-2 w-2 rounded-full bg-[color:var(--color-lime)]"></span>
-          {config.contact.phoneDisplay}
-        </a>
-        <span class="inline-flex items-center gap-2">
-          <span class="h-2 w-2 rounded-full bg-[color:var(--color-lime)]"></span>
-          {config.contact.address}
-        </span>
-        <span class="inline-flex items-center gap-2">
-          <span class="h-2 w-2 rounded-full bg-[color:var(--color-lime)]"></span>
-          {BUSINESS_HOURS}
-        </span>
-      </div>
-      <a href="/politicas" class="no-underline hover:text-[color:var(--color-forest)]">
-        Politicas
-      </a>
-    </div>
-  </div>
-
   <div class="container-max flex min-h-20 w-full items-center justify-between gap-3 py-3 md:gap-4">
     <a href="/" class="inline-flex max-w-[9.5rem] shrink items-center no-underline sm:max-w-[10.5rem] md:max-w-none" aria-label="Inicio">
       <img
