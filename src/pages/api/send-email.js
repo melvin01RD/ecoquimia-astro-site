@@ -1,6 +1,7 @@
 export const prerender = false;
 export const runtime = "node";
 
+import { config } from '../../config';
 import { sendMail } from '../../lib/mailer';
 
 function escapeHtml(str) {
@@ -38,10 +39,7 @@ export async function POST({ request }) {
     if (!configuredFrom) {
       console.warn('[send-email] RESEND_FROM_EMAIL no configurado, usando fallback: onboarding@resend.dev');
     }
-    const configuredTo = import.meta.env.RESEND_TO_EMAIL || process.env.RESEND_TO_EMAIL;
-    if (!configuredTo) {
-      throw new Error('RESEND_TO_EMAIL no está configurada');
-    }
+    const configuredTo = import.meta.env.RESEND_TO_EMAIL || process.env.RESEND_TO_EMAIL || config.contact.to;
     const toEmail = configuredTo;
 
     const sNombre = escapeHtml(nombre);

@@ -71,6 +71,95 @@ export const services: Service[] = [
   },
 ];
 
+export type CommercialItemClassification = "service";
+export type CommercialPresentation = "featured" | "compact";
+
+export type CommercialServiceItem = {
+  title: string;
+  description?: string;
+  href: string;
+  classification: CommercialItemClassification;
+  presentation: CommercialPresentation;
+  source: "repo" | "instagram" | "repo+instagram";
+  relatedSlug?: string;
+  featuredLabel?: string;
+  imageElement?: string;
+};
+
+const buildQuoteHref = (slug: string) => `/cotizacion?service=${encodeURIComponent(slug)}#quoteForm`;
+
+export const instagramCommercialElements = [
+  "Control de plagas",
+] as const;
+
+export const homepageCommercialServices: CommercialServiceItem[] = [
+  {
+    title: "Desinsectación",
+    description: "Eliminación de insectos rastreros y voladores con geles, cebos y aspersión.",
+    href: buildQuoteHref("desinsectacion"),
+    classification: "service",
+    presentation: "featured",
+    source: "repo",
+    relatedSlug: "desinsectacion",
+    featuredLabel: "Control de insectos",
+  },
+  {
+    title: "Desratización",
+    description: "Control de roedores con estaciones seguras, trampeo y sellado de puntos críticos.",
+    href: buildQuoteHref("desratizacion"),
+    classification: "service",
+    presentation: "featured",
+    source: "repo",
+    relatedSlug: "desratizacion",
+    featuredLabel: "Control de roedores",
+  },
+  {
+    title: "Tratamiento antitermitas",
+    description: "Barreras químicas y protección preventiva de madera en obra.",
+    href: buildQuoteHref("antitermitas"),
+    classification: "service",
+    presentation: "featured",
+    source: "repo",
+    relatedSlug: "antitermitas",
+    featuredLabel: "Tratamiento de termitas",
+  },
+  {
+    title: "Sanitización / Desinfección",
+    description: "Nebulización ULV y desinfección con productos certificados.",
+    href: buildQuoteHref("sanitizacion"),
+    classification: "service",
+    presentation: "compact",
+    source: "repo",
+    relatedSlug: "sanitizacion",
+  },
+  {
+    title: "Limpieza de tanques",
+    description: "Lavado y desinfección de tinacos y cisternas.",
+    href: buildQuoteHref("tanques"),
+    classification: "service",
+    presentation: "compact",
+    source: "repo",
+    relatedSlug: "tanques",
+  },
+  {
+    title: "Control de palomas",
+    description: "Picos, redes y geles repelentes para techos y cornisas.",
+    href: buildQuoteHref("palomas"),
+    classification: "service",
+    presentation: "compact",
+    source: "repo",
+    relatedSlug: "palomas",
+  },
+];
+
+export const homepageFeaturedServices = homepageCommercialServices.filter(
+  (item) => item.presentation === "featured"
+);
+
+export const homepageCompactServices = homepageCommercialServices.filter(
+  (item) => item.presentation === "compact"
+);
+
 /* ===== Helpers (sin cambios) ===== */
 export const SERVICE_SLUGS = services.map(s => s.slug) as readonly string[];
 export const ServiceSlugEnum = z.enum(SERVICE_SLUGS as [string, ...string[]]);
