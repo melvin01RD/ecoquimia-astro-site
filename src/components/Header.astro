@@ -8,7 +8,6 @@ const links = [
   { href: "/", label: "Inicio" },
   { href: "/nosotros", label: "Nosotros" },
   { href: "/servicios", label: "Servicios" },
-  { href: "/aprende-de-las-plagas", label: "Aprende de las plagas" },
   { href: "/contacto", label: "Contacto" },
 ];
 
@@ -32,14 +31,7 @@ const mobileHours = {
           <span class="h-2 w-2 rounded-full bg-[color:var(--color-lime)]"></span>
           {config.contact.address}
         </span>
-        <span class="inline-flex items-center gap-2">
-          <span class="h-2 w-2 rounded-full bg-[color:var(--color-lime)]"></span>
-          {BUSINESS_HOURS}
-        </span>
       </div>
-      <a href="/politicas" class="no-underline hover:text-[color:var(--color-forest)]">
-        Politicas
-      </a>
     </div>
   </div>
 
@@ -71,8 +63,8 @@ const mobileHours = {
     </nav>
 
     <div class="ml-auto hidden items-center gap-3 md:flex">
-      <a href="/cotizacion" class="btn btn-primary px-5" aria-label="Solicitar inspeccion">
-        Solicitar inspeccion
+      <a href="/cotizacion" class="btn btn-accent px-5" aria-label="Cotización">
+        Cotización
       </a>
     </div>
 
@@ -113,8 +105,8 @@ const mobileHours = {
       </ul>
 
       <div class="mt-4 grid gap-3">
-        <a href="/cotizacion" class="btn btn-primary btn-block justify-center" data-close>
-          Solicitar inspeccion
+        <a href="/cotizacion" class="btn btn-accent btn-block justify-center" data-close>
+          Cotización
         </a>
         <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-block justify-center" data-close>
           WhatsApp
@@ -134,15 +126,9 @@ const mobileHours = {
             <span class="block text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--color-forest)]">Ubicacion</span>
             <span class="mt-1 block text-base text-[color:var(--color-charcoal)]">Santo Domingo, RD</span>
           </li>
-          <li class="mobile-contact-row rounded-2xl bg-[color:var(--color-cream)]/70 px-3 py-3">
-            <span class="block text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--color-forest)]">Horario</span>
-            <span class="mt-1 block text-base text-[color:var(--color-charcoal)]">{mobileHours.weekdays}</span>
-            <span class="block text-base text-[color:var(--color-charcoal)]">{mobileHours.saturday}</span>
-          </li>
+          
         </ul>
-        <a href="/politicas" class="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-[color:var(--color-forest)] no-underline hover:text-[color:var(--color-brand)]" data-close>
-          Ver politicas
-        </a>
+        
       </div>
       <div class="pb-[max(env(safe-area-inset-bottom),0.5rem)]"></div>
     </nav>
