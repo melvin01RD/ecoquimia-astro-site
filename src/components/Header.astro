@@ -1,9 +1,4 @@
 ---
-import { config } from "../config";
-import { buildWhatsAppUrl, PHONE_E164 } from "../config/business";
-
-const whatsappUrl = buildWhatsAppUrl(config.contact.whatsappText);
-
 const links = [
   { href: "/", label: "Inicio" },
   { href: "/nosotros", label: "Nosotros" },
@@ -16,21 +11,6 @@ const isActive = (href: string) => pathname === href || (href !== "/" && pathnam
 ---
 
 <header class="site-header sticky top-0 z-50" data-js="header">
-  <div class="hidden lg:block border-b border-[color:var(--color-border)] bg-white/55">
-    <div class="container-max flex min-h-10 items-center justify-between gap-4 text-sm text-[color:var(--color-muted)]">
-      <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
-        <a href={`tel:${PHONE_E164}`} class="inline-flex items-center gap-2 no-underline hover:text-[color:var(--color-forest)]">
-          <span class="h-2 w-2 rounded-full bg-[color:var(--color-lime)]"></span>
-          {config.contact.phoneDisplay}
-        </a>
-        <span class="inline-flex items-center gap-2">
-          <span class="h-2 w-2 rounded-full bg-[color:var(--color-lime)]"></span>
-          {config.contact.address}
-        </span>
-      </div>
-    </div>
-  </div>
-
   <div class="container-max flex min-h-20 w-full items-center justify-between gap-3 py-3 md:gap-4">
     <a href="/" class="inline-flex max-w-[9.5rem] shrink items-center no-underline sm:max-w-[10.5rem] md:max-w-none" aria-label="Inicio">
       <img
@@ -100,24 +80,6 @@ const isActive = (href: string) => pathname === href || (href !== "/" && pathnam
         ))}
       </ul>
 
-
-      <div class="mobile-contact-panel mt-5 w-full max-w-full rounded-3xl border border-[color:var(--color-border)] bg-white/70 p-4 text-sm text-[color:var(--color-muted)]">
-        <p class="font-semibold text-[color:var(--color-forest)]">Contacto rapido</p>
-        <ul class="mobile-contact-list mt-3 grid gap-3">
-          <li class="mobile-contact-row rounded-2xl bg-[color:var(--color-cream)]/70 px-3 py-3">
-            <span class="block text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--color-forest)]">Telefono</span>
-            <a href={`tel:${PHONE_E164}`} class="mt-1 block text-base font-semibold text-[color:var(--color-charcoal)] no-underline hover:text-[color:var(--color-forest)]">
-              809-777-7586
-            </a>
-          </li>
-          <li class="mobile-contact-row rounded-2xl bg-[color:var(--color-cream)]/70 px-3 py-3">
-            <span class="block text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--color-forest)]">Ubicacion</span>
-            <span class="mt-1 block text-base text-[color:var(--color-charcoal)]">Santo Domingo, RD</span>
-          </li>
-
-        </ul>
-
-      </div>
       <div class="pb-[max(env(safe-area-inset-bottom),0.5rem)]"></div>
     </nav>
   </div>
