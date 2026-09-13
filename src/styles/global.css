@@ -198,6 +198,22 @@
   .btn-primary:hover { background-color: var(--color-brand-strong); }
   .btn-primary:active { transform: scale(0.98); }
 
+  /* Header-specific accent (red) for Cotización CTA */
+  .site-header .btn-accent {
+    background-color: var(--color-accent-red);
+    color: #fff;
+    box-shadow: 0 10px 20px rgba(201, 72, 66, 0.18);
+  }
+  .site-header .btn-accent:hover {
+    background-color: #a93e3a;
+    filter: brightness(0.98);
+  }
+  .site-header .btn-accent:focus-visible {
+    outline: 3px solid rgba(201, 72, 66, 0.9);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px rgba(201, 72, 66, 0.18);
+  }
+
   .btn-secondary {
     @apply text-white active:scale-[0.98] border border-black/10;
     background-color: var(--color-forest);
@@ -398,8 +414,8 @@
 }
 
 /* Mobile adjustments */
-@media (max-width: 740px) {
-  .site-header .container-max {
+@media (max-width: 767px) {
+  .site-header > .container-max {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
     min-height: var(--header-h-mobile);
@@ -498,3 +514,16 @@
 .theme-dark .input:-webkit-autofill,
 .theme-dark .select:-webkit-autofill,
 .theme-dark .textarea:-webkit-autofill { -webkit-text-fill-color: #fff; }
+
+/* Keep every mobile menu item reachable below the sticky header. */
+@media (max-width: 767px) {
+  .site-header #mobileMenu {
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    max-height: calc(100dvh - var(--mobile-menu-header-height, 5rem));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    box-shadow: var(--shadow-header);
+  }
+}
