@@ -1,6 +1,6 @@
 ---
 import { config } from "../config";
-import { buildWhatsAppUrl, PHONE_E164, BUSINESS_HOURS } from "../config/business";
+import { buildWhatsAppUrl, PHONE_E164 } from "../config/business";
 
 const whatsappUrl = buildWhatsAppUrl(config.contact.whatsappText);
 
@@ -13,10 +13,6 @@ const links = [
 
 const { pathname } = Astro.url;
 const isActive = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
-const mobileHours = {
-  weekdays: "Lun-Vie: 8:30 a. m.-5:00 p. m.",
-  saturday: "Sab: 9:00 a. m.-1:00 p. m.",
-};
 ---
 
 <header class="site-header sticky top-0 z-50" data-js="header">
@@ -104,14 +100,6 @@ const mobileHours = {
         ))}
       </ul>
 
-      <div class="mt-4 grid gap-3">
-        <a href="/cotizacion" class="btn btn-accent btn-block justify-center" data-close>
-          Cotización
-        </a>
-        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-block justify-center" data-close>
-          WhatsApp
-        </a>
-      </div>
 
       <div class="mobile-contact-panel mt-5 w-full max-w-full rounded-3xl border border-[color:var(--color-border)] bg-white/70 p-4 text-sm text-[color:var(--color-muted)]">
         <p class="font-semibold text-[color:var(--color-forest)]">Contacto rapido</p>
@@ -126,9 +114,9 @@ const mobileHours = {
             <span class="block text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--color-forest)]">Ubicacion</span>
             <span class="mt-1 block text-base text-[color:var(--color-charcoal)]">Santo Domingo, RD</span>
           </li>
-          
+
         </ul>
-        
+
       </div>
       <div class="pb-[max(env(safe-area-inset-bottom),0.5rem)]"></div>
     </nav>
@@ -145,20 +133,43 @@ const mobileHours = {
     const mqDesktop = matchMedia("(min-width: 768px)");
     const BURGER = "M4 7h16M4 12h16M4 17h16";
     const CLOSE = "M6 6l12 12M6 18L18 6";
+    const header = btn.closest("header");
+    const scrollRoots = [document.documentElement, document.body];
+    let previousScrollLocks = null;
+
+    // Use the rendered header height, including text zoom, for the panel's limit.
+    const headerObserver = new ResizeObserver(() => {
+      panel.style.setProperty("--mobile-menu-header-height", `${header.getBoundingClientRect().height}px`);
+    });
+    headerObserver.observe(header);
 
     function lockBodyScroll(lock) {
-      if (mqDesktop.matches) return;
-      document.documentElement.classList.toggle("overflow-hidden", lock);
-      document.body.classList.toggle("overflow-hidden", lock);
+      if (mqDesktop.matches) lock = false;
+      if (lock && !previousScrollLocks) {
+        previousScrollLocks = scrollRoots.map((root) => root.classList.contains("overflow-hidden"));
+        scrollRoots.forEach((root) => root.classList.add("overflow-hidden"));
+      } else if (!lock && previousScrollLocks) {
+        scrollRoots.forEach((root, index) => root.classList.toggle("overflow-hidden", previousScrollLocks[index]));
+        previousScrollLocks = null;
+      }
     }
 
     function setOpen(open) {
+      open = open && !mqDesktop.matches;
+      const focusWasInPanel = panel.contains(document.activeElement);
       btn.setAttribute("aria-expanded", String(open));
       btn.setAttribute("aria-label", open ? "Cerrar menu" : "Abrir menu");
       panel.classList.toggle("hidden", !open);
       panel.setAttribute("aria-hidden", String(!open));
       if (burgerPath) burgerPath.setAttribute("d", open ? CLOSE : BURGER);
       lockBodyScroll(open);
+      if (open) {
+        panel.querySelector("a[href]")?.focus({ preventScroll: true });
+      } else if (mqDesktop.matches && (focusWasInPanel || document.activeElement === btn)) {
+        header.querySelector(".nav-desktop a[aria-current='page'], .nav-desktop a")?.focus({ preventScroll: true });
+      } else if (focusWasInPanel) {
+        btn.focus({ preventScroll: true });
+      }
     }
 
     btn.addEventListener("click", () => {
@@ -175,9 +186,22 @@ const mobileHours = {
     });
 
     document.addEventListener("keydown", (event) => {
+      if (btn.getAttribute("aria-expanded") !== "true") return;
+      if (event.key === "Tab") {
+        const items = [btn, ...panel.querySelectorAll("a[href], button:not([disabled])")];
+        const index = items.indexOf(document.activeElement);
+        if (event.shiftKey && index <= 0) {
+          event.preventDefault();
+          items[items.length - 1].focus();
+        } else if (!event.shiftKey && (index === items.length - 1 || index === -1)) {
+          event.preventDefault();
+          btn.focus({ preventScroll: true });
+        }
+      }
       if (event.key === "Escape" && btn.getAttribute("aria-expanded") === "true") {
+        event.preventDefault();
         setOpen(false);
-        btn.focus();
+        btn.focus({ preventScroll: true });
       }
     });
 
