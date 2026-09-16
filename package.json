@@ -36,6 +36,7 @@
     "@astrojs/tailwind": "^5.1.5",
     "@astrojs/vercel": "^8.2.11",
     "@lucide/astro": "latest",
+    "@playwright/test": "^1.63.0",
     "@types/node": "^24.5.2",
     "@types/nodemailer": "^7.0.1",
     "astro": "^5.14.1",
