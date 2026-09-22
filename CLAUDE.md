@@ -31,16 +31,12 @@ npm run deploy       # Deploy to Vercel (runs check first)
 - `src/pages/api/` - Server-side API routes (contact, cotizacion, captcha, services)
 - `src/components/` - Reusable Astro components (Header, Footer, ServiceCard)
 - `src/layouts/` - Base layout with SEO schema.org markup
-- `src/content/plagas/` - Markdown content collection for pest information
 - `src/data/` - TypeScript data files (services, categories)
 - `src/lib/` - Utility modules (mailer.ts for Resend email)
 
 ### Configuration
 - `src/config.ts` - Centralized config with Zod validation for environment variables
 - Environment variables needed: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `CONTACT_TO`, `CONTACT_FROM`
-
-### Content Collections
-- `plagas` collection defined in `src/content.config.ts` with schema for title, excerpt, cover, tags, updated, draft
 
 ### Email System
 - Uses Resend SDK (`src/lib/mailer.ts`)

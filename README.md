@@ -13,7 +13,7 @@ Sitio web oficial de **Ecoquimia**, empresa dominicana especializada en control 
 
 ## Descripción
 
-La plataforma presenta los servicios de Ecoquimia, facilita el contacto mediante WhatsApp y permite solicitar cotizaciones desde un formulario web. También ofrece contenido educativo sobre las plagas más comunes en República Dominicana.
+La plataforma presenta los servicios de Ecoquimia, facilita el contacto mediante WhatsApp y permite solicitar cotizaciones desde un formulario web.
 
 El proyecto está desarrollado con Astro en modo SSR y desplegado en Vercel. Su estructura prioriza el rendimiento, la accesibilidad, el SEO, el diseño adaptable a dispositivos móviles y la facilidad de mantenimiento.
 
@@ -23,7 +23,6 @@ El proyecto está desarrollado con Astro en modo SSR y desplegado en Vercel. Su 
 * Formulario de cotización con envío de correos mediante Resend.
 * CAPTCHA, honeypot y validaciones para reducir solicitudes automatizadas.
 * Acceso directo a WhatsApp con mensajes predefinidos.
-* Contenido educativo sobre cucarachas, roedores, termitas y otras plagas.
 * Diseño responsive para computadoras, tabletas y dispositivos móviles.
 * Sitemap, metadatos y redirecciones orientadas al SEO.
 * Página de políticas y manejo de rutas no encontradas.
@@ -97,7 +96,6 @@ El sitio estará disponible en `http://localhost:4321`.
 
 * `src/components/`: header, footer, tarjetas y elementos reutilizables.
 * `src/config/`: datos oficiales y configuración del negocio.
-* `src/content/plagas/`: contenido educativo escrito en Markdown.
 * `src/data/`: servicios y categorías.
 * `src/layouts/`: layouts base del sitio.
 * `src/lib/`: utilidades e integraciones, como el cliente de correo.
@@ -108,6 +106,17 @@ El sitio estará disponible en `http://localhost:4321`.
 * `vercel.json`: configuración de redirecciones de dominios en Vercel.
 
 ## Validación antes de publicar
+
+Las pruebas HTTP de regresión usan el build de Vercel, sin enviar formularios ni correos:
+
+```bash
+npm run build
+npm run test:editorial-removal
+```
+
+Para inspeccionarlo localmente, ejecuta `npm run preview:build` y abre
+`http://127.0.0.1:4322`. Este servidor de pruebas utiliza los archivos estáticos y
+el handler SSR generados; no emula la CDN ni la configuración de dominios de Vercel.
 
 Antes de crear un pull request o desplegar una nueva versión, ejecuta:
 
