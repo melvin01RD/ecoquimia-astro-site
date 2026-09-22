@@ -23,6 +23,7 @@ export default defineConfig({
     sitemap({
       // Exclude legacy /services (redirected) and the thank-you page from the sitemap.
       filter: (page) =>
+        !new URL(page).pathname.startsWith("/aprende-de-las-plagas") &&
         !page.includes("/services/") && !page.includes("/gracias/"),
     }),
   ],
